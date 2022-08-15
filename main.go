@@ -41,7 +41,6 @@ func main() {
 	for i, row := range rows {
 		if i == 0 {
 			for _, colCell := range row {
-				// cols = strings.Split(colCell, " ")
 				cols = append(cols, colCell)
 			}
 			fmt.Println("Column information", cols)
@@ -56,13 +55,13 @@ func main() {
 				case "propietario":
 					ap.owner = colCell
 				case "depa":
-					ap.number, err = strconv.ParseInt(colCell, 10, 64)
+					ap.number, _ = strconv.ParseInt(colCell, 10, 64)
 				case "total área":
-					ap.totalArea, err = strconv.ParseFloat(colCell, 10)
+					ap.totalArea, _ = strconv.ParseFloat(colCell, 64)
 				case "cuota":
-					ap.amount, err = strconv.ParseFloat(colCell, 10)
+					ap.amount, _ = strconv.ParseFloat(colCell, 64)
 				case "porcentaje":
-					ap.percentaje, err = strconv.ParseFloat(colCell, 10)
+					ap.percentaje, _ = strconv.ParseFloat(colCell, 64)
 				case "estaciona":
 					if len(colCell) == 0 {
 						colCell = "--"
