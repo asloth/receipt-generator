@@ -7,7 +7,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func main() {
+func main1() {
 	// fechaEmision := "22/07/2022"
 	// fechaVenc := "31/07/2022"
 	// tipoCuota := "ORDINARIO"
