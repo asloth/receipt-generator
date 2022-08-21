@@ -1,14 +1,24 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/johnfercher/maroto/pkg/color"
 	"github.com/johnfercher/maroto/pkg/consts"
 	"github.com/johnfercher/maroto/pkg/pdf"
 	"github.com/johnfercher/maroto/pkg/props"
 )
 
-func main() {
-	owner := "BENITO JAVIER, SANTOS MEDINA"
+type Apartment struct {
+	number     int64
+	owner      string
+	totalArea  float64
+	percentaje float64
+	amount     float64
+	parking    string
+}
+
+func (ap *Apartment) generateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo string, areaTotal, totalPresupuesto float64) {
 
 	var heightHeader float64 = 30
 	var contentSize float64 = 10
@@ -26,7 +36,7 @@ func main() {
 	// tabla inicial
 	headers := []string{"TIPO CUOTA", "F. EMISION", "F. VCTO.", "PERIODO", "N. RECIBO"}
 	contents := [][]string{
-		{"Content1", "Content2", "Content2", "Content2", "Content2"},
+		{tipoCuota, fechaEmision, fechaVenc, periodo, "2022-****"},
 	}
 	m.Line(10)
 	m.SetBorder(true)
@@ -59,8 +69,17 @@ func main() {
 	subHeader(&m, colorMolio, "DATOS DEL PROPIETARIO/INQUILINO")
 
 	atributes := []string{"NOMBRE: ", "DEPARTAMENTO: ", "CODIGO BANCO: ", "AREA DEPARTAMENTO: ", "ESTACIONAMIENTO: ", "% PARTICIPACION: ", "AREA TOTAL EDIFICIO: ", "TOTAL PRESUPUESTO: "}
-	for _, v := range atributes {
-		dataOwner(&m, backgroundColor, rowHeight, contentSize, v, owner)
+
+	dptoArea := fmt.Sprintf("%f m2", ap.totalArea)
+	participation := fmt.Sprintf("%f %", ap.percentaje)
+	areaEd := fmt.Sprintf("%f m2", areaTotal)
+	presu := fmt.Sprintf("%f", totalPresupuesto)
+	monto := fmt.Sprintf("S/. %f", ap.amount)
+
+	ownerData := []string{ap.owner, "DPTO-01-" + string(ap.number), string(ap.number), dptoArea, string(ap.parking), participation, areaEd, presu}
+
+	for i, v := range atributes {
+		dataOwner(&m, backgroundColor, rowHeight, contentSize, v, ownerData[i])
 	}
 
 	//TERCERA TABLA de importes fcturados
@@ -88,7 +107,7 @@ func main() {
 	m.SetBackgroundColor(backgroundColor)
 	m.Row(7, func() {
 		m.Col(10, func() {
-			m.Text("MANTENIMIENTO ( 0.5841 % ) x ( S/ 28,974.00 )",
+			m.Text("MANTENIMIENTO ( "+participation+" % ) x ( S/ "+presu+" )",
 				props.Text{
 					Size:  contentSize,
 					Style: consts.Bold,
@@ -96,7 +115,7 @@ func main() {
 				})
 		})
 		m.Col(2, func() {
-			m.Text("S/. 169.24",
+			m.Text(monto,
 				props.Text{
 					Size:  contentSize,
 					Style: consts.Bold,
@@ -117,7 +136,7 @@ func main() {
 				})
 		})
 		m.Col(2, func() {
-			m.Text("169.24",
+			m.Text(monto,
 				props.Text{
 					Size:  12,
 					Style: consts.Bold,

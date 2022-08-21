@@ -15,7 +15,7 @@ func main1() {
 	// startColumn := "A"
 	totalNumberOfRows := 210
 
-	filePath := "files/GPR-CUOTA-JULIO-2022.xlsx"
+	filePath := "cuotas/GPR-CUOTA-JULIO-2022.xlsx"
 
 	sheetName := "Propietarios ordenados"
 
@@ -78,13 +78,4 @@ func main1() {
 	}
 	fmt.Println(ret[2])
 
-}
-
-type Apartment struct {
-	number     int64
-	owner      string
-	totalArea  float64
-	percentaje float64
-	amount     float64
-	parking    string
 }
