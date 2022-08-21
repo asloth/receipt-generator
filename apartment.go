@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/johnfercher/maroto/pkg/color"
 	"github.com/johnfercher/maroto/pkg/consts"
@@ -18,7 +19,7 @@ type Apartment struct {
 	parking    string
 }
 
-func (ap *Apartment) generateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo string, areaTotal, totalPresupuesto float64) {
+func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, areaTotal, totalPresupuesto string) {
 
 	var heightHeader float64 = 30
 	var contentSize float64 = 10
@@ -31,7 +32,7 @@ func (ap *Apartment) generateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	backgroundColor := color.NewWhite()
 	m := pdf.NewMaroto(consts.Portrait, consts.A4)
 	// Header
-	receiptHeader(&m, heightHeader)
+	ReceiptHeader(&m, heightHeader)
 
 	// tabla inicial
 	headers := []string{"TIPO CUOTA", "F. EMISION", "F. VCTO.", "PERIODO", "N. RECIBO"}
@@ -66,20 +67,19 @@ func (ap *Apartment) generateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	})
 
 	// tabla central datos del usuario
-	subHeader(&m, colorMolio, "DATOS DEL PROPIETARIO/INQUILINO")
+	SubHeader(&m, colorMolio, "DATOS DEL PROPIETARIO/INQUILINO")
 
 	atributes := []string{"NOMBRE: ", "DEPARTAMENTO: ", "CODIGO BANCO: ", "AREA DEPARTAMENTO: ", "ESTACIONAMIENTO: ", "% PARTICIPACION: ", "AREA TOTAL EDIFICIO: ", "TOTAL PRESUPUESTO: "}
 
-	dptoArea := fmt.Sprintf("%f m2", ap.totalArea)
-	participation := fmt.Sprintf("%f %", ap.percentaje)
-	areaEd := fmt.Sprintf("%f m2", areaTotal)
-	presu := fmt.Sprintf("%f", totalPresupuesto)
-	monto := fmt.Sprintf("S/. %f", ap.amount)
+	dptoArea := fmt.Sprintf("%.2f m2", ap.totalArea)
+	participation := fmt.Sprintf("%f", ap.percentaje)
 
-	ownerData := []string{ap.owner, "DPTO-01-" + string(ap.number), string(ap.number), dptoArea, string(ap.parking), participation, areaEd, presu}
+	monto := fmt.Sprintf("S/. %.2f", ap.amount)
+
+	ownerData := []string{ap.owner, "DPTO-01-" + strconv.Itoa(int(ap.number)), strconv.Itoa(int(ap.number)), dptoArea, string(ap.parking), participation + "%", areaTotal, totalPresupuesto}
 
 	for i, v := range atributes {
-		dataOwner(&m, backgroundColor, rowHeight, contentSize, v, ownerData[i])
+		DataOwner(&m, backgroundColor, rowHeight, contentSize, v, ownerData[i])
 	}
 
 	//TERCERA TABLA de importes fcturados
@@ -107,7 +107,7 @@ func (ap *Apartment) generateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	m.SetBackgroundColor(backgroundColor)
 	m.Row(7, func() {
 		m.Col(10, func() {
-			m.Text("MANTENIMIENTO ( "+participation+" % ) x ( S/ "+presu+" )",
+			m.Text("MANTENIMIENTO ( "+participation+" % ) x ( S/ "+totalPresupuesto+" )",
 				props.Text{
 					Size:  contentSize,
 					Style: consts.Bold,
@@ -147,11 +147,11 @@ func (ap *Apartment) generateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	m.SetBackgroundColor(backgroundColor)
 	m.Row(7, func() {})
 
-	subHeader(&m, colorMolio, "INFORMACION DE PAGO")
-	payInfo(&m, colorMolio)
+	SubHeader(&m, colorMolio, "INFORMACION DE PAGO")
+	PayInfo(&m, colorMolio)
 
 	//FOOTER : AVISOS IMPORTANTES DE LA BOLETA
-	subHeader(&m, colorMolio, "AVISO IMPORTANTE")
+	SubHeader(&m, colorMolio, "AVISO IMPORTANTE")
 	m.SetBackgroundColor(backgroundColor)
 	m.Row(10, func() {
 		m.Col(12, func() {
@@ -168,11 +168,11 @@ func (ap *Apartment) generateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 				})
 		})
 	})
-
-	m.OutputFileAndClose("maroto.pdf")
+	fileName := "Mantenimiento-" + periodo + "DPTO-01-" + string(rune(ap.number)) + ".pdf"
+	m.OutputFileAndClose(fileName)
 }
 
-func receiptHeader(pdf *pdf.Maroto, heightHeader float64) {
+func ReceiptHeader(pdf *pdf.Maroto, heightHeader float64) {
 	m := *pdf
 	var colWidth uint = 4
 
@@ -213,7 +213,7 @@ func receiptHeader(pdf *pdf.Maroto, heightHeader float64) {
 	})
 }
 
-func dataOwner(pdf *pdf.Maroto, backgroundColor color.Color, rowHeight float64, contentSize float64, prop, data string) {
+func DataOwner(pdf *pdf.Maroto, backgroundColor color.Color, rowHeight float64, contentSize float64, prop, data string) {
 	m := *pdf
 	m.SetBackgroundColor(backgroundColor)
 	m.SetBorder(false)
@@ -237,7 +237,7 @@ func dataOwner(pdf *pdf.Maroto, backgroundColor color.Color, rowHeight float64, 
 	})
 }
 
-func payInfo(pdf *pdf.Maroto, colorMolio color.Color) {
+func PayInfo(pdf *pdf.Maroto, colorMolio color.Color) {
 	m := *pdf
 
 	headers := []string{"BANCO", "CUENTA BANCARIA", "TITULAR DE CUENTA", "NUMERO INTERBANCARIO"}
@@ -269,7 +269,7 @@ func payInfo(pdf *pdf.Maroto, colorMolio color.Color) {
 	})
 }
 
-func subHeader(pdf *pdf.Maroto, colorMolio color.Color, subtitulo string) {
+func SubHeader(pdf *pdf.Maroto, colorMolio color.Color, subtitulo string) {
 	m := *pdf
 	m.SetBackgroundColor(colorMolio)
 	m.Row(7, func() {
