@@ -1,15 +1,44 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/xuri/excelize/v2"
 )
 
 func main() {
+
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("GENERAR RECIBOS")
+	fmt.Println("---------------------")
+
+	fechaEmision := ""
+	for {
+		fmt.Print("Ingresar fecha de emision (dd/mm/aa): ")
+		text, _ := reader.ReadString('\n')
+		// convert CRLF to LF
+		stringDate := strings.Replace(text, "\n", "", -1)
+
+		_, err := time.Parse("01/02/2006", stringDate)
+
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		fechaEmision = text
+
+		break
+
+	}
+
 	//Datos genrales que necesitamos del usuario
-	fechaEmision := "22/07/2022"
+	// fechaEmision := "22/07/2022"
 	fechaVenc := "31/07/2022"
 	tipoCuota := "ORDINARIO"
 	periodo := "AGOSTO-2022"

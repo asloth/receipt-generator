@@ -160,7 +160,7 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 					Size:  contentSize,
 					Align: consts.Left,
 				})
-			m.Text("2. El Propietario autoriza el corte de suministrode agua por incumplimiento de pago.",
+			m.Text("2. El Propietario autoriza el corte de suministro de agua por incumplimiento de pago.",
 				props.Text{
 					Size:  contentSize,
 					Align: consts.Left,
@@ -168,7 +168,7 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 				})
 		})
 	})
-	fileName := "Mantenimiento-" + periodo + "DPTO-01-" + string(rune(ap.number)) + ".pdf"
+	fileName := "Mantenimiento-" + periodo + "_DPTO-01-" + string(rune(ap.number)) + ".pdf"
 	m.OutputFileAndClose(fileName)
 }
 
