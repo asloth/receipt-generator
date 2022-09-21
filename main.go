@@ -17,41 +17,29 @@ func main() {
 	fmt.Println("GENERAR RECIBOS")
 	fmt.Println("---------------------")
 
-	fechaEmision := ""
-	for {
-		fmt.Print("Ingresar fecha de emision (dd/mm/aa): ")
-		text, _ := reader.ReadString('\n')
-		// convert CRLF to LF
-		stringDate := strings.Replace(text, "\n", "", -1)
-
-		_, err := time.Parse("01/02/2006", stringDate)
-
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		fechaEmision = text
-
-		break
-
-	}
-
 	//Datos genrales que necesitamos del usuario
-	// fechaEmision := "22/07/2022"
-	fechaVenc := "31/07/2022"
-	tipoCuota := "ORDINARIO"
-	periodo := "AGOSTO-2022"
-	totalPresupuesto := "28,974.00"
-	// nameFile := "GPR CUOTA AGOSTO 2022"
+	fechaEmision := ""
+	getReceiptData(reader, "fecha de emision (dd/mm/aa)", &fechaEmision, true)
 
+	fechaVenc := ""
+	getReceiptData(reader, "fecha de vencimiento (dd/mm/aa)", &fechaVenc, true)
+
+	tipoCuota := "ORDINARIO"
+	getReceiptData(reader, "tipo de cuota", &tipoCuota, false)
+
+	periodo := "AGOSTO-2022"
+	getReceiptData(reader, "periodo", &periodo, false)
+
+	totalPresupuesto := "28,974.00"
+	getFloatData(reader, "presupuesto", &totalPresupuesto)
+
+	// Limits in the spreadsheet
 	finalColumn := 11
 	totalNumberOfRows := 211
 
 	//variable que representa al edificio
 	gpr := make(map[string]string)
 
-	gpr["area_total"] = "14,926.79 m2"
 	gpr["total_pres"] = totalPresupuesto
 
 	filePath := "cuotas/GPR CUOTA AGOSTO 2022.xlsx"
@@ -121,6 +109,63 @@ func main() {
 
 	}
 	fmt.Println(ret[2])
-	ret[2].GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, gpr["area_total"], gpr["total_pres"])
+	ret[2].GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, gpr["total_pres"])
 
+}
+
+func getReceiptData(r *bufio.Reader, question string, data *string, isADate bool) {
+	reader := *r
+	for {
+		// Ask for the date
+		fmt.Print("Ingresar " + question + ": ")
+
+		// Reading the user input
+		text, _ := reader.ReadString('\n')
+		// convert CRLF to LF
+		stringDate := strings.Replace(text, "\n", "", -1)
+
+		if isADate {
+			// Verify the date's format
+			_, err := time.Parse("01/02/2006", stringDate)
+
+			if err != nil {
+				// Show error
+				fmt.Println("ERROR: Dato invalido")
+				fmt.Println(err)
+
+				// Ask again if the date if not correct
+				continue
+			}
+		}
+
+		*data = stringDate
+		fmt.Println(question + " guardada: " + *data)
+
+		break
+
+	}
+}
+
+func getFloatData(r *bufio.Reader, question string, data *string) {
+	reader := *r
+	for {
+		// Ask for the date
+		fmt.Print("Ingresar " + question + ": ")
+
+		// Reading the user input
+		text, _ := reader.ReadString('\n')
+		// convert CRLF to LF
+		input := strings.Replace(text, "\n", "", -1)
+
+		if _, err := strconv.ParseFloat(input, 64); err != nil {
+			fmt.Printf("ERROR: Dato ingresado no es un numero" + input)
+			continue
+		}
+
+		*data = input
+		fmt.Println(question + " guardada: " + *data)
+
+		break
+
+	}
 }

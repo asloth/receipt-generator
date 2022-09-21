@@ -19,7 +19,7 @@ type Apartment struct {
 	parking    string
 }
 
-func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, areaTotal, totalPresupuesto string) {
+func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, totalPresupuesto string) {
 
 	var heightHeader float64 = 30
 	var contentSize float64 = 10
@@ -35,9 +35,9 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	ReceiptHeader(&m, heightHeader)
 
 	// tabla inicial
-	headers := []string{"TIPO CUOTA", "F. EMISION", "F. VCTO.", "PERIODO", "N. RECIBO"}
+	headers := []string{"TIPO CUOTA", "F. EMISION", "F. VCTO.", "PERIODO"}
 	contents := [][]string{
-		{tipoCuota, fechaEmision, fechaVenc, periodo, "2022-****"},
+		{tipoCuota, fechaEmision, fechaVenc, periodo},
 	}
 	m.Line(10)
 	m.SetBorder(true)
@@ -48,13 +48,13 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 			Family:    consts.Arial,
 			Style:     consts.Bold,
 			Size:      11.0,
-			GridSizes: []uint{3, 2, 2, 3, 2},
+			GridSizes: []uint{3, 3, 3, 3},
 		},
 		ContentProp: props.TableListContent{
 			Family:    consts.Courier,
 			Style:     consts.Normal,
 			Size:      10.0,
-			GridSizes: []uint{3, 2, 2, 3, 2},
+			GridSizes: []uint{3, 3, 3, 3},
 		},
 		Align:                  consts.Center,
 		HeaderContentSpace:     0.01,
@@ -69,15 +69,19 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	// tabla central datos del usuario
 	SubHeader(&m, colorMolio, "DATOS DEL PROPIETARIO/INQUILINO")
 
-	atributes := []string{"NOMBRE: ", "DEPARTAMENTO: ", "CODIGO BANCO: ", "AREA DEPARTAMENTO: ", "ESTACIONAMIENTO: ", "% PARTICIPACION: ", "AREA TOTAL EDIFICIO: ", "TOTAL PRESUPUESTO: "}
+	atributes := []string{"NOMBRE: ", "DEPARTAMENTO: ", "CODIGO BANCO: ", "AREA DEPARTAMENTO: ", "ESTACIONAMIENTO: ", "% PARTICIPACION: ", "TOTAL PRESUPUESTO: "}
 
 	dptoArea := fmt.Sprintf("%.2f m2", ap.totalArea)
 	participation := fmt.Sprintf("%f", ap.percentaje)
 
 	monto := fmt.Sprintf("S/. %.2f", ap.amount)
 
-	ownerData := []string{ap.owner, "DPTO-01-" + strconv.Itoa(int(ap.number)), strconv.Itoa(int(ap.number)), dptoArea, string(ap.parking), participation + "%", areaTotal, totalPresupuesto}
+	ownerData := []string{ap.owner, strconv.Itoa(int(ap.number)), strconv.Itoa(int(ap.number)), dptoArea, string(ap.parking), participation + "%", totalPresupuesto}
 
+	m.Row(20, func() {
+		m.Col()
+		m.Col()
+	})
 	for i, v := range atributes {
 		DataOwner(&m, backgroundColor, rowHeight, contentSize, v, ownerData[i])
 	}
@@ -240,9 +244,9 @@ func DataOwner(pdf *pdf.Maroto, backgroundColor color.Color, rowHeight float64, 
 func PayInfo(pdf *pdf.Maroto, colorMolio color.Color) {
 	m := *pdf
 
-	headers := []string{"BANCO", "CUENTA BANCARIA", "TITULAR DE CUENTA", "NUMERO INTERBANCARIO"}
+	headers := []string{"BANCO", "CUENTA BANCARIA", "TITULAR DE CUENTA"}
 	contents := [][]string{
-		{"BCP", "3059864512041", "C. RECAUDADORA GRAN PARQUE ROMA", "********************"},
+		{"BCP", "3059864512041", "C. RECAUDADORA GRAN PARQUE ROMA"},
 	}
 
 	m.TableList(headers, contents, props.TableList{
@@ -250,13 +254,13 @@ func PayInfo(pdf *pdf.Maroto, colorMolio color.Color) {
 			Family:    consts.Arial,
 			Style:     consts.Bold,
 			Size:      11.0,
-			GridSizes: []uint{2, 3, 4, 3},
+			GridSizes: []uint{4, 4, 4},
 		},
 		ContentProp: props.TableListContent{
 			Family:    consts.Courier,
 			Style:     consts.Normal,
 			Size:      10.0,
-			GridSizes: []uint{2, 3, 4, 3},
+			GridSizes: []uint{4, 4, 4},
 		},
 		Align:                  consts.Center,
 		HeaderContentSpace:     0.01,
