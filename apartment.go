@@ -69,21 +69,24 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	// tabla central datos del usuario
 	SubHeader(&m, colorMolio, "DATOS DEL PROPIETARIO/INQUILINO")
 
-	atributes := []string{"NOMBRE: ", "DEPARTAMENTO: ", "CODIGO BANCO: ", "AREA DEPARTAMENTO: ", "ESTACIONAMIENTO: ", "% PARTICIPACION: ", "TOTAL PRESUPUESTO: "}
+	FirstColumn := []string{"NOMBRE: ", "DEPARTAMENTO: ", "CODIGO BANCO: ", "ESTACIONAMIENTO: "}
+
+	SecondColumn := []string{
+		"AREA DEPARTAMENTO: ",
+		"AREA ESTACIONAMIENTO: ",
+		"% PARTICIPACION: ",
+		"TOTAL PRESUPUESTO: "}
 
 	dptoArea := fmt.Sprintf("%.2f m2", ap.totalArea)
 	participation := fmt.Sprintf("%f", ap.percentaje)
 
 	monto := fmt.Sprintf("S/. %.2f", ap.amount)
 
-	ownerData := []string{ap.owner, strconv.Itoa(int(ap.number)), strconv.Itoa(int(ap.number)), dptoArea, string(ap.parking), participation + "%", totalPresupuesto}
+	ownerData := []string{ap.owner, strconv.Itoa(int(ap.number)), strconv.Itoa(int(ap.number)), string(ap.parking)}
+	otherData := []string{dptoArea, "--", participation + "%", totalPresupuesto}
 
-	m.Row(20, func() {
-		m.Col()
-		m.Col()
-	})
-	for i, v := range atributes {
-		DataOwner(&m, backgroundColor, rowHeight, contentSize, v, ownerData[i])
+	for i, v := range FirstColumn {
+		DataOwner(&m, backgroundColor, rowHeight, contentSize, v, ownerData[i], SecondColumn[i], otherData[i])
 	}
 
 	//TERCERA TABLA de importes fcturados
@@ -172,7 +175,7 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 				})
 		})
 	})
-	fileName := "Mantenimiento-" + periodo + "_DPTO-01-" + string(rune(ap.number)) + ".pdf"
+	fileName := "MANTENIMIENTO-" + periodo + "_DPTO-01-" + strconv.Itoa(int(ap.number)) + ".pdf"
 	m.OutputFileAndClose(fileName)
 }
 
@@ -217,16 +220,16 @@ func ReceiptHeader(pdf *pdf.Maroto, heightHeader float64) {
 	})
 }
 
-func DataOwner(pdf *pdf.Maroto, backgroundColor color.Color, rowHeight float64, contentSize float64, prop, data string) {
+func DataOwner(pdf *pdf.Maroto, backgroundColor color.Color, rowHeight float64, contentSize float64, prop1, data1, prop2, data2 string) {
 	m := *pdf
 	m.SetBackgroundColor(backgroundColor)
 	m.SetBorder(false)
-	var column1 uint = 4
-	var columnData uint = 8
-	m.Row(rowHeight, func() {
+	var column1 uint = 3
+	var columnData uint = 4
+	m.Row(9, func() {
 		m.Col(column1, func() {
-			m.Text(prop, props.Text{
-				Size:            contentSize,
+			m.Text(prop1, props.Text{
+				Size:            9,
 				Align:           consts.Right,
 				Style:           consts.Bold,
 				VerticalPadding: 3,
@@ -234,7 +237,21 @@ func DataOwner(pdf *pdf.Maroto, backgroundColor color.Color, rowHeight float64, 
 			})
 		})
 		m.Col(columnData, func() {
-			m.Text(data, props.Text{
+			m.Text(data1, props.Text{
+				Top: 1,
+			})
+		})
+		m.Col(3, func() {
+			m.Text(prop2, props.Text{
+				Size:            9,
+				Align:           consts.Right,
+				Style:           consts.Bold,
+				VerticalPadding: 3,
+				Top:             1,
+			})
+		})
+		m.Col(2, func() {
+			m.Text(data2, props.Text{
 				Top: 1,
 			})
 		})

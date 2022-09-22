@@ -108,8 +108,8 @@ func main() {
 		}
 
 	}
-	fmt.Println(ret[2])
-	ret[2].GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, gpr["total_pres"])
+	fmt.Println(ret[111])
+	ret[111].GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, gpr["total_pres"])
 
 }
 
@@ -126,7 +126,7 @@ func getReceiptData(r *bufio.Reader, question string, data *string, isADate bool
 
 		if isADate {
 			// Verify the date's format
-			_, err := time.Parse("01/02/2006", stringDate)
+			_, err := time.Parse("02/01/2006", stringDate)
 
 			if err != nil {
 				// Show error
