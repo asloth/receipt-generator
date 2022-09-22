@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/johnfercher/maroto/pkg/color"
@@ -175,8 +176,16 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 				})
 		})
 	})
-	fileName := "MANTENIMIENTO-" + periodo + "_DPTO-01-" + strconv.Itoa(int(ap.number)) + ".pdf"
-	m.OutputFileAndClose(fileName)
+	if err := os.Mkdir("GPR-RECIBOS-"+periodo, os.ModePerm); err != nil {
+		fmt.Println(err)
+	}
+
+	fileName := "MANTENIMIENTO-" + periodo + "_DPTO-" + strconv.Itoa(int(ap.number)) + ".pdf"
+	err := m.OutputFileAndClose("GPR-RECIBOS-" + periodo + "/" + fileName)
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 }
 
 func ReceiptHeader(pdf *pdf.Maroto, heightHeader float64) {
