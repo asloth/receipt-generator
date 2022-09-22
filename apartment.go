@@ -239,7 +239,7 @@ func DataOwner(pdf *pdf.Maroto, backgroundColor color.Color, rowHeight float64, 
 		m.Col(column1, func() {
 			m.Text(prop1, props.Text{
 				Size:            9,
-				Align:           consts.Right,
+				Align:           consts.Left,
 				Style:           consts.Bold,
 				VerticalPadding: 3,
 				Top:             1,
@@ -253,7 +253,7 @@ func DataOwner(pdf *pdf.Maroto, backgroundColor color.Color, rowHeight float64, 
 		m.Col(3, func() {
 			m.Text(prop2, props.Text{
 				Size:            9,
-				Align:           consts.Right,
+				Align:           consts.Left,
 				Style:           consts.Bold,
 				VerticalPadding: 3,
 				Top:             1,
