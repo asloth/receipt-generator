@@ -12,12 +12,14 @@ import (
 )
 
 type Apartment struct {
-	number     int64
-	owner      string
-	totalArea  float64
-	percentaje float64
-	amount     float64
-	parking    string
+	number          int64
+	owner           string
+	totalArea       float64
+	percentaje      float64
+	amount          float64
+	parking         string
+	deposit         []string
+	waterComsuption float64
 }
 
 func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, totalPresupuesto string) {

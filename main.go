@@ -42,13 +42,13 @@ func main() {
 
 	gpr["total_pres"] = totalPresupuesto
 
-	filePath := "cuotas/GPR CUOTA AGOSTO 2022.xlsx"
+	filePath := "cuotas/GPR CUOTA SETIEMBRE 2022.xlsx"
 
 	sheetName := "Propietarios ordenados"
 
-	fmt.Println("flag1.1")
+	// Open the spreadsheet
 	xlsxFile, err := excelize.OpenFile(filePath)
-	fmt.Println("flag1.2")
+
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -85,13 +85,25 @@ func main() {
 
 				switch cols[j] {
 				case "propietario":
+					if len(colCell) == 0 {
+						colCell = "Sin datos"
+					}
 					ap.owner = colCell
 				case "depa":
-					ap.number, _ = strconv.ParseInt(colCell, 10, 64)
+					ap.number, err = strconv.ParseInt(colCell, 10, 64)
+					if err != nil {
+						ap.number = 0.0
+					}
 				case "total área":
-					ap.totalArea, _ = strconv.ParseFloat(colCell, 64)
+					ap.totalArea, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.number = 0.0
+					}
 				case "cuota":
-					ap.amount, _ = strconv.ParseFloat(colCell, 64)
+					ap.amount, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.amount = 0.0
+					}
 				case "porcentaje":
 					ap.percentaje, _ = strconv.ParseFloat(colCell, 64)
 				case "estaciona":
@@ -99,6 +111,19 @@ func main() {
 						colCell = "--"
 					}
 					ap.parking = colCell
+				case "AGUA":
+					ap.waterComsuption, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.waterComsuption = 0.0
+					}
+				case "deposito":
+					if len(colCell) == 0 {
+						colCell = "--"
+					}
+					ap.deposit = append(ap.deposit, colCell)
+				default:
+					continue
+
 				}
 			}
 			ret = append(ret, ap)
