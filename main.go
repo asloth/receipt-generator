@@ -34,8 +34,8 @@ func main() {
 	getFloatData(reader, "presupuesto", &totalPresupuesto)
 
 	// Limits in the spreadsheet
-	finalColumn := 11
-	totalNumberOfRows := 211
+	finalColumn := 13
+	totalNumberOfRows := 212
 
 	//variable que representa al edificio
 	gpr := make(map[string]string)
@@ -65,10 +65,9 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("flag1")
+
 	cols := []string{}
 
-	fmt.Println("flag2")
 	ret := []Apartment{}
 	for i, row := range rows {
 		if i == 0 {
@@ -83,7 +82,7 @@ func main() {
 					break
 				}
 
-				switch cols[j] {
+				switch strings.ToLower(cols[j]) {
 				case "propietario":
 					if len(colCell) == 0 {
 						colCell = "Sin datos"
@@ -99,10 +98,20 @@ func main() {
 					if err != nil {
 						ap.number = 0.0
 					}
-				case "cuota":
-					ap.amount, err = strconv.ParseFloat(colCell, 64)
+				case "área-e":
+					ap.parkingArea, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
-						ap.amount = 0.0
+						ap.number = 0.0
+					}
+				case "total":
+					ap.total, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.total = 0.0
+					}
+				case "cuota":
+					ap.maintenance, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.maintenance = 0.0
 					}
 				case "porcentaje":
 					ap.percentaje, _ = strconv.ParseFloat(colCell, 64)
@@ -111,7 +120,7 @@ func main() {
 						colCell = "--"
 					}
 					ap.parking = colCell
-				case "AGUA":
+				case "agua":
 					ap.waterComsuption, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
 						ap.waterComsuption = 0.0
@@ -133,8 +142,8 @@ func main() {
 		}
 
 	}
-	fmt.Println(ret[111])
-	ret[111].GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, gpr["total_pres"])
+	fmt.Println(ret[210])
+	ret[210].GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, gpr["total_pres"])
 
 }
 

@@ -16,8 +16,10 @@ type Apartment struct {
 	owner           string
 	totalArea       float64
 	percentaje      float64
-	amount          float64
+	total           float64
+	maintenance     float64
 	parking         string
+	parkingArea     float64
 	deposit         []string
 	waterComsuption float64
 }
@@ -69,30 +71,37 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 		},
 	})
 
-	// tabla central datos del usuario
+	// Adding the header of DATOS DEL USUARIO section
 	SubHeader(&m, colorMolio, "DATOS DEL PROPIETARIO/INQUILINO")
 
-	FirstColumn := []string{"NOMBRE: ", "DEPARTAMENTO: ", "CODIGO BANCO: ", "ESTACIONAMIENTO: "}
+	// Defining the fields for the first column of the receipt
+	FirstColumn := []string{"NOMBRE: ", "DEPARTAMENTO: ", "CODIGO BANCO: ", "ESTACIONAMIENTO: ", "DEPOSITO: "}
 
+	// Defining the fields for the second column of the receipt
 	SecondColumn := []string{
 		"AREA DEPARTAMENTO: ",
 		"AREA ESTACIONAMIENTO: ",
 		"% PARTICIPACION: ",
+		"CONSUMO AGUA (S/.): ",
 		"TOTAL PRESUPUESTO: "}
 
+	// Parsing data from float to string with 2 decimals to show in the receipt
 	dptoArea := fmt.Sprintf("%.2f m2", ap.totalArea)
+	parkingArea := fmt.Sprintf("%.2f m2", ap.parkingArea)
 	participation := fmt.Sprintf("%f", ap.percentaje)
 
-	monto := fmt.Sprintf("S/. %.2f", ap.amount)
+	// Data for the first column of the receipt
+	ownerData := []string{ap.owner, strconv.Itoa(int(ap.number)), strconv.Itoa(int(ap.number)), string(ap.parking), string(ap.deposit[0]) + ", " + string(ap.deposit[1])}
+	// Data for the second column of the receipt
+	otherData := []string{dptoArea, parkingArea, participation + "%", fmt.Sprintf("%.2f", ap.waterComsuption), totalPresupuesto}
 
-	ownerData := []string{ap.owner, strconv.Itoa(int(ap.number)), strconv.Itoa(int(ap.number)), string(ap.parking)}
-	otherData := []string{dptoArea, "--", participation + "%", totalPresupuesto}
-
+	// Reading the data and painting it into the receipt
 	for i, v := range FirstColumn {
 		DataOwner(&m, backgroundColor, rowHeight, contentSize, v, ownerData[i], SecondColumn[i], otherData[i])
 	}
 
 	//TERCERA TABLA de importes fcturados
+	monto := fmt.Sprintf("S/. %.2f", ap.maintenance)
 	m.SetBackgroundColor(colorMolio)
 	m.SetBorder(true)
 	m.Row(7, func() {
@@ -117,7 +126,7 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	m.SetBackgroundColor(backgroundColor)
 	m.Row(7, func() {
 		m.Col(10, func() {
-			m.Text("MANTENIMIENTO ( "+participation+" % ) x ( S/ "+totalPresupuesto+" )",
+			m.Text("MANTENIMIENTO ",
 				props.Text{
 					Size:  contentSize,
 					Style: consts.Bold,
@@ -126,6 +135,24 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 		})
 		m.Col(2, func() {
 			m.Text(monto,
+				props.Text{
+					Size:  contentSize,
+					Style: consts.Bold,
+					Align: consts.Center,
+				})
+		})
+	})
+	m.Row(7, func() {
+		m.Col(10, func() {
+			m.Text("AGUA ",
+				props.Text{
+					Size:  contentSize,
+					Style: consts.Bold,
+					Align: consts.Left,
+				})
+		})
+		m.Col(2, func() {
+			m.Text(fmt.Sprintf("S/. %.2f", ap.waterComsuption),
 				props.Text{
 					Size:  contentSize,
 					Style: consts.Bold,
@@ -146,7 +173,7 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 				})
 		})
 		m.Col(2, func() {
-			m.Text(monto,
+			m.Text(fmt.Sprintf("S/. %.2f", ap.total),
 				props.Text{
 					Size:  12,
 					Style: consts.Bold,
