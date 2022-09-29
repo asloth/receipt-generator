@@ -100,6 +100,8 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 		DataOwner(&m, backgroundColor, rowHeight, contentSize, v, ownerData[i], SecondColumn[i], otherData[i])
 	}
 
+	SubHeader(&m, colorMolio, "Detalle consumo de agua")
+
 	//TERCERA TABLA de importes fcturados
 	monto := fmt.Sprintf("S/. %.2f", ap.maintenance)
 	m.SetBackgroundColor(colorMolio)
@@ -189,27 +191,17 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 
 	//FOOTER : AVISOS IMPORTANTES DE LA BOLETA
 	SubHeader(&m, colorMolio, "AVISO IMPORTANTE")
-	m.SetBackgroundColor(backgroundColor)
-	m.Row(10, func() {
-		m.Col(12, func() {
-			m.Text("1. Se deja por escrito que el incumplimiento del pago esta sujeto a mora.",
-				props.Text{
-					Size:  contentSize,
-					Align: consts.Left,
-				})
-			m.Text("2. El Propietario autoriza el corte de suministro de agua por incumplimiento de pago.",
-				props.Text{
-					Size:  contentSize,
-					Align: consts.Left,
-					Top:   5,
-				})
-		})
-	})
+	Footer(&m, backgroundColor, contentSize)
+
+	// Create the directory to store the receipts
 	if err := os.Mkdir("GPR-RECIBOS-"+periodo, os.ModePerm); err != nil {
 		fmt.Println(err)
 	}
 
+	// Create a custom name for the receipt
 	fileName := "MANTENIMIENTO-" + periodo + "_DPTO-" + strconv.Itoa(int(ap.number)) + ".pdf"
+
+	// Save the receipt into the directory
 	err := m.OutputFileAndClose("GPR-RECIBOS-" + periodo + "/" + fileName)
 
 	if err != nil {
@@ -338,6 +330,26 @@ func SubHeader(pdf *pdf.Maroto, colorMolio color.Color, subtitulo string) {
 					Size:  12,
 					Style: consts.Bold,
 					Align: consts.Center,
+				})
+		})
+	})
+}
+
+func Footer(pdf *pdf.Maroto, backgroundColor color.Color, contentSize float64) {
+	m := *pdf
+	m.SetBackgroundColor(backgroundColor)
+	m.Row(10, func() {
+		m.Col(12, func() {
+			m.Text("1. Se deja por escrito que el incumplimiento del pago esta sujeto a mora.",
+				props.Text{
+					Size:  contentSize,
+					Align: consts.Left,
+				})
+			m.Text("2. El Propietario autoriza el corte de suministro de agua por incumplimiento de pago.",
+				props.Text{
+					Size:  contentSize,
+					Align: consts.Left,
+					Top:   5,
 				})
 		})
 	})

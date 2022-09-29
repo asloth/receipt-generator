@@ -21,20 +21,26 @@ func GetTemplate(path string, body *bytes.Buffer, monthName string) {
 
 	t.Execute(b, struct{ Month string }{Month: monthName})
 }
-func sendReceiptEmail(email string, clientName, templatePath, period, pass string) error {
+func sendReceiptEmail(email string, clientName, templatePath, period, attachPath string) error {
+	pass, err := goDotEnvVariable("PASSWORD")
+	if err != nil {
+		fmt.Println("Couldn't find the password")
+		return err
+	}
+
 	var body bytes.Buffer
 	GetTemplate(templatePath, &body, period)
 
 	m := gomail.NewMessage()
 	m.SetHeaders(map[string][]string{
 		"From":    {m.FormatAddress("soporte-administrativo@elmolio.net", "El Molio Soporte")},
-		"To":      {email, "sarabenel14@hotmail.com"},
+		"To":      {email},
 		"Subject": {"Recibo de mantenimiento " + period},
 	})
 	// m.SetAddressHeader("Cc", "dan@example.com", "Dan")
 
 	m.SetBody("text/html", body.String())
-	m.Attach("../GPR-RECIBOS-SEPTIEMBRE-2022/MANTENIMIENTO-SEPTIEMBRE-2022_DPTO-1910.pdf")
+	m.Attach(attachPath)
 
 	d := gomail.NewDialer("smtp.gmail.com", 587, "soporte-administrativo@elmolio.net", pass)
 
@@ -58,11 +64,6 @@ func goDotEnvVariable(key string) (string, error) {
 }
 
 func main() {
-	password, err := goDotEnvVariable("PASSWORD")
-	if err != nil {
-		fmt.Println("Couldn't find the password")
-		return
-	}
 
-	sendReceiptEmail("sbenelramirez@gmail.com", "Sara", "./templates/maintenance.html", "Agosto-2022", password)
+	sendReceiptEmail("sbenelramirez@gmail.com", "Sara", "./templates/maintenance.html", "Agosto-2022", "../GPR-RECIBOS-SEPTIEMBRE-2022/MANTENIMIENTO-SEPTIEMBRE-2022_DPTO-1910.pdf")
 }
