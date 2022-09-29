@@ -143,7 +143,11 @@ func main() {
 
 	}
 	fmt.Println(ret[210])
-	ret[210].GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, gpr["total_pres"])
+	err = ret[210].GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, gpr["total_pres"])
+
+	if err != nil {
+		fmt.Println(err)
+	}
 
 }
 

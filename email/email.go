@@ -1,4 +1,4 @@
-package main
+package email
 
 import (
 	"bytes"
@@ -63,7 +63,4 @@ func goDotEnvVariable(key string) (string, error) {
 	return os.Getenv(key), nil
 }
 
-func main() {
-
-	sendReceiptEmail("sbenelramirez@gmail.com", "Sara", "./templates/maintenance.html", "Agosto-2022", "../GPR-RECIBOS-SEPTIEMBRE-2022/MANTENIMIENTO-SEPTIEMBRE-2022_DPTO-1910.pdf")
-}
+// sendReceiptEmail("sbenelramirez@gmail.com", "Sara", "./templates/maintenance.html", "Agosto-2022", "../GPR-RECIBOS-SEPTIEMBRE-2022/MANTENIMIENTO-SEPTIEMBRE-2022_DPTO-1910.pdf")

@@ -24,7 +24,7 @@ type Apartment struct {
 	waterComsuption float64
 }
 
-func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, totalPresupuesto string) {
+func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, totalPresupuesto string) error {
 
 	var heightHeader float64 = 30
 	var contentSize float64 = 10
@@ -100,9 +100,20 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 		DataOwner(&m, backgroundColor, rowHeight, contentSize, v, ownerData[i], SecondColumn[i], otherData[i])
 	}
 
-	SubHeader(&m, colorMolio, "Detalle consumo de agua")
+	// SECTION WATER DETAIL INFORMATION
+	SubHeader(&m, colorMolio, "DETALLE DEL CONSUMO DE AGUA")
+	// Defining the fields of the first column
+	waterDetailsFirstColumn := []string{"PERIODO: ", "LECTURA ANTERIOR: ", "LECTURA ACTUAL: ", "CONSUMO: "}
+	waterDetailsSecondColumn := []string{"CONSUMO REC: ", "S/. REC: ", "SOLES / M3	: ", " "}
 
-	//TERCERA TABLA de importes fcturados
+	waterData := []string{"--", "--", "--", "--"}
+	recData := []string{"--", "--", "--", " "}
+
+	for i, fieldFirstColumn := range waterDetailsFirstColumn {
+		DataOwner(&m, backgroundColor, rowHeight, contentSize, fieldFirstColumn, waterData[i], waterDetailsSecondColumn[i], recData[i])
+	}
+
+	//IMPORTES FACTURADOS SECTION TABLE
 	monto := fmt.Sprintf("S/. %.2f", ap.maintenance)
 	m.SetBackgroundColor(colorMolio)
 	m.SetBorder(true)
@@ -186,6 +197,7 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	m.SetBackgroundColor(backgroundColor)
 	m.Row(7, func() {})
 
+	// PAY INFORMACION
 	SubHeader(&m, colorMolio, "INFORMACION DE PAGO")
 	PayInfo(&m, colorMolio)
 
@@ -205,8 +217,10 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	err := m.OutputFileAndClose("GPR-RECIBOS-" + periodo + "/" + fileName)
 
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println(err)
 	}
+
+	return nil
 }
 
 func ReceiptHeader(pdf *pdf.Maroto, heightHeader float64) {
@@ -322,6 +336,7 @@ func PayInfo(pdf *pdf.Maroto, colorMolio color.Color) {
 
 func SubHeader(pdf *pdf.Maroto, colorMolio color.Color, subtitulo string) {
 	m := *pdf
+	m.SetBorder(true)
 	m.SetBackgroundColor(colorMolio)
 	m.Row(7, func() {
 		m.Col(12, func() {
