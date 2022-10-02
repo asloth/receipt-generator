@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
-	"strconv"
 
+	"github.com/asloth/receipt-generator/water"
 	"github.com/johnfercher/maroto/pkg/color"
 	"github.com/johnfercher/maroto/pkg/consts"
 	"github.com/johnfercher/maroto/pkg/pdf"
@@ -12,7 +12,7 @@ import (
 )
 
 type Apartment struct {
-	number          int64
+	number          string
 	owner           string
 	totalArea       float64
 	percentaje      float64
@@ -24,7 +24,13 @@ type Apartment struct {
 	waterComsuption float64
 }
 
-func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, totalPresupuesto string) error {
+type WaterMonthData struct {
+	lastMonth              float64
+	currentMonth           float64
+	waterConsumedThisMonth float64
+}
+
+func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, totalPresupuesto string, wData map[string]WaterMonthData) error {
 
 	var heightHeader float64 = 30
 	var contentSize float64 = 10
@@ -91,7 +97,7 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	participation := fmt.Sprintf("%f", ap.percentaje)
 
 	// Data for the first column of the receipt
-	ownerData := []string{ap.owner, strconv.Itoa(int(ap.number)), strconv.Itoa(int(ap.number)), string(ap.parking), string(ap.deposit[0]) + ", " + string(ap.deposit[1])}
+	ownerData := []string{ap.owner, ap.number, ap.number, string(ap.parking), string(ap.deposit[0]) + ", " + string(ap.deposit[1])}
 	// Data for the second column of the receipt
 	otherData := []string{dptoArea, parkingArea, participation + "%", fmt.Sprintf("%.2f", ap.waterComsuption), totalPresupuesto}
 
@@ -103,11 +109,14 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	// SECTION WATER DETAIL INFORMATION
 	SubHeader(&m, colorMolio, "DETALLE DEL CONSUMO DE AGUA")
 	// Defining the fields of the first column
-	waterDetailsFirstColumn := []string{"PERIODO: ", "LECTURA ANTERIOR: ", "LECTURA ACTUAL: ", "CONSUMO: "}
+	waterDetailsFirstColumn := []string{"PERIODO: ", "LECTURA ANTERIOR (m3): ", "LECTURA ACTUAL (m3): ", "CONSUMO (m3): "}
 	waterDetailsSecondColumn := []string{"CONSUMO REC: ", "S/. REC: ", "SOLES / M3	: ", " "}
 
-	waterData := []string{"--", "--", "--", "--"}
-	recData := []string{"--", "--", "--", " "}
+	waterData := []string{periodo, fmt.Sprintf("%.2f", wData[ap.number].lastMonth), fmt.Sprintf("%.2f", wData[ap.number].currentMonth), fmt.Sprintf("%.2f", wData[ap.number].waterConsumedThisMonth)}
+
+	// Get water data from this month
+	monthWaterData := water.GetWaterDataByBuilding("gpr")
+	recData := []string{fmt.Sprintf("%.2f", monthWaterData.Consumo_rec), fmt.Sprintf("%.2f", monthWaterData.Rec_soles), fmt.Sprintf("%.2f", monthWaterData.Soles_m3), ""}
 
 	for i, fieldFirstColumn := range waterDetailsFirstColumn {
 		DataOwner(&m, backgroundColor, rowHeight, contentSize, fieldFirstColumn, waterData[i], waterDetailsSecondColumn[i], recData[i])
@@ -207,11 +216,11 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 
 	// Create the directory to store the receipts
 	if err := os.Mkdir("GPR-RECIBOS-"+periodo, os.ModePerm); err != nil {
-		fmt.Println(err)
+
 	}
 
 	// Create a custom name for the receipt
-	fileName := "MANTENIMIENTO-" + periodo + "_DPTO-" + strconv.Itoa(int(ap.number)) + ".pdf"
+	fileName := "MANTENIMIENTO-" + periodo + "_DPTO-" + ap.number + ".pdf"
 
 	// Save the receipt into the directory
 	err := m.OutputFileAndClose("GPR-RECIBOS-" + periodo + "/" + fileName)

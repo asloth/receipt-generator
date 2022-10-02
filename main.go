@@ -46,107 +46,23 @@ func main() {
 
 	sheetName := "Propietarios ordenados"
 
-	// Open the spreadsheet
-	xlsxFile, err := excelize.OpenFile(filePath)
+	ret, err := loadApartmentData(filePath, sheetName, finalColumn, totalNumberOfRows)
 
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		fmt.Println("Error reading apartment data" + err.Error())
 	}
-	defer func() {
-		// Close the spreadsheet.
-		if err := xlsxFile.Close(); err != nil {
+
+	waterData, err := loadWaterData(filePath, "AGUA", 3)
+	if err != nil {
+		fmt.Println("Error reading the water data" + err.Error())
+	}
+
+	for _, apar := range ret {
+		err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, gpr["total_pres"], waterData)
+		if err != nil {
+			fmt.Println(apar.number)
 			fmt.Println(err)
 		}
-	}()
-	// Get all the rows in the Sheet1.
-	rows, err := xlsxFile.GetRows(sheetName)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	cols := []string{}
-
-	ret := []Apartment{}
-	for i, row := range rows {
-		if i == 0 {
-			for _, colCell := range row {
-				cols = append(cols, colCell)
-			}
-			fmt.Println("Column information", cols)
-		} else {
-			ap := Apartment{}
-			for j, colCell := range row {
-				if j > finalColumn {
-					break
-				}
-
-				switch strings.ToLower(cols[j]) {
-				case "propietario":
-					if len(colCell) == 0 {
-						colCell = "Sin datos"
-					}
-					ap.owner = colCell
-				case "depa":
-					ap.number, err = strconv.ParseInt(colCell, 10, 64)
-					if err != nil {
-						ap.number = 0.0
-					}
-				case "total área":
-					ap.totalArea, err = strconv.ParseFloat(colCell, 64)
-					if err != nil {
-						ap.number = 0.0
-					}
-				case "área-e":
-					ap.parkingArea, err = strconv.ParseFloat(colCell, 64)
-					if err != nil {
-						ap.number = 0.0
-					}
-				case "total":
-					ap.total, err = strconv.ParseFloat(colCell, 64)
-					if err != nil {
-						ap.total = 0.0
-					}
-				case "cuota":
-					ap.maintenance, err = strconv.ParseFloat(colCell, 64)
-					if err != nil {
-						ap.maintenance = 0.0
-					}
-				case "porcentaje":
-					ap.percentaje, _ = strconv.ParseFloat(colCell, 64)
-				case "estaciona":
-					if len(colCell) == 0 {
-						colCell = "--"
-					}
-					ap.parking = colCell
-				case "agua":
-					ap.waterComsuption, err = strconv.ParseFloat(colCell, 64)
-					if err != nil {
-						ap.waterComsuption = 0.0
-					}
-				case "deposito":
-					if len(colCell) == 0 {
-						colCell = "--"
-					}
-					ap.deposit = append(ap.deposit, colCell)
-				default:
-					continue
-
-				}
-			}
-			ret = append(ret, ap)
-		}
-		if i > totalNumberOfRows {
-			break
-		}
-
-	}
-	fmt.Println(ret[210])
-	err = ret[210].GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, gpr["total_pres"])
-
-	if err != nil {
-		fmt.Println(err)
 	}
 
 }
@@ -206,4 +122,175 @@ func getFloatData(r *bufio.Reader, question string, data *string) {
 		break
 
 	}
+}
+
+func loadApartmentData(filePath, sheetName string, finalColumn, totalNumberOfRows int) ([]Apartment, error) {
+	// Open the spreadsheet
+	xlsxFile, err := excelize.OpenFile(filePath)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+	defer func() {
+		// Close the spreadsheet.
+		if err := xlsxFile.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+	// Get all the rows in the
+	rows, err := xlsxFile.GetRows(sheetName)
+
+	if err != nil {
+		return nil, err
+	}
+
+	cols := []string{}
+
+	ret := []Apartment{}
+	for i, row := range rows {
+		if i == 0 {
+			for _, colCell := range row {
+				cols = append(cols, colCell)
+			}
+			fmt.Println("Column information", cols)
+		} else {
+			ap := Apartment{}
+			for j, colCell := range row {
+				if j > finalColumn {
+					break
+				}
+				switch strings.ToLower(cols[j]) {
+				case "propietario":
+					if len(colCell) == 0 {
+						colCell = "Sin datos"
+					}
+					ap.owner = colCell
+				case "depa":
+					ap.number = colCell
+					// if err != nil {
+					// 	fmt.Println("error en depa")
+					// 	ap.number = 0.0
+					// }
+				case "áread":
+					ap.totalArea, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						fmt.Println("error en aread")
+						ap.totalArea = 0.0
+					}
+				case "área-e":
+					ap.parkingArea, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.parkingArea = 0.0
+					}
+				case "total":
+					ap.total, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.total = 0.0
+					}
+				case "cuota":
+					ap.maintenance, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.maintenance = 0.0
+					}
+				case "porcentaje":
+					if len(colCell) == 0 {
+						colCell = "--"
+					}
+					ap.percentaje, _ = strconv.ParseFloat(colCell, 64)
+				case "estaciona":
+					if len(colCell) == 0 {
+						colCell = "--"
+					}
+					ap.parking = colCell
+				case "agua":
+					ap.waterComsuption, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.waterComsuption = 0.0
+					}
+				case "deposito":
+					if len(colCell) == 0 {
+						colCell = "--"
+					}
+					ap.deposit = append(ap.deposit, colCell)
+				default:
+					continue
+
+				}
+			}
+			ret = append(ret, ap)
+		}
+		if i > totalNumberOfRows {
+			break
+		}
+
+	}
+	return ret, nil
+}
+
+func loadWaterData(filePath, sheetName string, finalColumn int) (map[string]WaterMonthData, error) {
+	// Open the spreadsheet
+	xlsxFile, err := excelize.OpenFile(filePath)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+	defer func() {
+		// Close the spreadsheet.
+		if err := xlsxFile.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+	// Get all the rows in the
+	rows, err := xlsxFile.GetRows(sheetName)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	ret := make(map[string]WaterMonthData)
+
+out:
+	for i, row := range rows {
+		if i == 0 || i == 1 || i == 2 {
+			continue
+		} else {
+			var index string
+			temp := WaterMonthData{}
+			for j, colCell := range row {
+				if j > finalColumn {
+					break
+				}
+				switch j {
+				case 0:
+					if len(colCell) == 0 {
+						break out
+					}
+					index = colCell
+				case 1:
+					temp.lastMonth, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						temp.lastMonth = 0.0
+					}
+				case 2:
+					temp.currentMonth, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						temp.currentMonth = 0.0
+					}
+				case 3:
+					temp.waterConsumedThisMonth, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						temp.waterConsumedThisMonth = 0.0
+					}
+				default:
+					continue
+				}
+			}
+
+			ret[index] = temp
+		}
+	}
+	return ret, nil
 }
