@@ -21,7 +21,7 @@ func GetTemplate(path string, body *bytes.Buffer, monthName string) {
 
 	t.Execute(b, struct{ Month string }{Month: monthName})
 }
-func sendReceiptEmail(email string, clientName, templatePath, period, attachPath string) error {
+func sendReceiptEmail(email string, templatePath, period, attachPath string) error {
 	pass, err := goDotEnvVariable("PASSWORD")
 	if err != nil {
 		fmt.Println("Couldn't find the password")
@@ -53,7 +53,6 @@ func sendReceiptEmail(email string, clientName, templatePath, period, attachPath
 }
 
 func goDotEnvVariable(key string) (string, error) {
-
 	// load .env file
 	err := godotenv.Load("../.env")
 	if err != nil {
@@ -63,4 +62,4 @@ func goDotEnvVariable(key string) (string, error) {
 	return os.Getenv(key), nil
 }
 
-// sendReceiptEmail("sbenelramirez@gmail.com", "Sara", "./templates/maintenance.html", "Agosto-2022", "../GPR-RECIBOS-SEPTIEMBRE-2022/MANTENIMIENTO-SEPTIEMBRE-2022_DPTO-1910.pdf")
+// sendReceiptEmail("sbenelramirez@gmail.com", "./templates/maintenance.html", "Agosto-2022", "../GPR-RECIBOS-SEPTIEMBRE-2022/MANTENIMIENTO-SEPTIEMBRE-2022_DPTO-1910.pdf")
