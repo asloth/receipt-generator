@@ -2,45 +2,48 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
-	"os"
+
+	// "os"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/asloth/receipt-generator/email"
 	"github.com/xuri/excelize/v2"
 )
 
 func main() {
 
-	reader := bufio.NewReader(os.Stdin)
+	// reader := bufio.NewReader(os.Stdin)
 	fmt.Println("GENERAR RECIBOS")
 	fmt.Println("---------------------")
 
 	//Datos genrales que necesitamos del usuario
-	fechaEmision := ""
-	getReceiptData(reader, "fecha de emision (dd/mm/aa)", &fechaEmision, true)
+	// fechaEmision := ""
+	// getReceiptData(reader, "fecha de emision (dd/mm/aa)", &fechaEmision, true)
 
-	fechaVenc := ""
-	getReceiptData(reader, "fecha de vencimiento (dd/mm/aa)", &fechaVenc, true)
+	// fechaVenc := ""
+	// getReceiptData(reader, "fecha de vencimiento (dd/mm/aa)", &fechaVenc, true)
 
-	tipoCuota := "ORDINARIO"
-	getReceiptData(reader, "tipo de cuota", &tipoCuota, false)
+	// tipoCuota := "ORDINARIO"
+	// getReceiptData(reader, "tipo de cuota", &tipoCuota, false)
 
-	periodo := "AGOSTO-2022"
-	getReceiptData(reader, "periodo", &periodo, false)
+	// periodo := "AGOSTO-2022"
+	// getReceiptData(reader, "periodo", &periodo, false)
 
-	totalPresupuesto := "28,974.00"
-	getFloatData(reader, "presupuesto", &totalPresupuesto)
+	// totalPresupuesto := "28,974.00"
+	// getFloatData(reader, "presupuesto", &totalPresupuesto)
 
 	// Limits in the spreadsheet
 	finalColumn := 13
 	totalNumberOfRows := 212
 
 	//variable que representa al edificio
-	gpr := make(map[string]string)
+	// gpr := make(map[string]string)
 
-	gpr["total_pres"] = totalPresupuesto
+	// gpr["total_pres"] = totalPresupuesto
 
 	filePath := "cuotas/GPR CUOTA SETIEMBRE 2022.xlsx"
 
@@ -52,19 +55,52 @@ func main() {
 		fmt.Println("Error reading apartment data" + err.Error())
 	}
 
-	waterData, err := loadWaterData(filePath, "AGUA", 3)
+	// waterData, err := loadWaterData(filePath, "AGUA", 3)
+	// if err != nil {
+	// 	fmt.Println("Error reading the water data" + err.Error())
+	// }
+
+	// for _, apar := range ret {
+	// 	err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, gpr["total_pres"], waterData)
+	// 	if err != nil {
+	// 		fmt.Println(apar.number)
+	// 		fmt.Println(err)
+	// 	}
+	// }
+
+	var body bytes.Buffer
+
+	email.GetTemplate("email/templates/maintenance.html", &body, "Setiembre-2022")
+
+	e := &email.EmailService{
+		Host:     "smtp.gmail.com",
+		Port:     587,
+		Username: "soporte-administrativo@elmolio.net",
+	}
+	err = e.SetNewDialer()
 	if err != nil {
-		fmt.Println("Error reading the water data" + err.Error())
+		panic(err)
+	}
+
+	err = e.Connect()
+	if err != nil {
+		panic(err)
 	}
 
 	for _, apar := range ret {
-		err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, gpr["total_pres"], waterData)
+		allEmails := email.GetEmails()
+		fmt.Println(allEmails[apar.number])
+		err := e.SendReceipt(allEmails[apar.number], "Setiembre-2022", "GPR-RECIBOS-SETIEMBRE-2022/MANTENIMIENTO-SETIEMBRE-2022_DPTO-"+apar.number+".pdf", &body)
+
 		if err != nil {
-			fmt.Println(apar.number)
 			fmt.Println(err)
 		}
+
+		fmt.Println("Email enviado exitosamente a " + apar.number)
+
 	}
 
+	e.Desconnect()
 }
 
 func getReceiptData(r *bufio.Reader, question string, data *string, isADate bool) {

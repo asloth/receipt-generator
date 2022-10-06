@@ -1,6 +1,8 @@
 package email
 
-func getEmails() map[string]string {
+import "fmt"
+
+func GetEmails() map[string]string {
 
 	gpr_emails := map[string]string{
 		"101":  "wabrenneisen@yahoo.com",
@@ -220,4 +222,15 @@ func getEmails() map[string]string {
 
 	return gpr_emails
 
+}
+
+func ValidateEmails(number string) string {
+	allEmails := GetEmails()
+
+	if len(allEmails[number]) == 0 {
+		fmt.Printf("Apartment %v dont have an email", number)
+		return number
+	}
+
+	return ""
 }

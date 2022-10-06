@@ -10,6 +10,14 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
+type EmailService struct {
+	Host     string
+	Port     int
+	Username string
+	dialer   *gomail.Dialer
+	sender   *gomail.SendCloser
+}
+
 func GetTemplate(path string, body *bytes.Buffer, monthName string) {
 	b := body
 	t, err := template.ParseFiles(path)
@@ -21,15 +29,31 @@ func GetTemplate(path string, body *bytes.Buffer, monthName string) {
 
 	t.Execute(b, struct{ Month string }{Month: monthName})
 }
-func sendReceiptEmail(email string, templatePath, period, attachPath string) error {
+
+func (e *EmailService) SetNewDialer() error {
 	pass, err := goDotEnvVariable("PASSWORD")
 	if err != nil {
 		fmt.Println("Couldn't find the password")
 		return err
 	}
 
-	var body bytes.Buffer
-	GetTemplate(templatePath, &body, period)
+	e.dialer = gomail.NewDialer(e.Host, e.Port, e.Username, pass)
+	return nil
+}
+
+func (e *EmailService) Connect() error {
+	var s gomail.SendCloser
+	var err error
+	if s, err = e.dialer.Dial(); err != nil {
+		return err
+	}
+
+	e.sender = &s
+	return nil
+}
+
+func (e *EmailService) SendReceipt(email string, period, attachPath string, body *bytes.Buffer) error {
+	var s gomail.SendCloser = *e.sender
 
 	m := gomail.NewMessage()
 	m.SetHeaders(map[string][]string{
@@ -42,10 +66,17 @@ func sendReceiptEmail(email string, templatePath, period, attachPath string) err
 	m.SetBody("text/html", body.String())
 	m.Attach(attachPath)
 
-	d := gomail.NewDialer("smtp.gmail.com", 587, "soporte-administrativo@elmolio.net", pass)
+	if err := gomail.Send(s, m); err != nil {
+		return err
+	}
 
-	// Send the email to Bob, Cora and Dan.
-	if err := d.DialAndSend(m); err != nil {
+	return nil
+}
+
+func (e *EmailService) Desconnect() error {
+	s := *e.sender
+
+	if err := s.Close(); err != nil {
 		return err
 	}
 
@@ -54,7 +85,7 @@ func sendReceiptEmail(email string, templatePath, period, attachPath string) err
 
 func goDotEnvVariable(key string) (string, error) {
 	// load .env file
-	err := godotenv.Load("../.env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		fmt.Println("Error loading .env file")
 		return "", err
@@ -62,4 +93,4 @@ func goDotEnvVariable(key string) (string, error) {
 	return os.Getenv(key), nil
 }
 
-// sendReceiptEmail("sbenelramirez@gmail.com", "./templates/maintenance.html", "Agosto-2022", "../GPR-RECIBOS-SEPTIEMBRE-2022/MANTENIMIENTO-SEPTIEMBRE-2022_DPTO-1910.pdf")
+//
