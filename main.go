@@ -15,7 +15,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func main() {
+func main2() {
 
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("GENERAR RECIBOS")
@@ -302,7 +302,7 @@ out:
 	return ret, nil
 }
 
-func main2() {
+func main() {
 	// Limits in the spreadsheet
 
 	filePath := "cuotas/GPR CUOTA OCTUBRE 2022.xlsx"

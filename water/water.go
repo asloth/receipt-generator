@@ -13,9 +13,9 @@ func GetWaterDataByBuilding(name string) *WaterByMonth {
 	switch strings.ToLower(name) {
 	case "gpr":
 		gpr := WaterByMonth{
-			Consume:     2209,
-			Consumo_rec: 925,
-			Rec_soles:   3171.00,
+			Consume:     1359,
+			Consumo_rec: 1413,
+			Rec_soles:   5039.80,
 		}
 		gpr.Soles_m3 = gpr.Rec_soles / gpr.Consume
 		return &gpr

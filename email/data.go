@@ -124,7 +124,7 @@ func GetEmails() map[string]string {
 		"1110": "NHUAMANI@BANBIF.COM.PE",
 		"1111": "serviciosgeneralesmpm@gmail.com",
 		"1112": "MTDBV.217@GMAIL.COM",
-		"1201": "JUAN.REYES@FERREYROS.COM.PE",
+		"1201": "mercedesqc81@hotmail.com",
 		"1202": "lihumi6000@hotmail.com",
 		"1203": "MARITZA.CHE91@GMAIL.COM",
 		"1204": "MARYCELSA_ES@HOTMAIL.COM",
