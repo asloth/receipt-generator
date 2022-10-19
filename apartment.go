@@ -22,6 +22,7 @@ type Apartment struct {
 	parkingArea     float64
 	deposit         []string
 	waterComsuption float64
+	fine            float64
 }
 
 type WaterMonthData struct {
@@ -30,7 +31,7 @@ type WaterMonthData struct {
 	waterConsumedThisMonth float64
 }
 
-func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, totalPresupuesto string, wData map[string]WaterMonthData) error {
+func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, totalPresupuesto, waterDate string, wData map[string]WaterMonthData) error {
 
 	var heightHeader float64 = 30
 	var contentSize float64 = 10
@@ -110,13 +111,13 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	SubHeader(&m, colorMolio, "DETALLE DEL CONSUMO DE AGUA")
 	// Defining the fields of the first column
 	waterDetailsFirstColumn := []string{"PERIODO: ", "LECTURA ANTERIOR (m3): ", "LECTURA ACTUAL (m3): ", "CONSUMO (m3): "}
-	waterDetailsSecondColumn := []string{"CONSUMO REC: ", "S/. REC: ", "SOLES / M3	: ", " "}
+	waterDetailsSecondColumn := []string{"CONSUMO REC: ", "S/. REC: ", "SOLES / M3: ", "FECHA DE LECTURA: "}
 
 	waterData := []string{periodo, fmt.Sprintf("%.2f", wData[ap.number].lastMonth), fmt.Sprintf("%.2f", wData[ap.number].currentMonth), fmt.Sprintf("%.2f", wData[ap.number].waterConsumedThisMonth)}
 
 	// Get water data from this month
 	monthWaterData := water.GetWaterDataByBuilding("gpr")
-	recData := []string{fmt.Sprintf("%.2f", monthWaterData.Consumo_rec), fmt.Sprintf("%.2f", monthWaterData.Rec_soles), fmt.Sprintf("%.2f", monthWaterData.Soles_m3), ""}
+	recData := []string{fmt.Sprintf("%.2f", monthWaterData.Consumo_rec), fmt.Sprintf("%.2f", monthWaterData.Rec_soles), fmt.Sprintf("%.2f", monthWaterData.Soles_m3), waterDate}
 
 	for i, fieldFirstColumn := range waterDetailsFirstColumn {
 		DataOwner(&m, backgroundColor, rowHeight, contentSize, fieldFirstColumn, waterData[i], waterDetailsSecondColumn[i], recData[i])
@@ -146,42 +147,9 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	})
 
 	m.SetBackgroundColor(backgroundColor)
-	m.Row(7, func() {
-		m.Col(10, func() {
-			m.Text("MANTENIMIENTO ",
-				props.Text{
-					Size:  contentSize,
-					Style: consts.Bold,
-					Align: consts.Left,
-				})
-		})
-		m.Col(2, func() {
-			m.Text(monto,
-				props.Text{
-					Size:  contentSize,
-					Style: consts.Bold,
-					Align: consts.Center,
-				})
-		})
-	})
-	m.Row(7, func() {
-		m.Col(10, func() {
-			m.Text("AGUA ",
-				props.Text{
-					Size:  contentSize,
-					Style: consts.Bold,
-					Align: consts.Left,
-				})
-		})
-		m.Col(2, func() {
-			m.Text(fmt.Sprintf("S/. %.2f", ap.waterComsuption),
-				props.Text{
-					Size:  contentSize,
-					Style: consts.Bold,
-					Align: consts.Center,
-				})
-		})
-	})
+	Resumen(&m, backgroundColor, contentSize, "MANTENIMIENTO ", monto)
+	Resumen(&m, backgroundColor, contentSize, "AGUA ", fmt.Sprintf("S/. %.2f", ap.waterComsuption))
+	Resumen(&m, backgroundColor, contentSize, "MULTA ", fmt.Sprintf("S/. %.2f", ap.fine))
 
 	m.SetBackgroundColor(colorMolio)
 	m.SetBorder(true)
@@ -374,6 +342,28 @@ func Footer(pdf *pdf.Maroto, backgroundColor color.Color, contentSize float64) {
 					Size:  contentSize,
 					Align: consts.Left,
 					Top:   5,
+				})
+		})
+	})
+}
+
+func Resumen(pdf *pdf.Maroto, backgroundColor color.Color, contentSize float64, field, amount string) {
+	m := *pdf
+	m.Row(7, func() {
+		m.Col(10, func() {
+			m.Text(field,
+				props.Text{
+					Size:  contentSize,
+					Style: consts.Bold,
+					Align: consts.Left,
+				})
+		})
+		m.Col(2, func() {
+			m.Text(amount,
+				props.Text{
+					Size:  contentSize,
+					Style: consts.Bold,
+					Align: consts.Center,
 				})
 		})
 	})

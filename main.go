@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"os"
 
 	// "os"
 	"strconv"
@@ -16,91 +17,58 @@ import (
 
 func main() {
 
-	// reader := bufio.NewReader(os.Stdin)
+	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("GENERAR RECIBOS")
 	fmt.Println("---------------------")
 
-	//Datos genrales que necesitamos del usuario
-	// fechaEmision := ""
-	// getReceiptData(reader, "fecha de emision (dd/mm/aa)", &fechaEmision, true)
+	// Datos genrales que necesitamos del usuario
+	fechaEmision := ""
+	getReceiptData(reader, "fecha de emision (dd/mm/aa)", &fechaEmision, true)
 
-	// fechaVenc := ""
-	// getReceiptData(reader, "fecha de vencimiento (dd/mm/aa)", &fechaVenc, true)
+	fechaVenc := ""
+	getReceiptData(reader, "fecha de vencimiento (dd/mm/aa)", &fechaVenc, true)
 
-	// tipoCuota := "ORDINARIO"
-	// getReceiptData(reader, "tipo de cuota", &tipoCuota, false)
+	tipoCuota := "ORDINARIO"
+	getReceiptData(reader, "tipo de cuota", &tipoCuota, false)
 
-	// periodo := "AGOSTO-2022"
-	// getReceiptData(reader, "periodo", &periodo, false)
+	periodo := "AGOSTO-2022"
+	getReceiptData(reader, "periodo", &periodo, false)
 
-	// totalPresupuesto := "28,974.00"
-	// getFloatData(reader, "presupuesto", &totalPresupuesto)
+	totalPresupuesto := "28,974.00"
+	getFloatData(reader, "presupuesto", &totalPresupuesto)
 
+	waterRead := ""
+	getReceiptData(reader, "fecha de lectura del agua (dd/mm/aa)", &waterRead, true)
 	// Limits in the spreadsheet
-	finalColumn := 13
-	totalNumberOfRows := 212
 
-	//variable que representa al edificio
-	// gpr := make(map[string]string)
+	// variable que representa al edificio
+	gpr := make(map[string]string)
 
-	// gpr["total_pres"] = totalPresupuesto
+	gpr["total_pres"] = totalPresupuesto
 
-	filePath := "cuotas/GPR CUOTA SETIEMBRE 2022.xlsx"
+	filePath := "cuotas/GPR CUOTA OCTUBRE 2022.xlsx"
 
 	sheetName := "Propietarios ordenados"
 
-	ret, err := loadApartmentData(filePath, sheetName, finalColumn, totalNumberOfRows)
+	ret, err := loadApartmentData(filePath, sheetName)
 
 	if err != nil {
 		fmt.Println("Error reading apartment data" + err.Error())
 	}
 
-	// waterData, err := loadWaterData(filePath, "AGUA", 3)
-	// if err != nil {
-	// 	fmt.Println("Error reading the water data" + err.Error())
-	// }
-
-	// for _, apar := range ret {
-	// 	err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, gpr["total_pres"], waterData)
-	// 	if err != nil {
-	// 		fmt.Println(apar.number)
-	// 		fmt.Println(err)
-	// 	}
-	// }
-
-	var body bytes.Buffer
-
-	email.GetTemplate("email/templates/maintenance.html", &body, "Setiembre-2022")
-
-	e := &email.EmailService{
-		Host:     "smtp.gmail.com",
-		Port:     587,
-		Username: "soporte-administrativo@elmolio.net",
-	}
-	err = e.SetNewDialer()
+	waterData, err := loadWaterData(filePath, "AGUA", 3)
 	if err != nil {
-		panic(err)
-	}
-
-	err = e.Connect()
-	if err != nil {
-		panic(err)
+		fmt.Println("Error reading the water data" + err.Error())
 	}
 
 	for _, apar := range ret {
-		allEmails := email.GetEmails()
-		fmt.Println(allEmails[apar.number])
-		err := e.SendReceipt(allEmails[apar.number], "Setiembre-2022", "GPR-RECIBOS-SETIEMBRE-2022/MANTENIMIENTO-SETIEMBRE-2022_DPTO-"+apar.number+".pdf", &body)
-
+		err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, gpr["total_pres"], waterRead, waterData)
 		if err != nil {
+			fmt.Println(apar.number)
 			fmt.Println(err)
 		}
-
-		fmt.Println("Email enviado exitosamente a " + apar.number)
-
 	}
 
-	e.Desconnect()
 }
 
 func getReceiptData(r *bufio.Reader, question string, data *string, isADate bool) {
@@ -160,7 +128,7 @@ func getFloatData(r *bufio.Reader, question string, data *string) {
 	}
 }
 
-func loadApartmentData(filePath, sheetName string, finalColumn, totalNumberOfRows int) ([]Apartment, error) {
+func loadApartmentData(filePath, sheetName string) ([]Apartment, error) {
 	// Open the spreadsheet
 	xlsxFile, err := excelize.OpenFile(filePath)
 
@@ -184,6 +152,8 @@ func loadApartmentData(filePath, sheetName string, finalColumn, totalNumberOfRow
 	cols := []string{}
 
 	ret := []Apartment{}
+
+out:
 	for i, row := range rows {
 		if i == 0 {
 			for _, colCell := range row {
@@ -192,14 +162,12 @@ func loadApartmentData(filePath, sheetName string, finalColumn, totalNumberOfRow
 			fmt.Println("Column information", cols)
 		} else {
 			ap := Apartment{}
+		inside:
 			for j, colCell := range row {
-				if j > finalColumn {
-					break
-				}
 				switch strings.ToLower(cols[j]) {
 				case "propietario":
 					if len(colCell) == 0 {
-						colCell = "Sin datos"
+						break out
 					}
 					ap.owner = colCell
 				case "depa":
@@ -208,13 +176,13 @@ func loadApartmentData(filePath, sheetName string, finalColumn, totalNumberOfRow
 					// 	fmt.Println("error en depa")
 					// 	ap.number = 0.0
 					// }
-				case "áread":
+				case "área depa":
 					ap.totalArea, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
-						fmt.Println("error en aread")
+						fmt.Println("error en aread", ap.totalArea)
 						ap.totalArea = 0.0
 					}
-				case "área-e":
+				case "área est":
 					ap.parkingArea, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
 						ap.parkingArea = 0.0
@@ -223,6 +191,12 @@ func loadApartmentData(filePath, sheetName string, finalColumn, totalNumberOfRow
 					ap.total, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
 						ap.total = 0.0
+					}
+					break inside
+				case "multa":
+					ap.fine, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.fine = 0.0
 					}
 				case "cuota":
 					ap.maintenance, err = strconv.ParseFloat(colCell, 64)
@@ -255,9 +229,6 @@ func loadApartmentData(filePath, sheetName string, finalColumn, totalNumberOfRow
 				}
 			}
 			ret = append(ret, ap)
-		}
-		if i > totalNumberOfRows {
-			break
 		}
 
 	}
@@ -329,4 +300,51 @@ out:
 		}
 	}
 	return ret, nil
+}
+
+func main2() {
+	// Limits in the spreadsheet
+
+	filePath := "cuotas/GPR CUOTA OCTUBRE 2022.xlsx"
+
+	sheetName := "Propietarios ordenados"
+
+	ret, err := loadApartmentData(filePath, sheetName)
+	if err != nil {
+		panic(err)
+	}
+
+	var body bytes.Buffer
+
+	email.GetTemplate("email/templates/maintenance.html", &body, "Octubre-2022")
+
+	e := &email.EmailService{
+		Host:     "smtp.gmail.com",
+		Port:     587,
+		Username: "soporte-administrativo@elmolio.net",
+	}
+	err = e.SetNewDialer()
+	if err != nil {
+		panic(err)
+	}
+
+	err = e.Connect()
+	if err != nil {
+		panic(err)
+	}
+
+	for _, apar := range ret {
+		allEmails := email.GetEmails()
+		fmt.Println(allEmails[apar.number])
+		err := e.SendReceipt(allEmails[apar.number], "Octubre-2022", "GPR-RECIBOS-OCTUBRE-2022/MANTENIMIENTO-OCTUBRE-2022_DPTO-"+apar.number+".pdf", &body)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		fmt.Println("Email enviado exitosamente a " + apar.number)
+
+	}
+
+	e.Desconnect()
 }
