@@ -18,7 +18,7 @@ type EmailService struct {
 	sender   *gomail.SendCloser
 }
 
-func GetTemplate(path string, body *bytes.Buffer, monthName string) {
+func GetTemplate(path string, body *bytes.Buffer, monthName, email string) {
 	b := body
 	t, err := template.ParseFiles(path)
 
@@ -27,7 +27,7 @@ func GetTemplate(path string, body *bytes.Buffer, monthName string) {
 		return
 	}
 
-	t.Execute(b, struct{ Month string }{Month: monthName})
+	t.Execute(b, struct{ Month, Email string }{Month: monthName, Email: email})
 }
 
 func (e *EmailService) SetNewDialer() error {

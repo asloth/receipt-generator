@@ -11,11 +11,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/asloth/receipt-generator/building"
 	"github.com/asloth/receipt-generator/email"
+	"github.com/asloth/receipt-generator/fee"
+	"github.com/asloth/receipt-generator/water"
 	"github.com/xuri/excelize/v2"
 )
 
-func main2() {
+func mainreceipts() {
 
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("GENERAR RECIBOS")
@@ -39,36 +42,81 @@ func main2() {
 
 	waterRead := ""
 	getReceiptData(reader, "fecha de lectura del agua (dd/mm/aa)", &waterRead, true)
-	// Limits in the spreadsheet
 
-	// variable que representa al edificio
-	gpr := make(map[string]string)
+	fmt.Println("ELIJA EL EDIFICIO DEL CUAL DESEA GENERAR RECIBOS")
+	fmt.Println("1. GRAN PARQUE ROMA")
+	fmt.Println("2. BELMONTE")
 
-	gpr["total_pres"] = totalPresupuesto
+	option := ""
+	getData(reader, &option)
 
-	filePath := "cuotas/GPR CUOTA OCTUBRE 2022.xlsx"
+	filePath := "cuotas/BELMONTE CUOTA NOVIEMBRE 2022.xlsx"
+
+	waterPath := "AGUA"
 
 	sheetName := "Propietarios ordenados"
 
-	ret, err := loadApartmentData(filePath, sheetName)
+	var b building.Building
+	switch option {
+	case "1":
+		b.GetBuildingData("gpr")
+		b.Budget = totalPresupuesto
 
-	if err != nil {
-		fmt.Println("Error reading apartment data" + err.Error())
-	}
+		ret, err := loadApartmentData(filePath, sheetName)
 
-	waterData, err := loadWaterData(filePath, "AGUA", 3)
-	if err != nil {
-		fmt.Println("Error reading the water data" + err.Error())
-	}
-
-	for _, apar := range ret {
-		err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, gpr["total_pres"], waterRead, waterData)
 		if err != nil {
-			fmt.Println(apar.number)
-			fmt.Println(err)
+			fmt.Println("Error reading apartment data" + err.Error())
+		}
+		waterData, err := loadWaterData(filePath, waterPath, 3)
+		if err != nil {
+			fmt.Println("Error reading the water data" + err.Error())
+		}
+
+		for _, apar := range ret {
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			if err != nil {
+				fmt.Println(apar.number)
+				fmt.Println(err)
+			}
+		}
+	case "2":
+		b.GetBuildingData("belmonte")
+		b.Budget = totalPresupuesto
+
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			fmt.Println("Error reading fee data" + err.Error())
+		}
+		waterData, err := loadWaterData(filePath, waterPath, 3)
+		if err != nil {
+			fmt.Println("Error reading the water data" + err.Error())
+		}
+
+		for _, apar := range ret {
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			if err != nil {
+				fmt.Println(apar.ApartmentNumber)
+				fmt.Println(err)
+			}
 		}
 	}
 
+}
+
+func getData(r *bufio.Reader, data *string) {
+	reader := *r
+	for {
+
+		// Reading the user input
+		text, _ := reader.ReadString('\n')
+		// convert CRLF to LF
+		stringText := strings.Replace(text, "\n", "", -1)
+
+		*data = stringText
+
+		break
+
+	}
 }
 
 func getReceiptData(r *bufio.Reader, question string, data *string, isADate bool) {
@@ -235,7 +283,7 @@ out:
 	return ret, nil
 }
 
-func loadWaterData(filePath, sheetName string, finalColumn int) (map[string]WaterMonthData, error) {
+func loadWaterData(filePath, sheetName string, finalColumn int) (map[string]water.WaterMonthData, error) {
 	// Open the spreadsheet
 	xlsxFile, err := excelize.OpenFile(filePath)
 
@@ -257,7 +305,7 @@ func loadWaterData(filePath, sheetName string, finalColumn int) (map[string]Wate
 		return nil, err
 	}
 
-	ret := make(map[string]WaterMonthData)
+	ret := make(map[string]water.WaterMonthData)
 
 out:
 	for i, row := range rows {
@@ -265,7 +313,7 @@ out:
 			continue
 		} else {
 			var index string
-			temp := WaterMonthData{}
+			temp := water.WaterMonthData{}
 			for j, colCell := range row {
 				if j > finalColumn {
 					break
@@ -277,19 +325,19 @@ out:
 					}
 					index = colCell
 				case 1:
-					temp.lastMonth, err = strconv.ParseFloat(colCell, 64)
+					temp.LastMonth, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
-						temp.lastMonth = 0.0
+						temp.LastMonth = 0.0
 					}
 				case 2:
-					temp.currentMonth, err = strconv.ParseFloat(colCell, 64)
+					temp.CurrentMonth, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
-						temp.currentMonth = 0.0
+						temp.CurrentMonth = 0.0
 					}
 				case 3:
-					temp.waterConsumedThisMonth, err = strconv.ParseFloat(colCell, 64)
+					temp.WaterConsumedThisMonth, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
-						temp.waterConsumedThisMonth = 0.0
+						temp.WaterConsumedThisMonth = 0.0
 					}
 				default:
 					continue
@@ -303,20 +351,22 @@ out:
 }
 
 func main() {
-	// Limits in the spreadsheet
 
-	filePath := "cuotas/GPR CUOTA OCTUBRE 2022.xlsx"
+	var b building.Building
+	b.GetBuildingData("belmonte")
+
+	filePath := "cuotas/BELMONTE CUOTA NOVIEMBRE 2022.xlsx"
 
 	sheetName := "Propietarios ordenados"
 
-	ret, err := loadApartmentData(filePath, sheetName)
+	ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 	if err != nil {
 		panic(err)
 	}
 
 	var body bytes.Buffer
 
-	email.GetTemplate("email/templates/maintenance.html", &body, "Octubre-2022")
+	email.GetTemplate("email/templates/maintenance.html", &body, "Noviembre-2022", b.Email)
 
 	e := &email.EmailService{
 		Host:     "smtp.gmail.com",
@@ -334,15 +384,15 @@ func main() {
 	}
 
 	for _, apar := range ret {
-		allEmails := email.GetEmails()
-		fmt.Println(allEmails[apar.number])
-		err := e.SendReceipt(allEmails[apar.number], "Octubre-2022", "GPR-RECIBOS-OCTUBRE-2022/MANTENIMIENTO-OCTUBRE-2022_DPTO-"+apar.number+".pdf", &body)
+		allEmails := *email.GetEmails(b.Nickname)
+		fmt.Println(allEmails[apar.ApartmentNumber])
+		err := e.SendReceipt(allEmails[apar.ApartmentNumber], "Noviembre-2022", b.Nickname+"-RECIBOS-NOVIEMBRE-2022/MANTENIMIENTO-NOVIEMBRE-2022_DPTO-"+apar.ApartmentNumber+".pdf", &body)
 
 		if err != nil {
 			fmt.Println(err)
 		}
 
-		fmt.Println("Email enviado exitosamente a " + apar.number)
+		fmt.Println("Email enviado exitosamente a " + apar.ApartmentNumber)
 
 	}
 

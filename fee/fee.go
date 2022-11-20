@@ -1,8 +1,10 @@
-package main
+package fee
 
 import (
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/asloth/receipt-generator/building"
 	"github.com/asloth/receipt-generator/receipt"
@@ -11,23 +13,125 @@ import (
 	"github.com/johnfercher/maroto/pkg/consts"
 	"github.com/johnfercher/maroto/pkg/pdf"
 	"github.com/johnfercher/maroto/pkg/props"
+	"github.com/xuri/excelize/v2"
 )
 
-type Apartment struct {
-	number          string
-	owner           string
-	totalArea       float64
-	percentaje      float64
-	total           float64
-	maintenance     float64
-	parking         string
-	parkingArea     float64
-	deposit         []string
-	waterComsuption float64
-	fine            float64
+type FeeDetail struct {
+	owner                string
+	ApartmentNumber      string
+	waterFee             float64
+	maintenanceFee       float64
+	liftMaintenanceFee   float64
+	cleaningToolsFee     float64
+	gardenMaintenanceFee float64
+	electricityBCI       float64
+	electricitySSGG      float64
+	administrationFee    float64
+	total                float64
 }
 
-func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterDate string, wData map[string]water.WaterMonthData, b *building.Building) error {
+func LoadFeeDetailData(filePath, sheetName string) ([]FeeDetail, error) {
+	// Open the spreadsheet
+	xlsxFile, err := excelize.OpenFile(filePath)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+	defer func() {
+		// Close the spreadsheet.
+		if err := xlsxFile.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+	// Get all the rows in the
+	rows, err := xlsxFile.GetRows(sheetName)
+
+	if err != nil {
+		return nil, err
+	}
+
+	cols := []string{}
+
+	ret := []FeeDetail{}
+
+out:
+	for i, row := range rows {
+		if i == 0 {
+			for _, colCell := range row {
+				cols = append(cols, colCell)
+			}
+			fmt.Println("Column information", cols)
+		} else {
+			ap := FeeDetail{}
+		inside:
+			for j, colCell := range row {
+				switch strings.ToLower(cols[j]) {
+				case "propietario":
+					if len(colCell) == 0 {
+						break out
+					}
+					ap.owner = colCell
+				case "depa":
+					ap.ApartmentNumber = colCell
+				case "pago por consumo de agua":
+					ap.waterFee, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.total = 0.0
+					}
+				case "mantenimientos preventivos":
+					ap.maintenanceFee, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.total = 0.0
+					}
+				case "mantenimiento de ascensor":
+					ap.liftMaintenanceFee, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.total = 0.0
+					}
+				case "materiales de limpieza":
+					ap.cleaningToolsFee, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.total = 0.0
+					}
+				case "mantenimiento jardines":
+					ap.gardenMaintenanceFee, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.total = 0.0
+					}
+				case "luz bci":
+					ap.electricityBCI, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.total = 0.0
+					}
+				case "luz ssgg":
+					ap.electricitySSGG, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.total = 0.0
+					}
+				case "administración y personal":
+					ap.administrationFee, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.total = 0.0
+					}
+				case "cuota":
+					ap.total, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.total = 0.0
+					}
+					break inside
+				default:
+					continue
+				}
+			}
+			ret = append(ret, ap)
+		}
+
+	}
+	return ret, nil
+}
+
+func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterDate string, wData map[string]water.WaterMonthData, b *building.Building) error {
 	buildng := *b
 	var heightHeader float64 = 30
 	var contentSize float64 = 10
@@ -75,8 +179,9 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	})
 
 	// SECTION DATOS DEL USUARIO
-	receipt.SubHeader(&m, colorMolio, "DATOS DEL PROPIETARIO/INQUILINO")
-	UserDetail(&m, backgroundColor, contentSize, rowHeight, ap, &buildng)
+	receipt.SubHeader(&m, colorMolio, "DETALLE DEL CONSUMO DE LA CUOTA")
+
+	Detail(&m, backgroundColor, contentSize, rowHeight, ap, &buildng)
 
 	// SECTION WATER DETAIL INFORMATION
 	receipt.SubHeader(&m, colorMolio, "DETALLE DEL CONSUMO DE AGUA")
@@ -84,7 +189,7 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	waterDetailsFirstColumn := []string{"PERIODO: ", "LECTURA ANTERIOR (m3): ", "LECTURA ACTUAL (m3): ", "CONSUMO (m3): "}
 	waterDetailsSecondColumn := []string{"CONSUMO REC: ", "S/. REC: ", "SOLES / M3: ", "FECHA DE LECTURA: "}
 
-	waterData := []string{periodo, fmt.Sprintf("%.2f", wData[ap.number].LastMonth), fmt.Sprintf("%.2f", wData[ap.number].CurrentMonth), fmt.Sprintf("%.2f", wData[ap.number].WaterConsumedThisMonth)}
+	waterData := []string{periodo, fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].LastMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].CurrentMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].WaterConsumedThisMonth)}
 
 	// Get water data from this month
 	monthWaterData := water.GetWaterDataByBuilding(b.Nickname)
@@ -95,12 +200,12 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	}
 
 	//IMPORTES FACTURADOS SECTION TABLE
-	monto := fmt.Sprintf("S/. %.2f", ap.maintenance)
+	monto := fmt.Sprintf("S/. %.2f", ap.total)
 	m.SetBackgroundColor(colorMolio)
 	m.SetBorder(true)
 	m.Row(7, func() {
 		m.Col(10, func() {
-			m.Text("DETALLE DE LOS IMPORTES FACTURADOS",
+			m.Text("IMPORTES FACTURADOS",
 				props.Text{
 					Size:  12,
 					Style: consts.Bold,
@@ -119,8 +224,6 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 
 	m.SetBackgroundColor(backgroundColor)
 	receipt.Resumen(&m, backgroundColor, contentSize, "MANTENIMIENTO ", monto)
-	receipt.Resumen(&m, backgroundColor, contentSize, "AGUA ", fmt.Sprintf("S/. %.2f", ap.waterComsuption))
-	receipt.Resumen(&m, backgroundColor, contentSize, "MULTA ", fmt.Sprintf("S/. %.2f", ap.fine))
 
 	m.SetBackgroundColor(colorMolio)
 	m.SetBorder(true)
@@ -134,7 +237,7 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 				})
 		})
 		m.Col(2, func() {
-			m.Text(fmt.Sprintf("S/. %.2f", ap.total),
+			m.Text(monto,
 				props.Text{
 					Size:  12,
 					Style: consts.Bold,
@@ -159,7 +262,7 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	}
 
 	// Create a custom name for the receipt
-	fileName := "MANTENIMIENTO-" + periodo + "_DPTO-" + ap.number + ".pdf"
+	fileName := "MANTENIMIENTO-" + periodo + "_DPTO-" + ap.ApartmentNumber + ".pdf"
 
 	// Save the receipt into the directory
 	err := m.OutputFileAndClose(buildng.Nickname + "-RECIBOS-" + periodo + "/" + fileName)
@@ -171,29 +274,24 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	return nil
 }
 
-func UserDetail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight float64, ap *Apartment, buildng *building.Building) {
+func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight float64, ap *FeeDetail, buildng *building.Building) {
 	m := *pdf
 
 	// Defining the fields for the first column of the receipt
-	FirstColumn := []string{"NOMBRE: ", "DEPARTAMENTO: ", "CODIGO BANCO: ", "ESTACIONAMIENTO: ", "DEPOSITO: "}
+	FirstColumn := []string{"NOMBRE: ", "DEPARTAMENTO: ", "AGUA: ", "MAN. PREVENTIVO: ", "MAN. ASCENSOR: "}
 
 	// Defining the fields for the second column of the receipt
 	SecondColumn := []string{
-		"AREA DEPARTAMENTO: ",
-		"AREA ESTACIONAMIENTO: ",
-		"% PARTICIPACION: ",
-		"CONSUMO AGUA (S/.): ",
-		"TOTAL PRESUPUESTO: "}
-
-	// Parsing data from float to string with 2 decimals to show in the receipt
-	dptoArea := fmt.Sprintf("%.2f m2", ap.totalArea)
-	parkingArea := fmt.Sprintf("%.2f m2", ap.parkingArea)
-	participation := fmt.Sprintf("%f", ap.percentaje)
+		"MATERIALES LIMPIEZA: ",
+		"MANTENIMIENTO JARDINES: ",
+		"LUZ SSGG: ",
+		"LUZ BCI: ",
+		"ADMINISTRACION Y PERSONAL: "}
 
 	// Data for the first column of the receipt
-	ownerData := []string{ap.owner, ap.number, ap.number, string(ap.parking), string(ap.deposit[0]) + ", " + string(ap.deposit[1])}
+	ownerData := []string{ap.owner, ap.ApartmentNumber, fmt.Sprintf("S/. %.2f", ap.waterFee), fmt.Sprintf("S/. %.2f", ap.maintenanceFee), fmt.Sprintf("S/. %.2f", ap.liftMaintenanceFee)}
 	// Data for the second column of the receipt
-	otherData := []string{dptoArea, parkingArea, participation + "%", fmt.Sprintf("%.2f", ap.waterComsuption), buildng.Budget}
+	otherData := []string{fmt.Sprintf("S/. %.2f", ap.cleaningToolsFee), fmt.Sprintf("S/. %.2f", ap.gardenMaintenanceFee), fmt.Sprintf("S/. %.2f", ap.electricitySSGG), fmt.Sprintf("S/. %.2f", ap.electricityBCI), fmt.Sprintf("S/. %.2f", ap.administrationFee)}
 
 	// Reading the data and painting it into the receipt
 	for i, v := range FirstColumn {

@@ -1,28 +1,38 @@
 package building
 
 type Building struct {
-	name    string
-	address string
-	email   string
+	Name     string
+	Nickname string
+	Address  string
+	Email    string
+	Picture  string
 
-	bank             string
-	bankAccount      string
-	bankAccountOwner string
+	Bank             string
+	BankAccount      string
+	BankAccountOwner string
+	Budget           string
 }
 
-func getBuildingData(name string) *Building {
+func (b *Building) GetBuildingData(name string) {
 	switch name {
 	case "gpr":
-		gpr := Building{
-			name:             "CONDOMINIO GRAN PARQUE ROMA",
-			address:          "LEONARDO ARIETA 825 - CERCADO DE LIMA",
-			email:            "granparqueroma@elmolio.com",
-			bank:             "BCP",
-			bankAccount:      "3059864512041",
-			bankAccountOwner: "C. RECAUDADORA GRAN PARQUE ROMA",
-		}
-		return &gpr
+		b.Name = "CONDOMINIO GRAN PARQUE ROMA"
+		b.Nickname = "GPR"
+		b.Address = "LEONARDO ARIETA 825 - CERCADO DE LIMA"
+		b.Email = "granparqueroma@elmolio.com"
+		b.Bank = "BCP"
+		b.BankAccount = "3059864512041"
+		b.BankAccountOwner = "C. RECAUDADORA GRAN PARQUE ROMA"
+		b.Picture = "files/parque-roma-logo.jpg"
+	case "belmonte":
+		b.Name = "EDIFICIO BELMONTE"
+		b.Nickname = "BELMONTE"
+		b.Address = "JIRON DANIEL OLAECHEA 246"
+		b.Email = "administradorlimaeste@elmolio.com"
+		b.Bank = "BCP"
+		b.BankAccount = "19306790451040"
+		b.BankAccountOwner = "NITZIA ROJAS / ODARIS LUCENA"
+		b.Picture = "files/belmonte.jpeg"
 	}
-	return &Building{}
 
 }
