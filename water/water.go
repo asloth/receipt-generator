@@ -33,6 +33,14 @@ func GetWaterDataByBuilding(name string) *WaterByMonth {
 		}
 		gpr.Soles_m3 = gpr.Rec_soles / gpr.Consume
 		return &gpr
+	case "torrereal":
+		gpr := WaterByMonth{
+			Consume:     180.08,
+			Consumo_rec: 0,
+			Rec_soles:   0,
+		}
+		gpr.Soles_m3 = 0
+		return &gpr
 	}
 	return &WaterByMonth{}
 

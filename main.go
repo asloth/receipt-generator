@@ -18,7 +18,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func mainreceipt() {
+func main() {
 
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("GENERAR RECIBOS")
@@ -46,11 +46,12 @@ func mainreceipt() {
 	fmt.Println("ELIJA EL EDIFICIO DEL CUAL DESEA GENERAR RECIBOS")
 	fmt.Println("1. GRAN PARQUE ROMA")
 	fmt.Println("2. BELMONTE")
+	fmt.Println("3. TORRE REAL")
 
 	option := ""
 	getData(reader, &option)
 
-	filePath := "cuotas/GPR CUOTA NOVIEMBRE 2022.xlsx"
+	filePath := "cuotas/TORREREAL CUOTA NOVIEMBRE 2022.xlsx"
 
 	waterPath := "AGUA"
 
@@ -81,6 +82,26 @@ func mainreceipt() {
 		}
 	case "2":
 		b.GetBuildingData("belmonte")
+		b.Budget = totalPresupuesto
+
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			fmt.Println("Error reading fee data" + err.Error())
+		}
+		waterData, err := loadWaterData(filePath, waterPath, 3)
+		if err != nil {
+			fmt.Println("Error reading the water data" + err.Error())
+		}
+
+		for _, apar := range ret {
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			if err != nil {
+				fmt.Println(apar.ApartmentNumber)
+				fmt.Println(err)
+			}
+		}
+	case "3":
+		b.GetBuildingData("torrereal")
 		b.Budget = totalPresupuesto
 
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
@@ -355,7 +376,7 @@ out:
 	return ret, nil
 }
 
-func main() {
+func mainemail() {
 
 	var b building.Building
 	b.GetBuildingData("gpr")

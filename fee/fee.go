@@ -28,6 +28,14 @@ type FeeDetail struct {
 	electricitySSGG      float64
 	administrationFee    float64
 	total                float64
+
+	participationPercentage float64
+	reserve                 float64
+	maintenanceProv         float64
+	fineReturn              float64
+	credit                  float64
+	parkinglot              string
+	deposit                 string
 }
 
 func LoadFeeDetailData(filePath, sheetName string) ([]FeeDetail, error) {
@@ -77,42 +85,73 @@ out:
 				case "pago por consumo de agua":
 					ap.waterFee, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
-						ap.total = 0.0
+						ap.waterFee = 0.0
 					}
 				case "mantenimientos preventivos":
 					ap.maintenanceFee, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
-						ap.total = 0.0
+						ap.maintenanceFee = 0.0
+					}
+				case "participación":
+					ap.participationPercentage, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.participationPercentage = 0.0
+					}
+				case "fondo de reserva":
+					ap.reserve, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.reserve = 0.0
 					}
 				case "mantenimiento de ascensor":
 					ap.liftMaintenanceFee, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
-						ap.total = 0.0
+						ap.liftMaintenanceFee = 0.0
 					}
 				case "materiales de limpieza":
 					ap.cleaningToolsFee, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
-						ap.total = 0.0
+						ap.cleaningToolsFee = 0.0
 					}
+				case "provision y mantenimiento":
+					ap.maintenanceProv, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.maintenanceProv = 0.0
+					}
+				case "devolución de multa":
+					ap.fineReturn, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.fineReturn = 0.0
+					}
+				case "saldo a favor o en contra":
+					ap.credit, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.credit = 0.0
+					}
+				case "estacionamiento":
+					ap.parkinglot = colCell
+
+				case "deposito":
+					ap.deposit = colCell
+
 				case "mantenimiento jardines":
 					ap.gardenMaintenanceFee, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
-						ap.total = 0.0
+						ap.gardenMaintenanceFee = 0.0
 					}
 				case "luz bci":
 					ap.electricityBCI, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
-						ap.total = 0.0
+						ap.electricityBCI = 0.0
 					}
 				case "luz ssgg":
 					ap.electricitySSGG, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
-						ap.total = 0.0
+						ap.electricitySSGG = 0.0
 					}
 				case "administración y personal":
 					ap.administrationFee, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
-						ap.total = 0.0
+						ap.administrationFee = 0.0
 					}
 				case "cuota":
 					ap.total, err = strconv.ParseFloat(colCell, 64)
@@ -276,22 +315,54 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 
 func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight float64, ap *FeeDetail, buildng *building.Building) {
 	m := *pdf
+	var ownerData []string
+	var otherData []string
 
 	// Defining the fields for the first column of the receipt
-	FirstColumn := []string{"NOMBRE: ", "DEPARTAMENTO: ", "AGUA: ", "MAN. PREVENTIVO: ", "MAN. ASCENSOR: "}
+	FirstColumn := buildng.FirstColumn
 
 	// Defining the fields for the second column of the receipt
-	SecondColumn := []string{
-		"MATERIALES LIMPIEZA: ",
-		"MANTENIMIENTO JARDINES: ",
-		"LUZ SSGG: ",
-		"LUZ BCI: ",
-		"ADMINISTRACION Y PERSONAL: "}
+	SecondColumn := buildng.SecondColumn
 
-	// Data for the first column of the receipt
-	ownerData := []string{ap.owner, ap.ApartmentNumber, fmt.Sprintf("S/. %.2f", ap.waterFee), fmt.Sprintf("S/. %.2f", ap.maintenanceFee), fmt.Sprintf("S/. %.2f", ap.liftMaintenanceFee)}
-	// Data for the second column of the receipt
-	otherData := []string{fmt.Sprintf("S/. %.2f", ap.cleaningToolsFee), fmt.Sprintf("S/. %.2f", ap.gardenMaintenanceFee), fmt.Sprintf("S/. %.2f", ap.electricitySSGG), fmt.Sprintf("S/. %.2f", ap.electricityBCI), fmt.Sprintf("S/. %.2f", ap.administrationFee)}
+	switch strings.ToLower(buildng.Nickname) {
+	case "belmonte":
+		// Data for the first column of the receipt
+		ownerData = []string{
+			ap.owner,
+			ap.ApartmentNumber,
+			fmt.Sprintf("S/. %.2f", ap.waterFee),
+			fmt.Sprintf("S/. %.2f", ap.maintenanceFee),
+			fmt.Sprintf("S/. %.2f", ap.liftMaintenanceFee),
+		}
+		// Data for the second column of the receipt
+		otherData = []string{
+			fmt.Sprintf("S/. %.2f", ap.cleaningToolsFee),
+			fmt.Sprintf("S/. %.2f", ap.gardenMaintenanceFee),
+			fmt.Sprintf("S/. %.2f", ap.electricitySSGG),
+			fmt.Sprintf("S/. %.2f", ap.electricityBCI),
+			fmt.Sprintf("S/. %.2f", ap.administrationFee),
+		}
+	case "torrereal":
+		ownerData = []string{
+			ap.owner,
+			ap.ApartmentNumber,
+			fmt.Sprintf(" %.2f %%", ap.participationPercentage),
+			fmt.Sprintf("%v", ap.parkinglot),
+			fmt.Sprintf(" %v", ap.deposit),
+			fmt.Sprintf("S/. %.2f", ap.waterFee),
+			fmt.Sprintf("S/. %.2f", ap.reserve),
+		}
+		otherData = []string{
+			fmt.Sprintf("S/. %.2f", ap.liftMaintenanceFee),
+			fmt.Sprintf("S/. %.2f", ap.maintenanceProv),
+			fmt.Sprintf("S/. %.2f", ap.electricitySSGG),
+			fmt.Sprintf("S/. %.2f", ap.electricityBCI),
+			fmt.Sprintf("S/. %.2f", ap.administrationFee),
+			fmt.Sprintf("S/. %.2f", ap.fineReturn),
+			fmt.Sprintf("S/. %.2f", ap.credit),
+		}
+
+	}
 
 	// Reading the data and painting it into the receipt
 	for i, v := range FirstColumn {
