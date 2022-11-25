@@ -18,7 +18,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func main() {
+func mainreceipts() {
 
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("GENERAR RECIBOS")
@@ -376,17 +376,17 @@ out:
 	return ret, nil
 }
 
-func mainemail() {
+func main() {
 
 	var b building.Building
-	b.GetBuildingData("gpr")
+	b.GetBuildingData("torrereal")
 
-	filePath := "cuotas/GPR CUOTA NOVIEMBRE 2022.xlsx"
+	filePath := "cuotas/TORREREAL CUOTA NOVIEMBRE 2022.xlsx"
 
 	sheetName := "Propietarios ordenados"
 
 	//CAMBIAR SI ES GPR O BELMONTE
-	ret, err := loadApartmentData(filePath, sheetName)
+	ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 	if err != nil {
 		panic(err)
 	}
@@ -412,15 +412,15 @@ func mainemail() {
 
 	for _, apar := range ret {
 		allEmails := *email.GetEmails(b.Nickname)
-		fmt.Println(allEmails[apar.number])
-		err := e.SendReceipt(allEmails[apar.number], "Noviembre-2022", b.Nickname+"-RECIBOS-NOVIEMBRE-2022/MANTENIMIENTO-NOVIEMBRE-2022_DPTO-"+apar.number+".pdf", &body)
+		fmt.Println(allEmails[apar.ApartmentNumber])
+		err := e.SendReceipt(allEmails[apar.ApartmentNumber], "Noviembre-2022", b.Nickname+"-RECIBOS-NOVIEMBRE-2022/MANTENIMIENTO-NOVIEMBRE-2022_DPTO-"+apar.ApartmentNumber+".pdf", &body)
 
 		if err != nil {
 			fmt.Println(err)
 			continue
 		}
 
-		fmt.Println("Email enviado exitosamente a " + apar.number)
+		fmt.Println("Email enviado exitosamente a " + apar.ApartmentNumber)
 
 	}
 

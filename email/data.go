@@ -255,6 +255,41 @@ func GetEmails(building string) *map[string]string {
 			"603": "frankperezlamas@gmail.com",
 			"604": "estebanjenny202@gmail.com",
 		}
+	case "torrereal":
+		result = map[string]string{
+			"101": "brumi02@gmail.com",
+			"102": "carmendavilarioja@gmail.com",
+			"103": "hiroshi.miranda@gmail.com ",
+			"201": "",
+			"203": "lilianadv1707@gmail.com ",
+			"204": "miralvant24@gmail.com ",
+			"301": "jaymefloresr1973@yahoo.com ",
+			"302": "percy.huaylinos@pucp.pe",
+			"303": "kjauregui@esan.edu.pe",
+			"304": "norbertosoza_67@hotmail.com",
+			"401": "vicky.victorino@gmail.com",
+			"403": "lulurose4020@gmail.com",
+			"404": "mariela.noles@gmail.com",
+			"501": "cintia.lz28@hotmail.com",
+			"502": "angizita@hotmail.com",
+			"503": "jvagiles@gmail.com",
+			"504": "emamansilla11@gmail.com",
+			"601": "carmen_c15@hotmail.com",
+			"603": "pramirez58@gmail.com",
+			"604": "adagabygarcia@yahoo.com",
+			"701": "rocioplc@hotmail.com",
+			"702": "tomas.sanchez@spital.so.ch",
+			"703": "Rosa.caballeroacevedo@gmail.com",
+			"704": "mariela.noles@gmail.com",
+			"801": "juliotakimoto@hotmail.com",
+			"802": "laurapalma_1@hotmail.com",
+			"803": "kattye.montenegro@gmail.com",
+			"804": "medithsol@gmail.com",
+			"0":   "jsanchezb.uni@gmail.com",
+			"1":   "magda_rivas@yahoo.com",
+			"2":   "mariela.noles@gmail.com",
+			"3":   "allisonalfarorobledo@hotmail.com",
+		}
 	}
 
 	return &result
