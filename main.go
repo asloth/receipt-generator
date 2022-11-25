@@ -18,7 +18,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func mainreceipts() {
+func mainreceipt() {
 
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("GENERAR RECIBOS")
@@ -50,7 +50,7 @@ func mainreceipts() {
 	option := ""
 	getData(reader, &option)
 
-	filePath := "cuotas/BELMONTE CUOTA NOVIEMBRE 2022.xlsx"
+	filePath := "cuotas/GPR CUOTA NOVIEMBRE 2022.xlsx"
 
 	waterPath := "AGUA"
 
@@ -251,6 +251,11 @@ out:
 					if err != nil {
 						ap.maintenance = 0.0
 					}
+				case "cuota ext":
+					ap.maintenance_ext, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.maintenance_ext = 0.0
+					}
 				case "porcentaje":
 					if len(colCell) == 0 {
 						colCell = "--"
@@ -353,19 +358,20 @@ out:
 func main() {
 
 	var b building.Building
-	b.GetBuildingData("belmonte")
+	b.GetBuildingData("gpr")
 
-	filePath := "cuotas/BELMONTE CUOTA NOVIEMBRE 2022.xlsx"
+	filePath := "cuotas/GPR CUOTA NOVIEMBRE 2022.xlsx"
 
 	sheetName := "Propietarios ordenados"
 
-	ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+	//CAMBIAR SI ES GPR O BELMONTE
+	ret, err := loadApartmentData(filePath, sheetName)
 	if err != nil {
 		panic(err)
 	}
 
 	var body bytes.Buffer
-
+	//CAMBIAR NOMBRE CUOTA
 	email.GetTemplate("email/templates/maintenance.html", &body, "Noviembre-2022", b.Email)
 
 	e := &email.EmailService{
@@ -385,14 +391,15 @@ func main() {
 
 	for _, apar := range ret {
 		allEmails := *email.GetEmails(b.Nickname)
-		fmt.Println(allEmails[apar.ApartmentNumber])
-		err := e.SendReceipt(allEmails[apar.ApartmentNumber], "Noviembre-2022", b.Nickname+"-RECIBOS-NOVIEMBRE-2022/MANTENIMIENTO-NOVIEMBRE-2022_DPTO-"+apar.ApartmentNumber+".pdf", &body)
+		fmt.Println(allEmails[apar.number])
+		err := e.SendReceipt(allEmails[apar.number], "Noviembre-2022", b.Nickname+"-RECIBOS-NOVIEMBRE-2022/MANTENIMIENTO-NOVIEMBRE-2022_DPTO-"+apar.number+".pdf", &body)
 
 		if err != nil {
 			fmt.Println(err)
+			continue
 		}
 
-		fmt.Println("Email enviado exitosamente a " + apar.ApartmentNumber)
+		fmt.Println("Email enviado exitosamente a " + apar.number)
 
 	}
 

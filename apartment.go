@@ -19,6 +19,7 @@ type Apartment struct {
 	totalArea       float64
 	percentaje      float64
 	total           float64
+	maintenance_ext float64
 	maintenance     float64
 	parking         string
 	parkingArea     float64
@@ -96,6 +97,7 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 
 	//IMPORTES FACTURADOS SECTION TABLE
 	monto := fmt.Sprintf("S/. %.2f", ap.maintenance)
+
 	m.SetBackgroundColor(colorMolio)
 	m.SetBorder(true)
 	m.Row(7, func() {
@@ -121,6 +123,7 @@ func (ap *Apartment) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	receipt.Resumen(&m, backgroundColor, contentSize, "MANTENIMIENTO ", monto)
 	receipt.Resumen(&m, backgroundColor, contentSize, "AGUA ", fmt.Sprintf("S/. %.2f", ap.waterComsuption))
 	receipt.Resumen(&m, backgroundColor, contentSize, "MULTA ", fmt.Sprintf("S/. %.2f", ap.fine))
+	receipt.Resumen(&m, backgroundColor, contentSize, "CUOTA EXTRAORDINARIA ", fmt.Sprintf("S/. %.2f", ap.maintenance_ext))
 
 	m.SetBackgroundColor(colorMolio)
 	m.SetBorder(true)
