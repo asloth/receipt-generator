@@ -30,8 +30,11 @@ type FeeDetail struct {
 	total                float64
 
 	participationPercentage float64
+	commonWater             float64
 	reserve                 float64
 	maintenanceProv         float64
+	fine                    float64
+	refund                  float64
 	fineReturn              float64
 	credit                  float64
 	parkinglot              string
@@ -87,6 +90,11 @@ out:
 					if err != nil {
 						ap.waterFee = 0.0
 					}
+				case "agua comun":
+					ap.commonWater, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.waterFee = 0.0
+					}
 				case "mantenimientos preventivos":
 					ap.maintenanceFee, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
@@ -122,6 +130,11 @@ out:
 					if err != nil {
 						ap.fineReturn = 0.0
 					}
+				case "multa":
+					ap.fine, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.fine = 0.0
+					}
 				case "saldo a favor o en contra":
 					ap.credit, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
@@ -137,6 +150,11 @@ out:
 					ap.gardenMaintenanceFee, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
 						ap.gardenMaintenanceFee = 0.0
+					}
+				case "reembolso":
+					ap.refund, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.refund = 0.0
 					}
 				case "luz bci":
 					ap.electricityBCI, err = strconv.ParseFloat(colCell, 64)
@@ -225,10 +243,10 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	// SECTION WATER DETAIL INFORMATION
 	receipt.SubHeader(&m, colorMolio, "DETALLE DEL CONSUMO DE AGUA")
 	// Defining the fields of the first column
-	waterDetailsFirstColumn := []string{"PERIODO: ", "LECTURA ANTERIOR (m3): ", "LECTURA ACTUAL (m3): ", "CONSUMO (m3): "}
+	waterDetailsFirstColumn := []string{"AGUA COMUN: ", "LECTURA ANTERIOR (m3): ", "LECTURA ACTUAL (m3): ", "CONSUMO (m3): "}
 	waterDetailsSecondColumn := []string{"CONSUMO REC: ", "S/. REC: ", "SOLES / M3: ", "FECHA DE LECTURA: "}
 
-	waterData := []string{periodo, fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].LastMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].CurrentMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].WaterConsumedThisMonth)}
+	waterData := []string{fmt.Sprintf("S/. %.2f", ap.commonWater), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].LastMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].CurrentMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].WaterConsumedThisMonth)}
 
 	// Get water data from this month
 	monthWaterData := water.GetWaterDataByBuilding(b.Nickname)
@@ -292,8 +310,8 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	receipt.PayInfo(&m, colorMolio, &buildng)
 
 	//FOOTER : AVISOS IMPORTANTES DE LA BOLETA
-	receipt.SubHeader(&m, colorMolio, "AVISO IMPORTANTE")
-	receipt.Footer(&m, backgroundColor, contentSize)
+	//receipt.SubHeader(&m, colorMolio, "AVISO IMPORTANTE")
+	//receipt.Footer(&m, backgroundColor, contentSize)
 
 	// Create the directory to store the receipts
 	if err := os.Mkdir(buildng.Nickname+"-RECIBOS-"+periodo, os.ModePerm); err != nil {
@@ -354,12 +372,12 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 		}
 		otherData = []string{
 			fmt.Sprintf("S/. %.2f", ap.liftMaintenanceFee),
-			fmt.Sprintf("S/. %.2f", ap.maintenanceProv),
+			fmt.Sprintf("S/. %.2f", ap.cleaningToolsFee),
 			fmt.Sprintf("S/. %.2f", ap.electricitySSGG),
 			fmt.Sprintf("S/. %.2f", ap.electricityBCI),
 			fmt.Sprintf("S/. %.2f", ap.administrationFee),
-			fmt.Sprintf("S/. %.2f", ap.fineReturn),
-			fmt.Sprintf("S/. %.2f", ap.credit),
+			fmt.Sprintf("S/. %.2f", ap.fine),
+			fmt.Sprintf("S/. %.2f", ap.refund),
 		}
 
 	}
