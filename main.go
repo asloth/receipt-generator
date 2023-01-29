@@ -384,32 +384,70 @@ out:
 }
 
 func main() {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("ENVIAR RECIBOS")
+	fmt.Println("---------------------")
+
+	fmt.Println("Ingrese el nombre del archivo excel, formato XLSX")
+	name := "sheetName"
+	getData(reader, &name)
+	filePath := "cuotas/" + name + ".xlsx"
+
+	fmt.Println("Ingrese el nombre de la hoja donde se encuentran los propietarios ordenados")
+	sheetName := "Propietarios ordenados"
+	getData(reader, &sheetName)
+
+	fmt.Println("Ingrese el nombre del periodo al que pertenecen los recibos (Mes-A;o)")
+	period := "Enero-2023"
+	getData(reader, &period)
+
+	fmt.Println("ELIJA EL EDIFICIO DEL CUAL DESEA GENERAR RECIBOS")
+	fmt.Println("1. GRAN PARQUE ROMA")
+	fmt.Println("2. BELMONTE")
+	fmt.Println("3. TORRE REAL")
+
+	option := ""
+	getData(reader, &option)
 
 	var b building.Building
-	b.GetBuildingData("gpr")
 
-	filePath := "cuotas/GPR CUOTA ENE 2023.xlsx"
-
-	sheetName := "Propietarios ordenados (2)"
-
-	// CAMBIAR SI ES GPR O BELMONTE
-	// GPR loadApartmentData(filePath, sheetName)
-	// BELMONTE fee.LoadFeeDetailData(filePath, sheetName)
-	ret, err := loadApartmentData(filePath, sheetName)
-	if err != nil {
-		panic(err)
+	switch option {
+	case "1":
+		b.GetBuildingData("gpr")
+		ret, err := loadApartmentData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmailbyApartment(ret, b, period)
+	case "2":
+		b.GetBuildingData("belmonte")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period)
+	case "3":
+		b.GetBuildingData("torrereal")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period)
 	}
 
+}
+
+func sendingEmail(ret []fee.FeeDetail, b building.Building, period string) {
 	var body bytes.Buffer
 	//CAMBIAR NOMBRE CUOTA
-	email.GetTemplate("email/templates/maintenance.html", &body, "Enero-2023", b.Email)
+	email.GetTemplate("email/templates/maintenance.html", &body, period, b.Email)
 
 	e := &email.EmailService{
 		Host:     "smtp.gmail.com",
 		Port:     587,
 		Username: "soporte-administrativo@elmolio.net",
 	}
-	err = e.SetNewDialer()
+	err := e.SetNewDialer()
 	if err != nil {
 		panic(err)
 	}
@@ -421,8 +459,45 @@ func main() {
 
 	for _, apar := range ret {
 		allEmails := *email.GetEmails(b.Nickname)
-		fmt.Println(allEmails[apar.number])
-		err := e.SendReceipt(allEmails[apar.number], "Enero-2023", b.Nickname+"-RECIBOS-ENERO-2023/MANTENIMIENTO-ENERO-2023_DPTO-"+apar.number+".pdf", &body)
+		fmt.Println(allEmails[apar.ApartmentNumber][0])
+		err := e.SendReceipt(allEmails[apar.ApartmentNumber], period, b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.ApartmentNumber+".pdf", &body)
+
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		fmt.Println("Email enviado exitosamente a " + apar.ApartmentNumber)
+
+	}
+
+	e.Desconnect()
+}
+
+func sendingEmailbyApartment(ret []Apartment, b building.Building, period string) {
+	var body bytes.Buffer
+	//CAMBIAR NOMBRE CUOTA
+	email.GetTemplate("email/templates/maintenance.html", &body, period, b.Email)
+
+	e := &email.EmailService{
+		Host:     "smtp.gmail.com",
+		Port:     587,
+		Username: "soporte-administrativo@elmolio.net",
+	}
+	err := e.SetNewDialer()
+	if err != nil {
+		panic(err)
+	}
+
+	err = e.Connect()
+	if err != nil {
+		panic(err)
+	}
+
+	for _, apar := range ret {
+		allEmails := *email.GetEmails(b.Nickname)
+		fmt.Println(allEmails[apar.number][0])
+		err := e.SendReceipt(allEmails[apar.number], period, b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.number+".pdf", &body)
 
 		if err != nil {
 			fmt.Println(err)

@@ -39,6 +39,7 @@ type FeeDetail struct {
 	credit                  float64
 	parkinglot              string
 	deposit                 string
+	extra                   float64
 }
 
 func LoadFeeDetailData(filePath, sheetName string) ([]FeeDetail, error) {
@@ -100,6 +101,16 @@ out:
 					if err != nil {
 						ap.maintenanceFee = 0.0
 					}
+				case "fondo de mantenimiento":
+					ap.maintenanceProv, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.maintenanceProv = 0.0
+					}
+				case "cuota extra":
+					ap.extra, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.extra = 0.0
+					}
 				case "participación":
 					ap.participationPercentage, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
@@ -140,6 +151,16 @@ out:
 					if err != nil {
 						ap.credit = 0.0
 					}
+				case "pagos pendientes y a favor":
+					ap.credit, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.credit = 0.0
+					}
+				case "reembolso":
+					ap.refund, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.refund = 0.0
+					}
 				case "estacionamiento":
 					ap.parkinglot = colCell
 
@@ -150,11 +171,6 @@ out:
 					ap.gardenMaintenanceFee, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
 						ap.gardenMaintenanceFee = 0.0
-					}
-				case "reembolso":
-					ap.refund, err = strconv.ParseFloat(colCell, 64)
-					if err != nil {
-						ap.refund = 0.0
 					}
 				case "luz bci":
 					ap.electricityBCI, err = strconv.ParseFloat(colCell, 64)
@@ -369,6 +385,7 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 			fmt.Sprintf(" %v", ap.deposit),
 			fmt.Sprintf("S/. %.2f", ap.waterFee),
 			fmt.Sprintf("S/. %.2f", ap.reserve),
+			fmt.Sprintf("S/. %.2f", ap.maintenanceProv),
 		}
 		otherData = []string{
 			fmt.Sprintf("S/. %.2f", ap.liftMaintenanceFee),
@@ -377,7 +394,8 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 			fmt.Sprintf("S/. %.2f", ap.electricityBCI),
 			fmt.Sprintf("S/. %.2f", ap.administrationFee),
 			fmt.Sprintf("S/. %.2f", ap.fine),
-			fmt.Sprintf("S/. %.2f", ap.refund),
+			fmt.Sprintf("S/. %.2f", ap.credit),
+			fmt.Sprintf("S/. %.2f", ap.extra),
 		}
 
 	}
