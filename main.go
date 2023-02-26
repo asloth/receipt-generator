@@ -19,7 +19,6 @@ import (
 )
 
 func main2() {
-
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("GENERAR RECIBOS")
 	fmt.Println("---------------------")
@@ -60,6 +59,7 @@ func main2() {
 	fmt.Println("1. GRAN PARQUE ROMA")
 	fmt.Println("2. BELMONTE")
 	fmt.Println("3. TORRE REAL")
+	fmt.Println("4. MIRADOR")
 
 	option := ""
 	getData(reader, &option)
@@ -127,6 +127,25 @@ func main2() {
 				fmt.Println(err)
 			}
 		}
+	case "4":
+		b.GetBuildingData("mirador")
+		b.Budget = totalPresupuesto
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			fmt.Println("Error reading fee data" + err.Error())
+		}
+		waterData, err := loadWaterData(filePath, waterPath, 3)
+		if err != nil {
+			fmt.Println("Error reading the water data" + err.Error())
+		}
+		for _, apar := range ret {
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			if err != nil {
+				fmt.Println(apar.ApartmentNumber)
+				fmt.Println(err)
+			}
+		}
+
 	}
 
 }
@@ -134,7 +153,6 @@ func main2() {
 func getData(r *bufio.Reader, data *string) {
 	reader := *r
 	for {
-
 		// Reading the user input
 		text, _ := reader.ReadString('\n')
 		// convert CRLF to LF
@@ -143,7 +161,6 @@ func getData(r *bufio.Reader, data *string) {
 		*data = stringText
 
 		break
-
 	}
 }
 
@@ -385,7 +402,7 @@ out:
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("ENVIAR RECIBOS")
+	fmt.Println("ENVIAR RECIBOS POR CORREO")
 	fmt.Println("---------------------")
 
 	fmt.Println("Ingrese el nombre del archivo excel, formato XLSX")
@@ -398,13 +415,14 @@ func main() {
 	getData(reader, &sheetName)
 
 	fmt.Println("Ingrese el nombre del periodo al que pertenecen los recibos (Mes-A;o)")
-	period := "Enero-2023"
+	period := "Febrero-2023"
 	getData(reader, &period)
 
-	fmt.Println("ELIJA EL EDIFICIO DEL CUAL DESEA GENERAR RECIBOS")
+	fmt.Println("ELIJA EL EDIFICIO DEL CUAL DESEA ENVIAR LOS RECIBOS")
 	fmt.Println("1. GRAN PARQUE ROMA")
 	fmt.Println("2. BELMONTE")
 	fmt.Println("3. TORRE REAL")
+	fmt.Println("4. MIRADOR")
 
 	option := ""
 	getData(reader, &option)
@@ -428,6 +446,13 @@ func main() {
 		sendingEmail(ret, b, period)
 	case "3":
 		b.GetBuildingData("torrereal")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period)
+	case "4":
+		b.GetBuildingData("mirador")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			panic(err)

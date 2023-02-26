@@ -20,6 +20,7 @@ type FeeDetail struct {
 	owner                string
 	ApartmentNumber      string
 	waterFee             float64
+	waterOnlyFee         float64
 	maintenanceFee       float64
 	liftMaintenanceFee   float64
 	cleaningToolsFee     float64
@@ -40,6 +41,11 @@ type FeeDetail struct {
 	parkinglot              string
 	deposit                 string
 	extra                   float64
+
+	employee1         float64
+	cleaningEmployees float64
+	doorMan1          float64
+	doorMan2          float64
 }
 
 func LoadFeeDetailData(filePath, sheetName string) ([]FeeDetail, error) {
@@ -91,10 +97,35 @@ out:
 					if err != nil {
 						ap.waterFee = 0.0
 					}
+				case "consumo por dpto":
+					ap.waterOnlyFee, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.waterOnlyFee = 0.0
+					}
+				case "descansero":
+					ap.employee1, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.employee1 = 0.0
+					}
+				case "personal de limpieza":
+					ap.cleaningEmployees, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.cleaningEmployees = 0.0
+					}
+				case "portero jerson":
+					ap.doorMan1, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.doorMan1 = 0.0
+					}
+				case "portero roberto":
+					ap.doorMan2, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.doorMan2 = 0.0
+					}
 				case "agua comun":
 					ap.commonWater, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
-						ap.waterFee = 0.0
+						ap.commonWater = 0.0
 					}
 				case "mantenimientos preventivos":
 					ap.maintenanceFee, err = strconv.ParseFloat(colCell, 64)
@@ -183,6 +214,11 @@ out:
 						ap.electricitySSGG = 0.0
 					}
 				case "administración y personal":
+					ap.administrationFee, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.administrationFee = 0.0
+					}
+				case "administración":
 					ap.administrationFee, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
 						ap.administrationFee = 0.0
@@ -396,6 +432,27 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 			fmt.Sprintf("S/. %.2f", ap.fine),
 			fmt.Sprintf("S/. %.2f", ap.credit),
 			fmt.Sprintf("S/. %.2f", ap.extra),
+		}
+	case "mirador":
+		// Data for the first column of the receipt
+		ownerData = []string{
+			ap.owner,
+			ap.ApartmentNumber,
+			fmt.Sprintf("S/. %.2f", ap.waterFee),
+			fmt.Sprintf("S/. %.2f", ap.waterOnlyFee),
+			fmt.Sprintf("S/. %.2f", ap.liftMaintenanceFee),
+			fmt.Sprintf("S/. %.2f", ap.doorMan1),
+			fmt.Sprintf("S/. %.2f", ap.doorMan2),
+		}
+		// Data for the second column of the receipt
+		otherData = []string{
+			fmt.Sprintf("S/. %.2f", ap.cleaningToolsFee),
+			fmt.Sprintf("S/. %.2f", ap.cleaningEmployees),
+			fmt.Sprintf("S/. %.2f", ap.employee1),
+			fmt.Sprintf("S/. %.2f", ap.gardenMaintenanceFee),
+			fmt.Sprintf("S/. %.2f", ap.electricitySSGG),
+			fmt.Sprintf("S/. %.2f", ap.electricityBCI),
+			fmt.Sprintf("S/. %.2f", ap.administrationFee),
 		}
 
 	}

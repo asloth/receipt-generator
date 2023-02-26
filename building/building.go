@@ -49,7 +49,17 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/torrereal.jpeg"
 		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "PARTICIPACION: ", "ESTACIONAMIENTO: ", "DEPOSITO: ", "AGUA: ", "FONDO DE RESERVA: ", "FONDO MANTENIMIENTO: "}
 		b.SecondColumn = []string{"MAN. ASCENSOR: ", "MATERIALES LIMPIEZA: ", "LUZ SSGG: ", "LUZ BCI: ", "ADMINISTRACION Y PERSONAL: ", "MULTA: ", "SALDO A FAVOR/CONTRA: ", "AGUA DIC.: "}
-
+	case "mirador":
+		b.Name = "EDIFICIO MIRADOR 2"
+		b.Nickname = "MIRADOR"
+		b.Address = "AV. PARQUE SUR #446 URB.CORPAC - SAN ISIDRO"
+		b.Email = "administradorlimaeste@elmolio.com"
+		b.Bank = "BCP"
+		b.BankAccount = "19374206534093"
+		b.BankAccountOwner = "ROSA CACEDA/GONZALO CERDA"
+		b.Picture = "files/mirador.jpeg"
+		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "AGUA TOTAL: ", "AGUA X DPTO: ", "MAN. ASCENSOR: ", "PORTERO JERSON: ", "PORTERO ROBERTO: "}
+		b.SecondColumn = []string{"MATERIALES LIMPIEZA: ", "PERSONAL LIMPIEZA: ", "DESCANSERO: ", "MANTENIMIENTO JARDINES: ", "LUZ SSGG: ", "LUZ BCI: ", "ADMINISTRACION: "}
 	}
 
 }

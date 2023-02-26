@@ -78,6 +78,7 @@ func GetEmails(building string) *map[string][]string {
 			"702":  {"DAVIDPADILLACR31@GMAIL.COM"},
 			"703":  {"anthony_pp06@hotmail.com"},
 			"704":  {"MARYELE77@HOTMAIL.COM"},
+			"705":  {"guilleseminario@hotmail.com"},
 			"706":  {"ATELLOD@OUTLOOK.ES"},
 			"707":  {"mghhmc@hotmail.com"},
 			"708":  {"JCPURIZACA33@GMAIL.COM"},
@@ -276,7 +277,7 @@ func GetEmails(building string) *map[string][]string {
 			"503": {"jvagiles@gmail.com"},
 			"504": {"emamansilla11@gmail.com"},
 			"601": {"carmen_c15@hotmail.com"},
-			"603": {"pramirez58@gmail.com"},
+			"603": {"maribeltipa2018@gmail.com"},
 			"604": {"adagabygarcia@yahoo.com"},
 			"701": {"rocioplc@hotmail.com"},
 			"702": {"tomas.sanchez@spital.so.ch"},
@@ -291,10 +292,26 @@ func GetEmails(building string) *map[string][]string {
 			"2":   {"mariela.noles@gmail.com"},
 			"3":   {"allisonalfarorobledo@hotmail.com"},
 		}
+	case "mirador":
+		result = map[string][]string{
+			"101": {"dcruzado2000@yahoo.es"},
+			"201": {"vferiasmg@gmail.com"},
+			"202": {"jreategui33@hotmail.com"},
+			"301": {"carina-blasm@hotmail.com"},
+			"302": {"mariana.bauer@icloud.com"},
+			"401": {"leoch1305@gmail.com"},
+			"402": {"ariana.soy@hotmail.com"},
+			"501": {"sanchezpoma.richard@gmail.com"},
+			"502": {"mreategui@intercorp.com.pe"},
+			"601": {"rosacaceda10@gmail.com"},
+			"602": {"angelcop1926@gmail.com"},
+			"701": {"gcerda068@gmail.com"},
+			"702": {"jonathan_fabris@yahoo.com"},
+			"703": {"jordi.rib.hib@gmail.com"},
+		}
 	}
 
 	return &result
-
 }
 
 func ValidateEmails(number, building string) string {
