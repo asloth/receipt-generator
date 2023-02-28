@@ -48,7 +48,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.BankAccountOwner = "ESCOBAR BARRIONUEVO DIEGO"
 		b.Picture = "files/torrereal.jpeg"
 		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "PARTICIPACION: ", "ESTACIONAMIENTO: ", "DEPOSITO: ", "AGUA: ", "FONDO DE RESERVA: ", "FONDO MANTENIMIENTO: "}
-		b.SecondColumn = []string{"MAN. ASCENSOR: ", "MATERIALES LIMPIEZA: ", "LUZ SSGG: ", "LUZ BCI: ", "ADMINISTRACION Y PERSONAL: ", "MULTA: ", "SALDO A FAVOR/CONTRA: ", "AGUA DIC.: "}
+		b.SecondColumn = []string{"MAN. ASCENSOR: ", "MATERIALES LIMPIEZA: ", "LUZ SSGG: ", "LUZ BCI: ", "ADMINISTRACION Y PERSONAL: ", "MULTA: ", "SALDO A FAVOR: ", "MORA: "}
 	case "mirador":
 		b.Name = "EDIFICIO MIRADOR 2"
 		b.Nickname = "MIRADOR"

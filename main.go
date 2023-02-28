@@ -466,7 +466,6 @@ func sendingEmail(ret []fee.FeeDetail, b building.Building, period string) {
 	var body bytes.Buffer
 	//CAMBIAR NOMBRE CUOTA
 	email.GetTemplate("email/templates/maintenance.html", &body, period, b.Email)
-
 	e := &email.EmailService{
 		Host:     "smtp.gmail.com",
 		Port:     587,

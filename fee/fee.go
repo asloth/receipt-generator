@@ -177,7 +177,12 @@ out:
 					if err != nil {
 						ap.fine = 0.0
 					}
-				case "saldo a favor o en contra":
+				case "saldo a favor":
+					ap.refund, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.refund = 0.0
+					}
+				case "mora":
 					ap.credit, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
 						ap.credit = 0.0
@@ -430,8 +435,8 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 			fmt.Sprintf("S/. %.2f", ap.electricityBCI),
 			fmt.Sprintf("S/. %.2f", ap.administrationFee),
 			fmt.Sprintf("S/. %.2f", ap.fine),
+			fmt.Sprintf("S/. %.2f", ap.refund),
 			fmt.Sprintf("S/. %.2f", ap.credit),
-			fmt.Sprintf("S/. %.2f", ap.extra),
 		}
 	case "mirador":
 		// Data for the first column of the receipt
