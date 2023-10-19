@@ -28,12 +28,18 @@ type FeeDetail struct {
 	electricityBCI       float64
 	electricitySSGG      float64
 	administrationFee    float64
+	cleaningFee          float64
+	parkingFee           float64
+	subtotal             float64
 	total                float64
 
 	participationPercentage float64
+	apartmentPercentage     float64
+	parkingPercentage       float64
 	commonWater             float64
 	reserve                 float64
 	maintenanceProv         float64
+	maintenanceCorrec       float64
 	fine                    float64
 	refund                  float64
 	fineReturn              float64
@@ -46,6 +52,8 @@ type FeeDetail struct {
 	cleaningEmployees float64
 	doorMan1          float64
 	doorMan2          float64
+
+	waterandelectricity float64
 }
 
 func LoadFeeDetailData(filePath, sheetName string) ([]FeeDetail, error) {
@@ -107,10 +115,35 @@ out:
 					if err != nil {
 						ap.employee1 = 0.0
 					}
+				case "seguridad":
+					ap.employee1, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.employee1 = 0.0
+					}
+				case "total agua y luz":
+					ap.waterandelectricity, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.waterandelectricity = 0.0
+					}
 				case "personal de limpieza":
 					ap.cleaningEmployees, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
 						ap.cleaningEmployees = 0.0
+					}
+				case "limpieza":
+					ap.cleaningFee, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.cleaningFee = 0.0
+					}
+				case "cuota por estacionamiento":
+					ap.parkingFee, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.parkingFee = 0.0
+					}
+				case "cuota por departamento":
+					ap.subtotal, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.subtotal = 0.0
 					}
 				case "portero jerson":
 					ap.doorMan1, err = strconv.ParseFloat(colCell, 64)
@@ -132,6 +165,11 @@ out:
 					if err != nil {
 						ap.maintenanceFee = 0.0
 					}
+				case "mantenimientos correctivos":
+					ap.maintenanceCorrec, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.maintenanceCorrec = 0.0
+					}
 				case "fondo de mantenimiento":
 					ap.maintenanceProv, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
@@ -142,12 +180,32 @@ out:
 					if err != nil {
 						ap.extra = 0.0
 					}
+				case "incremento cuota":
+					ap.extra, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.extra = 0.0
+					}
 				case "participación":
 					ap.participationPercentage, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
 						ap.participationPercentage = 0.0
 					}
+				case "porcentaje departamento":
+					ap.apartmentPercentage, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.apartmentPercentage = 0.0
+					}
+				case "porcentaje estacionamiento":
+					ap.parkingPercentage, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.parkingPercentage = 0.0
+					}
 				case "fondo de reserva":
+					ap.reserve, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.reserve = 0.0
+					}
+				case "monto para contingencias":
 					ap.reserve, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
 						ap.reserve = 0.0
@@ -228,6 +286,11 @@ out:
 					if err != nil {
 						ap.administrationFee = 0.0
 					}
+				case "subtotal":
+					ap.subtotal, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.subtotal = 0.0
+					}
 				case "cuota":
 					ap.total, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
@@ -298,19 +361,21 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	Detail(&m, backgroundColor, contentSize, rowHeight, ap, &buildng)
 
 	// SECTION WATER DETAIL INFORMATION
-	receipt.SubHeader(&m, colorMolio, "DETALLE DEL CONSUMO DE AGUA")
-	// Defining the fields of the first column
-	waterDetailsFirstColumn := []string{"AGUA COMUN: ", "LECTURA ANTERIOR (m3): ", "LECTURA ACTUAL (m3): ", "CONSUMO (m3): "}
-	waterDetailsSecondColumn := []string{"CONSUMO REC: ", "S/. REC: ", "SOLES / M3: ", "FECHA DE LECTURA: "}
+	if buildng.HaveWater {
+		receipt.SubHeader(&m, colorMolio, "DETALLE DEL CONSUMO DE AGUA")
+		// Defining the fields of the first column
+		waterDetailsFirstColumn := []string{"AGUA COMUN: ", "LECTURA ANTERIOR (m3): ", "LECTURA ACTUAL (m3): ", "CONSUMO (m3): "}
+		waterDetailsSecondColumn := []string{"CONSUMO REC: ", "S/. REC: ", "SOLES / M3: ", "FECHA DE LECTURA: "}
 
-	waterData := []string{fmt.Sprintf("S/. %.2f", ap.commonWater), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].LastMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].CurrentMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].WaterConsumedThisMonth)}
+		waterData := []string{fmt.Sprintf("S/. %.2f", ap.commonWater), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].LastMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].CurrentMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].WaterConsumedThisMonth)}
 
-	// Get water data from this month
-	monthWaterData := water.GetWaterDataByBuilding(b.Nickname)
-	recData := []string{fmt.Sprintf("%.2f", monthWaterData.Consumo_rec), fmt.Sprintf("%.2f", monthWaterData.Rec_soles), fmt.Sprintf("%.2f", monthWaterData.Soles_m3), waterDate}
+		// Get water data from this month
+		monthWaterData := water.GetWaterDataByBuilding(b.Nickname)
+		recData := []string{fmt.Sprintf("%.2f", monthWaterData.Consumo_rec), fmt.Sprintf("%.2f", monthWaterData.Rec_soles), fmt.Sprintf("%.2f", monthWaterData.Soles_m3), waterDate}
 
-	for i, fieldFirstColumn := range waterDetailsFirstColumn {
-		receipt.DataOwner(&m, backgroundColor, rowHeight, contentSize, fieldFirstColumn, waterData[i], waterDetailsSecondColumn[i], recData[i])
+		for i, fieldFirstColumn := range waterDetailsFirstColumn {
+			receipt.DataOwner(&m, backgroundColor, rowHeight, contentSize, fieldFirstColumn, waterData[i], waterDetailsSecondColumn[i], recData[i])
+		}
 	}
 
 	//IMPORTES FACTURADOS SECTION TABLE
@@ -426,10 +491,7 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 			fmt.Sprintf(" %v", ap.deposit),
 			fmt.Sprintf("S/. %.2f", ap.waterFee),
 			fmt.Sprintf("S/. %.2f", ap.reserve),
-			fmt.Sprintf("S/. %.2f", ap.maintenanceProv),
-		}
-		otherData = []string{
-			fmt.Sprintf("S/. %.2f", ap.liftMaintenanceFee),
+			fmt.Sprintf("S/. %.2f", ap.maintenanceFee),
 			fmt.Sprintf("S/. %.2f", ap.cleaningToolsFee),
 			fmt.Sprintf("S/. %.2f", ap.electricitySSGG),
 			fmt.Sprintf("S/. %.2f", ap.electricityBCI),
@@ -459,7 +521,74 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 			fmt.Sprintf("S/. %.2f", ap.electricityBCI),
 			fmt.Sprintf("S/. %.2f", ap.administrationFee),
 		}
-
+	case "nitoa":
+		// Data for the first column of the receipt
+		ownerData = []string{
+			ap.owner,
+			ap.ApartmentNumber,
+			fmt.Sprintf("S/. %.2f", ap.commonWater),
+			fmt.Sprintf("S/. %.2f", ap.waterOnlyFee),
+			fmt.Sprintf("S/. %.2f", ap.electricitySSGG),
+			fmt.Sprintf("S/. %.2f", ap.electricityBCI),
+			fmt.Sprintf("S/. %.2f", ap.waterandelectricity),
+			fmt.Sprintf("S/. %.2f", ap.extra),
+		}
+		// Data for the second column of the receipt
+		otherData = []string{
+			fmt.Sprintf("S/. %.2f", ap.cleaningFee),
+			fmt.Sprintf("S/. %.2f", ap.maintenanceFee),
+			fmt.Sprintf("S/. %.2f", ap.maintenanceCorrec),
+			fmt.Sprintf("S/. %.2f", ap.employee1),
+			fmt.Sprintf("S/. %.2f", ap.administrationFee),
+			fmt.Sprintf("S/. %.2f", ap.refund),
+			fmt.Sprintf("S/. %.2f", ap.credit),
+			fmt.Sprintf("S/. %.2f", ap.subtotal),
+		}
+	case "valera":
+		// Data for the first column of the receipt
+		ownerData = []string{
+			ap.owner,
+			ap.ApartmentNumber,
+			fmt.Sprintf(" %.2f %%", ap.participationPercentage),
+			fmt.Sprintf(" %.2f %%", ap.parkingPercentage),
+			fmt.Sprintf(" %.2f %%", ap.apartmentPercentage),
+			fmt.Sprintf("S/. %.2f", ap.electricityBCI),
+			fmt.Sprintf("S/. %.2f", ap.electricitySSGG),
+		}
+		// Data for the second column of the receipt
+		otherData = []string{
+			fmt.Sprintf("S/. %.2f", ap.waterFee),
+			fmt.Sprintf("S/. %.2f", ap.commonWater),
+			fmt.Sprintf("S/. %.2f", ap.liftMaintenanceFee),
+			fmt.Sprintf("S/. %.2f", ap.administrationFee),
+			fmt.Sprintf("S/. %.2f", ap.cleaningToolsFee),
+			fmt.Sprintf("S/. %.2f", ap.parkingFee),
+			fmt.Sprintf("S/. %.2f", ap.subtotal),
+		}
+	case "golf":
+		// Data for the first column of the receipt
+		ownerData = []string{
+			ap.owner,
+		}
+		// Data for the second column of the receipt
+		otherData = []string{
+			ap.ApartmentNumber,
+		}
+	case "mora":
+		// Data for the first column of the receipt
+		ownerData = []string{
+			ap.owner,
+			ap.ApartmentNumber,
+			fmt.Sprintf("S/. %.2f", ap.waterOnlyFee),
+			fmt.Sprintf("S/. %.2f", ap.commonWater),
+		}
+		// Data for the second column of the receipt
+		otherData = []string{
+			fmt.Sprintf("S/. %.2f", ap.electricitySSGG),
+			fmt.Sprintf("S/. %.2f", ap.maintenanceFee),
+			fmt.Sprintf("S/. %.2f", ap.reserve),
+			fmt.Sprintf("S/. %.2f", ap.administrationFee),
+		}
 	}
 
 	// Reading the data and painting it into the receipt

@@ -52,16 +52,15 @@ func (e *EmailService) Connect() error {
 	return nil
 }
 
-func (e *EmailService) SendReceipt(email []string, period, attachPath string, body *bytes.Buffer) error {
+func (e *EmailService) SendReceipt(email string, period, attachPath string, body *bytes.Buffer) error {
 	var s gomail.SendCloser = *e.sender
 
 	m := gomail.NewMessage()
 	m.SetHeaders(map[string][]string{
 		"From":    {m.FormatAddress("soporte-administrativo@elmolio.net", "El Molio Soporte")},
-		"To":      {email[0]},
+		"To":      {email},
 		"Subject": {"Recibo de mantenimiento " + period},
 	})
-	// m.SetAddressHeader("Cc", "dan@example.com", "Dan")
 
 	m.SetBody("text/html", body.String())
 	m.Attach(attachPath)

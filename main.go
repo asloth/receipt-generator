@@ -60,6 +60,10 @@ func main2() {
 	fmt.Println("2. BELMONTE")
 	fmt.Println("3. TORRE REAL")
 	fmt.Println("4. MIRADOR")
+	fmt.Println("5. NITOA")
+	fmt.Println("6. VALERA")
+	fmt.Println("7. GOLF PARK")
+	fmt.Println("8. MORA")
 
 	option := ""
 	getData(reader, &option)
@@ -129,6 +133,78 @@ func main2() {
 		}
 	case "4":
 		b.GetBuildingData("mirador")
+		b.Budget = totalPresupuesto
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			fmt.Println("Error reading fee data" + err.Error())
+		}
+		waterData, err := loadWaterData(filePath, waterPath, 3)
+		if err != nil {
+			fmt.Println("Error reading the water data" + err.Error())
+		}
+		for _, apar := range ret {
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			if err != nil {
+				fmt.Println(apar.ApartmentNumber)
+				fmt.Println(err)
+			}
+		}
+	case "5":
+		b.GetBuildingData("nitoa")
+		b.Budget = totalPresupuesto
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			fmt.Println("Error reading fee data" + err.Error())
+		}
+		waterData, err := loadWaterData(filePath, waterPath, 3)
+		if err != nil {
+			fmt.Println("Error reading the water data" + err.Error())
+		}
+		for _, apar := range ret {
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			if err != nil {
+				fmt.Println(apar.ApartmentNumber)
+				fmt.Println(err)
+			}
+		}
+	case "6":
+		b.GetBuildingData("valera")
+		b.Budget = totalPresupuesto
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			fmt.Println("Error reading fee data" + err.Error())
+		}
+		waterData, err := loadWaterData(filePath, waterPath, 3)
+		if err != nil {
+			fmt.Println("Error reading the water data" + err.Error())
+		}
+		for _, apar := range ret {
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			if err != nil {
+				fmt.Println(apar.ApartmentNumber)
+				fmt.Println(err)
+			}
+		}
+	case "7":
+		b.GetBuildingData("golf")
+		b.Budget = totalPresupuesto
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			fmt.Println("Error reading fee data" + err.Error())
+		}
+		waterData, err := loadWaterData(filePath, waterPath, 3)
+		if err != nil {
+			fmt.Println("Error reading the water data" + err.Error())
+		}
+		for _, apar := range ret {
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			if err != nil {
+				fmt.Println(apar.ApartmentNumber)
+				fmt.Println(err)
+			}
+		}
+	case "8":
+		b.GetBuildingData("mora")
 		b.Budget = totalPresupuesto
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
@@ -423,6 +499,10 @@ func main() {
 	fmt.Println("2. BELMONTE")
 	fmt.Println("3. TORRE REAL")
 	fmt.Println("4. MIRADOR")
+	fmt.Println("5. NITOA")
+	fmt.Println("6. VALERA")
+	fmt.Println("7. GOLF PARK")
+	fmt.Println("8. MORA")
 
 	option := ""
 	getData(reader, &option)
@@ -436,6 +516,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+		// test := ret[len(ret)-19:] Utilizado para solo seleccionar a los ultimos 19 dptos
 		sendingEmailbyApartment(ret, b, period)
 	case "2":
 		b.GetBuildingData("belmonte")
@@ -453,6 +534,34 @@ func main() {
 		sendingEmail(ret, b, period)
 	case "4":
 		b.GetBuildingData("mirador")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period)
+	case "5":
+		b.GetBuildingData("nitoa")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period)
+	case "6":
+		b.GetBuildingData("valera")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period)
+	case "7":
+		b.GetBuildingData("golf")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period)
+	case "8":
+		b.GetBuildingData("mora")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			panic(err)
@@ -483,9 +592,12 @@ func sendingEmail(ret []fee.FeeDetail, b building.Building, period string) {
 
 	for _, apar := range ret {
 		allEmails := *email.GetEmails(b.Nickname)
-		fmt.Println(allEmails[apar.ApartmentNumber][0])
-		err := e.SendReceipt(allEmails[apar.ApartmentNumber], period, b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.ApartmentNumber+".pdf", &body)
-
+		fmt.Println("Enviando email a " + apar.ApartmentNumber + " con correo :" + allEmails[apar.ApartmentNumber][0])
+		err := e.SendReceipt(allEmails[apar.ApartmentNumber][0], period, b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.ApartmentNumber+".pdf", &body)
+		if len(allEmails[apar.ApartmentNumber][1]) > 0 {
+			fmt.Println("Enviando email a " + apar.ApartmentNumber + " con correo :" + allEmails[apar.ApartmentNumber][1])
+			err = e.SendReceipt(allEmails[apar.ApartmentNumber][1], period, b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.ApartmentNumber+".pdf", &body)
+		}
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -521,7 +633,7 @@ func sendingEmailbyApartment(ret []Apartment, b building.Building, period string
 	for _, apar := range ret {
 		allEmails := *email.GetEmails(b.Nickname)
 		fmt.Println(allEmails[apar.number][0])
-		err := e.SendReceipt(allEmails[apar.number], period, b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.number+".pdf", &body)
+		err := e.SendReceipt(allEmails[apar.number][0], period, b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.number+".pdf", &body)
 
 		if err != nil {
 			fmt.Println(err)
