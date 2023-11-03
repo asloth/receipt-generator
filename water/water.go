@@ -27,19 +27,19 @@ func GetWaterDataByBuilding(name string) *WaterByMonth {
 		return &gpr
 	case "belmonte":
 		gpr := WaterByMonth{
-			Consume:     301.56,
-			Consumo_rec: 295.00,
-			Rec_soles:   1058.40,
+			Consume:     249.00,
+			Consumo_rec: 277.00,
+			Rec_soles:   994.10,
 		}
-		gpr.Soles_m3 = gpr.Rec_soles / gpr.Consume
+		gpr.Soles_m3 = gpr.Rec_soles / gpr.Consumo_rec
 		return &gpr
 	case "torrereal":
 		gpr := WaterByMonth{
-			Consume:     205.26,
-			Consumo_rec: 194.96,
-			Rec_soles:   714.30,
+			Consume:     176.41,
+			Consumo_rec: 198.00,
+			Rec_soles:   713.20,
 		}
-		gpr.Soles_m3 = gpr.Rec_soles / gpr.Consume
+		gpr.Soles_m3 = gpr.Rec_soles / gpr.Consumo_rec
 		return &gpr
 	case "mirador":
 		gpr := WaterByMonth{
@@ -59,9 +59,9 @@ func GetWaterDataByBuilding(name string) *WaterByMonth {
 		return &gpr
 	case "valera":
 		gpr := WaterByMonth{
-			Consume:     389.18,
-			Consumo_rec: 00, //casi no sirve para nada
-			Rec_soles:   1102.10,
+			Consume:     416.00,
+			Consumo_rec: 353.00, //casi no sirve para nada
+			Rec_soles:   1265.00,
 		}
 		gpr.Soles_m3 = gpr.Rec_soles / gpr.Consume
 		return &gpr
@@ -72,6 +72,22 @@ func GetWaterDataByBuilding(name string) *WaterByMonth {
 			Rec_soles:   1022.30,
 		}
 		gpr.Soles_m3 = gpr.Rec_soles / gpr.Consume
+		return &gpr
+	case "alayza":
+		gpr := WaterByMonth{
+			Consume:     362.63,
+			Consumo_rec: 358.00, //casi no sirve para nada
+			Rec_soles:   1290.80,
+		}
+		gpr.Soles_m3 = gpr.Rec_soles / gpr.Consume
+		return &gpr
+	case "sbs":
+		gpr := WaterByMonth{
+			Consume:     60.384,
+			Consumo_rec: 69, //casi no sirve para nada
+			Rec_soles:   253.30,
+		}
+		gpr.Soles_m3 = gpr.Rec_soles / gpr.Consumo_rec
 		return &gpr
 	}
 	return &WaterByMonth{}

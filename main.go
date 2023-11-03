@@ -64,6 +64,8 @@ func main2() {
 	fmt.Println("6. VALERA")
 	fmt.Println("7. GOLF PARK")
 	fmt.Println("8. MORA")
+	fmt.Println("9. ALAYZA")
+	fmt.Println("10. SAN BORJA SUR")
 
 	option := ""
 	getData(reader, &option)
@@ -205,6 +207,42 @@ func main2() {
 		}
 	case "8":
 		b.GetBuildingData("mora")
+		b.Budget = totalPresupuesto
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			fmt.Println("Error reading fee data" + err.Error())
+		}
+		waterData, err := loadWaterData(filePath, waterPath, 3)
+		if err != nil {
+			fmt.Println("Error reading the water data" + err.Error())
+		}
+		for _, apar := range ret {
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			if err != nil {
+				fmt.Println(apar.ApartmentNumber)
+				fmt.Println(err)
+			}
+		}
+	case "9":
+		b.GetBuildingData("alayza")
+		b.Budget = totalPresupuesto
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			fmt.Println("Error reading fee data" + err.Error())
+		}
+		waterData, err := loadWaterData(filePath, waterPath, 3)
+		if err != nil {
+			fmt.Println("Error reading the water data" + err.Error())
+		}
+		for _, apar := range ret {
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			if err != nil {
+				fmt.Println(apar.ApartmentNumber)
+				fmt.Println(err)
+			}
+		}
+	case "10":
+		b.GetBuildingData("sbs")
 		b.Budget = totalPresupuesto
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
@@ -503,6 +541,8 @@ func main() {
 	fmt.Println("6. VALERA")
 	fmt.Println("7. GOLF PARK")
 	fmt.Println("8. MORA")
+	fmt.Println("9. ALAYZA")
+	fmt.Println("10. SBS")
 
 	option := ""
 	getData(reader, &option)
@@ -562,6 +602,20 @@ func main() {
 		sendingEmail(ret, b, period)
 	case "8":
 		b.GetBuildingData("mora")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period)
+	case "9":
+		b.GetBuildingData("alayza")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period)
+	case "10":
+		b.GetBuildingData("sbs")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			panic(err)

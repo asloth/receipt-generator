@@ -27,6 +27,8 @@ type FeeDetail struct {
 	gardenMaintenanceFee float64
 	electricityBCI       float64
 	electricitySSGG      float64
+	internetFee          float64
+	bankFee              float64
 	administrationFee    float64
 	cleaningFee          float64
 	parkingFee           float64
@@ -115,6 +117,11 @@ out:
 					if err != nil {
 						ap.employee1 = 0.0
 					}
+				case "gastos bancarios":
+					ap.bankFee, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.bankFee = 0.0
+					}
 				case "seguridad":
 					ap.employee1, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
@@ -129,6 +136,11 @@ out:
 					ap.cleaningEmployees, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
 						ap.cleaningEmployees = 0.0
+					}
+				case "personal":
+					ap.employee1, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.employee1 = 0.0
 					}
 				case "limpieza":
 					ap.cleaningFee, err = strconv.ParseFloat(colCell, 64)
@@ -176,6 +188,11 @@ out:
 						ap.maintenanceProv = 0.0
 					}
 				case "cuota extra":
+					ap.extra, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.extra = 0.0
+					}
+				case "servicios por honorarios":
 					ap.extra, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
 						ap.extra = 0.0
@@ -245,6 +262,11 @@ out:
 					if err != nil {
 						ap.credit = 0.0
 					}
+				case "internet":
+					ap.internetFee, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.internetFee = 0.0
+					}
 				case "pagos pendientes y a favor":
 					ap.credit, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
@@ -260,7 +282,6 @@ out:
 
 				case "deposito":
 					ap.deposit = colCell
-
 				case "mantenimiento jardines":
 					ap.gardenMaintenanceFee, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
@@ -491,7 +512,10 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 			fmt.Sprintf(" %v", ap.deposit),
 			fmt.Sprintf("S/. %.2f", ap.waterFee),
 			fmt.Sprintf("S/. %.2f", ap.reserve),
-			fmt.Sprintf("S/. %.2f", ap.maintenanceFee),
+			fmt.Sprintf("S/. %.2f", ap.maintenanceProv),
+		}
+		otherData = []string{
+			fmt.Sprintf("S/. %.2f", ap.liftMaintenanceFee),
 			fmt.Sprintf("S/. %.2f", ap.cleaningToolsFee),
 			fmt.Sprintf("S/. %.2f", ap.electricitySSGG),
 			fmt.Sprintf("S/. %.2f", ap.electricityBCI),
@@ -588,6 +612,44 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 			fmt.Sprintf("S/. %.2f", ap.maintenanceFee),
 			fmt.Sprintf("S/. %.2f", ap.reserve),
 			fmt.Sprintf("S/. %.2f", ap.administrationFee),
+		}
+	case "alayza":
+		// Data for the first column of the receipt
+		ownerData = []string{
+			ap.owner,
+			ap.ApartmentNumber,
+			fmt.Sprintf("S/. %.2f", ap.waterOnlyFee),
+			fmt.Sprintf("S/. %.2f", ap.employee1),
+			fmt.Sprintf("S/. %.2f", ap.maintenanceFee),
+			fmt.Sprintf("S/. %.2f", ap.maintenanceCorrec),
+		}
+		// Data for the second column of the receipt
+		otherData = []string{
+			fmt.Sprintf("S/. %.2f", ap.electricitySSGG),
+			fmt.Sprintf("S/. %.2f", ap.electricityBCI),
+			fmt.Sprintf("S/. %.2f", ap.extra),
+			fmt.Sprintf("S/. %.2f", ap.administrationFee),
+			fmt.Sprintf("S/. %.2f", ap.liftMaintenanceFee),
+			fmt.Sprintf("S/. %.2f", ap.reserve),
+		}
+	case "sbs":
+		// Data for the first column of the receipt
+		ownerData = []string{
+			ap.owner,
+			ap.ApartmentNumber,
+			fmt.Sprintf("S/. %.2f", ap.waterFee),
+			fmt.Sprintf("S/. %.2f", ap.bankFee),
+			fmt.Sprintf("S/. %.2f", ap.internetFee),
+			fmt.Sprintf("S/. %.2f", ap.commonWater),
+		}
+		// Data for the second column of the receipt
+		otherData = []string{
+			fmt.Sprintf("S/. %.2f", ap.electricitySSGG),
+			fmt.Sprintf("S/. %.2f", ap.cleaningEmployees),
+			fmt.Sprintf("S/. %.2f", ap.administrationFee),
+			fmt.Sprintf("S/. %.2f", ap.cleaningToolsFee),
+			fmt.Sprintf("S/. %.2f", ap.reserve),
+			fmt.Sprintf("S/. %.2f", ap.extra),
 		}
 	}
 
