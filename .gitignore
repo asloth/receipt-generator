@@ -33,4 +33,4 @@ go.work
 *.xlsx
 *.pdf
 .env
-./email/data.go
+email/data.go
