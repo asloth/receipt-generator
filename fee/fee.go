@@ -94,7 +94,8 @@ out:
 			ap := FeeDetail{}
 		inside:
 			for j, colCell := range row {
-				switch strings.ToLower(cols[j]) {
+				colCell = strings.TrimSpace(colCell)
+				switch strings.TrimSpace(strings.ToLower(cols[j])) {
 				case "propietario":
 					if len(colCell) == 0 {
 						break out
@@ -173,6 +174,11 @@ out:
 						ap.commonWater = 0.0
 					}
 				case "mantenimientos preventivos":
+					ap.maintenanceFee, err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						ap.maintenanceFee = 0.0
+					}
+				case "mantenimiento":
 					ap.maintenanceFee, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
 						ap.maintenanceFee = 0.0
@@ -564,8 +570,8 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 			fmt.Sprintf("S/. %.2f", ap.maintenanceCorrec),
 			fmt.Sprintf("S/. %.2f", ap.employee1),
 			fmt.Sprintf("S/. %.2f", ap.administrationFee),
-			fmt.Sprintf("S/. %.2f", ap.refund),
 			fmt.Sprintf("S/. %.2f", ap.credit),
+			fmt.Sprintf("S/. %.2f", ap.refund),
 			fmt.Sprintf("S/. %.2f", ap.subtotal),
 		}
 	case "valera":
@@ -582,7 +588,7 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 		// Data for the second column of the receipt
 		otherData = []string{
 			fmt.Sprintf("S/. %.2f", ap.waterFee),
-			fmt.Sprintf("S/. %.2f", ap.commonWater),
+			fmt.Sprintf("S/. %.2f", ap.maintenanceCorrec),
 			fmt.Sprintf("S/. %.2f", ap.liftMaintenanceFee),
 			fmt.Sprintf("S/. %.2f", ap.administrationFee),
 			fmt.Sprintf("S/. %.2f", ap.cleaningToolsFee),
@@ -622,6 +628,7 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 			fmt.Sprintf("S/. %.2f", ap.employee1),
 			fmt.Sprintf("S/. %.2f", ap.maintenanceFee),
 			fmt.Sprintf("S/. %.2f", ap.maintenanceCorrec),
+			fmt.Sprintf("S/. %.2f", ap.refund),
 		}
 		// Data for the second column of the receipt
 		otherData = []string{
@@ -631,6 +638,7 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 			fmt.Sprintf("S/. %.2f", ap.administrationFee),
 			fmt.Sprintf("S/. %.2f", ap.liftMaintenanceFee),
 			fmt.Sprintf("S/. %.2f", ap.reserve),
+			fmt.Sprintf("S/. %.2f", ap.maintenanceProv),
 		}
 	case "sbs":
 		// Data for the first column of the receipt
@@ -649,6 +657,32 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 			fmt.Sprintf("S/. %.2f", ap.administrationFee),
 			fmt.Sprintf("S/. %.2f", ap.cleaningToolsFee),
 			fmt.Sprintf("S/. %.2f", ap.reserve),
+			fmt.Sprintf("S/. %.2f", ap.extra),
+		}
+	case "montereal":
+		// Data for the first column of the receipt
+		ownerData = []string{
+			ap.owner,
+			ap.ApartmentNumber,
+			ap.parkinglot,
+		}
+		// Data for the second column of the receipt
+		otherData = []string{
+			fmt.Sprintf("S/. %.2f", ap.waterFee),
+			fmt.Sprintf("S/. %.2f", ap.maintenanceFee),
+			fmt.Sprintf("S/. %.2f", ap.extra),
+		}
+	case "tomasal":
+		// Data for the first column of the receipt
+		ownerData = []string{
+			ap.owner,
+			ap.ApartmentNumber,
+			fmt.Sprintf(" %.2f %%", ap.participationPercentage*100),
+		}
+		// Data for the second column of the receipt
+		otherData = []string{
+			fmt.Sprintf("S/. %.2f", ap.waterFee),
+			fmt.Sprintf("S/. %.2f", ap.subtotal),
 			fmt.Sprintf("S/. %.2f", ap.extra),
 		}
 	}

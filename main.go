@@ -66,6 +66,8 @@ func main2() {
 	fmt.Println("8. MORA")
 	fmt.Println("9. ALAYZA")
 	fmt.Println("10. SAN BORJA SUR")
+	fmt.Println("11. MONTE REAL")
+	fmt.Println("12. TOMASAL")
 
 	option := ""
 	getData(reader, &option)
@@ -259,7 +261,42 @@ func main2() {
 				fmt.Println(err)
 			}
 		}
-
+	case "11":
+		b.GetBuildingData("montereal")
+		b.Budget = totalPresupuesto
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			fmt.Println("Error reading fee data" + err.Error())
+		}
+		waterData, err := loadWaterData(filePath, waterPath, 3)
+		if err != nil {
+			fmt.Println("Error reading the water data" + err.Error())
+		}
+		for _, apar := range ret {
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			if err != nil {
+				fmt.Println(apar.ApartmentNumber)
+				fmt.Println(err)
+			}
+		}
+	case "12":
+		b.GetBuildingData("tomasal")
+		b.Budget = totalPresupuesto
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			fmt.Println("Error reading fee data" + err.Error())
+		}
+		waterData, err := loadWaterData(filePath, waterPath, 3)
+		if err != nil {
+			fmt.Println("Error reading the water data" + err.Error())
+		}
+		for _, apar := range ret {
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			if err != nil {
+				fmt.Println(apar.ApartmentNumber)
+				fmt.Println(err)
+			}
+		}
 	}
 
 }
@@ -543,6 +580,8 @@ func main() {
 	fmt.Println("8. MORA")
 	fmt.Println("9. ALAYZA")
 	fmt.Println("10. SBS")
+	fmt.Println("11. MONTE REAL")
+	fmt.Println("12. TOMASAL")
 
 	option := ""
 	getData(reader, &option)
@@ -616,6 +655,20 @@ func main() {
 		sendingEmail(ret, b, period)
 	case "10":
 		b.GetBuildingData("sbs")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period)
+	case "11":
+		b.GetBuildingData("montereal")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period)
+	case "12":
+		b.GetBuildingData("tomasal")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			panic(err)

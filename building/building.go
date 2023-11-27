@@ -52,11 +52,11 @@ func (b *Building) GetBuildingData(name string) {
 		b.BankAccountOwner = "NOLES COTITO MARIELA INES"
 		b.Picture = "files/torrereal.jpeg"
 		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "PARTICIPACION: ", "ESTACIONAMIENTO: ", "DEPOSITO: ", "AGUA: ", "FONDO DE RESERVA: ", "FONDO MANTENIMIENTO: "}
-		b.SecondColumn = []string{"MAN. ASCENSOR: ", "INSUMOS LIMPIEZA: ", "LUZ SSGG: ", "LUZ BCI: ", "ADMINISTRACION Y PERSONAL: ", "MULTA: ", "SALDO A FAVOR: ", "COMPRA BOMBAS (25% S/.7500): "}
+		b.SecondColumn = []string{"MAN. ASCENSOR: ", "INSUMOS LIMPIEZA: ", "LUZ SSGG: ", "LUZ BCI: ", "ADMINISTRACION Y PERSONAL: ", "MULTA: ", "SALDO A FAVOR: ", "MORA: "}
 		b.HaveWater = true
 	case "valera":
 		b.Name = "EDIFICIO VARELA III"
-		b.Nickname = "VARELA"
+		b.Nickname = "VALERA"
 		b.Address = "Jr. Gral. Varela 871-879 - Breña"
 		b.Email = "administrador@elmolio.com"
 		b.Bank = "BCP"
@@ -64,7 +64,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.BankAccountOwner = "SIGUAS GALVEZ CORY NATHALI"
 		b.Picture = "files/valera.jpeg"
 		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "PARTICIPACION(%): ", "ESTACIONAMIENTO (%): ", "DPTO (%): ", "LUZ BCI: ", "LUZ SSGG: "}
-		b.SecondColumn = []string{"AGUA X DPTO.: ", "AGUA COMUN: ", "MAN. ASCENSOR: ", "ADMIN. Y PERSONA: ", "MATERIALES DE LIMPIEZA: ", "CUOTA ESTACIONAMIENTO: ", "CUOTA X DPTO.: "}
+		b.SecondColumn = []string{"AGUA X DPTO.: ", "RECARGA EXTINTORES: ", "REPARACIÓN ASC. DISCAPACITADOS: ", "SERV. ADMINISTRACION: ", "INSUMOS FERRETERIA: ", "CUOTA ESTACIONAMIENTO: ", "CUOTA X DPTO.: "}
 		b.HaveWater = true
 	case "mirador":
 		b.Name = "EDIFICIO MIRADOR 2"
@@ -88,7 +88,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.BankAccountOwner = "VEGA GABRIELA-O-CHERO AMELIA"
 		b.Picture = "files/nitoa.png"
 		b.FirstColumn = []string{"PROPIETARIO: ", "DPTO: ", "AGUA COMUN: ", "AGUA X DPTO: ", "LUZ SSGG: ", "LUZ BCI: ", "TOTAL AGUA Y LUZ: ", "INCREMENTO APROBADO ASAMBLEA 2023: "}
-		b.SecondColumn = []string{"SANEAMIENTO Y LIMPIEZA: ", "MAN. PREVENTIVOS: ", "MAN. CORRECTIVO: ", "SEGURIDAD: ", "ADMINISTRACION: ", "SALDO A FAVOR: ", "REDONDEO DEL MES: ", "SUBTOTAL: "}
+		b.SecondColumn = []string{"SANEAMIENTO Y LIMPIEZA: ", "MAN. PREVENTIVOS: ", "MAN. CORRECTIVO: ", "SEGURIDAD: ", "ADMINISTRACION: ", "MORA: ", "REDONDEO DEL MES: ", "SUBTOTAL: "}
 		b.HaveWater = true
 	case "golf":
 		b.Name = "EDIFICIO GOLF PARK"
@@ -111,7 +111,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.BankAccount = "OO1104260200287653"
 		b.BankAccountOwner = "DIAZ MAMANI NATALY YULIANA Y/O BENZAQUEN VASQUEZ YAIR"
 		b.Picture = "files/default.png"
-		b.FirstColumn = []string{"NOMBRE: ", "DEPARTMENTO: ", "AGUA X DPTO.: ", "AGUA COMUN: "}
+		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "AGUA X DPTO.: ", "AGUA COMUN: "}
 		b.SecondColumn = []string{"LUZ SSGG: ", "MANTENIMIENTOS PREVENTIVOS: ", "MONTO CONTINGENCIAS:", "ADMINISTRACION: "}
 		b.HaveWater = true
 	case "alayza":
@@ -123,8 +123,8 @@ func (b *Building) GetBuildingData(name string) {
 		b.BankAccount = "305-2646967-0-46"
 		b.BankAccountOwner = "EL MOLIO - CARLOS ALAYZA"
 		b.Picture = "files/default.png"
-		b.FirstColumn = []string{"NOMBRE: ", "DEPARTMENTO: ", "AGUA X DPTO.: ", "PERSONAL: ", "COMPRA DE 2 VARIADORES: ", "FONDO COMPRA DE VARIADORES: "}
-		b.SecondColumn = []string{"LUZ SSGG: ", "LUZ BCI: ", "SERVICIOS POR HONORARIOS:", "ADMINISTRACION: ", "MANTENIMIENTOS ASCENSOR: ", "MONTO CONTINGENCIAS: "}
+		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "AGUA X DPTO.: ", "PERSONAL: ", "MAN. ALARMAS CONTRA INCENDIO: ", "MAN. PUERTA LEVADIZA: ", "REINTEGRO SEDAPAL: "}
+		b.SecondColumn = []string{"LUZ SSGG: ", "LUZ BCI: ", "SERVICIOS POR HONORARIOS:", "ADMINISTRACION: ", "MANTENIMIENTOS ASCENSOR: ", "MONTO CONTINGENCIAS: ", "MAN. POZOS A TIERRA: "}
 		b.HaveWater = true
 	case "sbs":
 		b.Name = "SAN BORJA SUR"
@@ -135,9 +135,32 @@ func (b *Building) GetBuildingData(name string) {
 		b.BankAccount = "3059864513051"
 		b.BankAccountOwner = "EL MOLIO - SAN BORJA SUR"
 		b.Picture = "files/default.png"
-		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "AGUA X DPTO.: ", "GASTOS BANCARIOS: ", "INTERNET: ", "COMPRA 5Kg DE TIERRA: "}
-		b.SecondColumn = []string{"LUZ SSGG: ", "PERSONAL LIMPIEZA: ", "SERV. ADMINISTRACION:", "INSUMOS DE LIMPIEZA: ", "FONDO CONTINGENCIA: ", "CUOTA EXTRAORDINARIA: "}
+		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "AGUA X DPTO.: ", "GASTOS BANCARIOS: ", "INTERNET: "}
+		b.SecondColumn = []string{"LUZ SSGG: ", "PERSONAL LIMPIEZA: ", "SERV. ADMINISTRACION:", "INSUMOS DE LIMPIEZA: ", "FONDO CONTINGENCIA: "}
+		b.HaveWater = true
+	case "montereal":
+		b.Name = "MONTE REAL"
+		b.Nickname = "MONTEREAL"
+		b.Address = "JR. MONTE REAL 490-492 URB. CHACARILLA DEL ESTANQUE"
+		b.Email = "administracion@elmolio.com"
+		b.Bank = "BCP"
+		b.BankAccount = "305-9864565-0-76"
+		b.BankAccountOwner = "EL MOLIO"
+		b.Picture = "files/default.png"
+		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "ESTACIONAMIENTO: "}
+		b.SecondColumn = []string{"AGUA: ", "MANTENIMIENTO: ", "CUOTA EXTRAORDINARIA: "}
+		b.HaveWater = true
+	case "tomasal":
+		b.Name = "TOMASAL"
+		b.Nickname = "TOMASAL"
+		b.Address = "Jr. Tomasal 753 - Santiago de Surco"
+		b.Email = "administracion@elmolio.com"
+		b.Bank = "BCP"
+		b.BankAccount = "305-8969463-0-42"
+		b.BankAccountOwner = "EL MOLIO - TOMASAL"
+		b.Picture = "files/default.png"
+		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "PARTICIPACION: "}
+		b.SecondColumn = []string{"AGUA: ", "CUOTA ANTERIOR: ", "4,000 MÁS 7%: "}
 		b.HaveWater = true
 	}
-
 }
