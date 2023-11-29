@@ -6,6 +6,7 @@ type WaterMonthData struct {
 	LastMonth              float64
 	CurrentMonth           float64
 	WaterConsumedThisMonth float64
+  CommonWater float64
 }
 
 type WaterByMonth struct {
