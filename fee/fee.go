@@ -67,6 +67,7 @@ func LoadFeeDetailData(filePath, sheetName string) ([]FeeDetail, error) {
         fmt.Println("soy ap2", ap2)
 			}
       ap.Amounts = ap2
+      ret = append(ret, ap)
 		}
 
 	}
@@ -80,7 +81,7 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	var rowHeight float64 = 7
 	colorMolio := color.Color{
 		Red:   148,
-		Green: 235,
+		Green: 235, //bajar un poco hasta 200
 		Blue:  66,
 	}
 	backgroundColor := color.NewWhite()

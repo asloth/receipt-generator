@@ -14,7 +14,7 @@ type Apartment struct {
   deposit         string
 }
 
-func loadAparmentData (filePath, sheetName string) ([]Apartment, error) {
+func LoadAparmentData (filePath, sheetName string) ([]Apartment, error) {
 	// Open the spreadsheet
 	xlsxFile, err := excelize.OpenFile(filePath)
 
@@ -40,6 +40,7 @@ func loadAparmentData (filePath, sheetName string) ([]Apartment, error) {
 
   ret := []Apartment{}
 
+  out:
 	for i, row := range rows {
 		if i == 0 {
 			for _, colCell := range row {
@@ -48,10 +49,14 @@ func loadAparmentData (filePath, sheetName string) ([]Apartment, error) {
 			fmt.Println("Column information", cols)
 		} else {
       ap := Apartment{}
+      inside:
 			for j, colCell := range row {
-				colCell = strings.TrimSpace(colCell) //el valor de la celda 
+				colCell = strings.TrimSpace(strings.ToUpper(colCell)) //el valor de la celda 
         switch j {
         case 0:
+          if len(colCell) == 0 {
+						break out
+					}
           ap.number = colCell
         case 1:
           ap.owner = colCell
@@ -59,11 +64,11 @@ func loadAparmentData (filePath, sheetName string) ([]Apartment, error) {
           ap.parking = colCell
         case 3:
           ap.deposit = colCell
-          break v
+          break inside
         }
 			}
+      ret = append(ret, ap)
 		}
-
 	}
 	return ret, nil
 }

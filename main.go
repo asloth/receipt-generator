@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/asloth/receipt-generator/apartment"
 	"github.com/asloth/receipt-generator/building"
 	"github.com/asloth/receipt-generator/email"
 	"github.com/asloth/receipt-generator/fee"
@@ -17,8 +18,26 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func main2() {
-	reader := bufio.NewReader(os.Stdin)
+func main(){
+  reader := bufio.NewReader(os.Stdin)
+	fmt.Println("PARA QUE SOY BUENO")
+	fmt.Println("-----------------")
+	fmt.Println("1. GENERAR RECIBOS")
+  fmt.Println("2. ENVIAR RECIBOS POR CORREO")
+  opti := "1"
+	getData(reader, &opti)
+
+  switch opti{
+  case "1":
+    generateRece(reader)
+  case "2":
+    sendEmails(reader)
+  }
+
+}
+
+func generateRece(r *bufio.Reader) {
+	reader := r
 	fmt.Println("GENERAR RECIBOS")
 	fmt.Println("---------------------")
 
@@ -42,6 +61,10 @@ func main2() {
 	name := "sheetName"
 	getData(reader, &name)
 	filePath := "cuotas/" + name + ".xlsx"
+
+	fmt.Println("Ingrese el nombre de la hoja donde se encuentra la data de los departamentos")
+	apartmentSheet := ""
+	getData(reader, &apartmentSheet)
 
 	fmt.Println("Ingrese el nombre de la hoja donde se encuentran el agua")
 	waterPath := "AGUA"
@@ -245,6 +268,11 @@ func main2() {
 		}
 	case "12":
 		b.GetBuildingData("tomasal")
+    apData, err := apartment.LoadAparmentData(filePath, apartmentSheet) 
+   	if err != nil {
+			fmt.Println("Error reading fee data" + err.Error())
+		}
+    fmt.Println(apData)
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
@@ -407,8 +435,8 @@ out:
 	return ret, nil
 }
 
-func main() {
-	reader := bufio.NewReader(os.Stdin)
+func sendEmails( r *bufio.Reader) {
+	reader := r
 	fmt.Println("ENVIAR RECIBOS POR CORREO")
 	fmt.Println("---------------------")
 
@@ -565,39 +593,3 @@ func sendingEmail(ret []fee.FeeDetail, b building.Building, period string) {
 	e.Desconnect()
 }
 
-func sendingEmailbyApartment(ret []Apartment, b building.Building, period string) {
-	var body bytes.Buffer
-	//CAMBIAR NOMBRE CUOTA
-	email.GetTemplate("email/templates/maintenance.html", &body, period, b.Email)
-
-	e := &email.EmailService{
-		Host:     "smtp.gmail.com",
-		Port:     587,
-		Username: "soporte-administrativo@elmolio.net",
-	}
-	err := e.SetNewDialer()
-	if err != nil {
-		panic(err)
-	}
-
-	err = e.Connect()
-	if err != nil {
-		panic(err)
-	}
-
-	for _, apar := range ret {
-		allEmails := *email.GetEmails(b.Nickname)
-		fmt.Println(allEmails[apar.number][0])
-		err := e.SendReceipt(allEmails[apar.number][0], period, b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.number+".pdf", &body)
-
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		fmt.Println("Email enviado exitosamente a " + apar.number)
-
-	}
-
-	e.Desconnect()
-}
