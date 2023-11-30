@@ -64,7 +64,6 @@ func LoadFeeDetailData(filePath, sheetName string) ([]FeeDetail, error) {
           continue inside
         }
         ap2[col], err = strconv.ParseFloat(colCell, 64)
-        fmt.Println("soy ap2", ap2)
 			}
       ap.Amounts = ap2
       ret = append(ret, ap)
@@ -134,7 +133,8 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 		waterDetailsSecondColumn := []string{"CONSUMO REC: ", "S/. REC: ", "SOLES / M3: ", "FECHA DE LECTURA: "}
 
 		waterData := []string{fmt.Sprintf("S/. %.2f", wData[ap.ApartmentNumber].CommonWater), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].LastMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].CurrentMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].WaterConsumedThisMonth)}
-
+    
+    fmt.Println("pase waterDataaaaaaaaaaaaaaaaaa")
 		// Get water data from this month
 		monthWaterData := water.GetWaterDataByBuilding(b.Nickname)
 		recData := []string{fmt.Sprintf("%.2f", monthWaterData.Consumo_rec), fmt.Sprintf("%.2f", monthWaterData.Rec_soles), fmt.Sprintf("%.2f", monthWaterData.Soles_m3), waterDate}
@@ -146,6 +146,8 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 
 	//IMPORTES FACTURADOS SECTION TABLE
 	monto := fmt.Sprintf("S/. %.2f", ap.Amounts["CUOTA"])
+  fmt.Println("pase CUOTA")
+
 	m.SetBackgroundColor(colorMolio)
 	m.SetBorder(true)
 	m.Row(7, func() {
@@ -202,7 +204,7 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	//receipt.Footer(&m, backgroundColor, contentSize)
 
 	// Create the directory to store the receipts
-	if err := os.Mkdir(buildng.Nickname+"-RECIBOS-"+periodo, os.ModePerm); err != nil {
+	if err := os.Mkdir("output/"+buildng.Nickname+"-RECIBOS-"+periodo, os.ModePerm); err != nil {
 
 	}
 
@@ -210,7 +212,7 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	fileName := "MANTENIMIENTO-" + periodo + "_DPTO-" + ap.ApartmentNumber + ".pdf"
 
 	// Save the receipt into the directory
-	err := m.OutputFileAndClose(buildng.Nickname + "-RECIBOS-" + periodo + "/" + fileName)
+	err := m.OutputFileAndClose("output/"+buildng.Nickname + "-RECIBOS-" + periodo + "/" + fileName)
 
 	if err != nil {
 		fmt.Println(err)

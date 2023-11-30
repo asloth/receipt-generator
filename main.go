@@ -268,16 +268,21 @@ func generateRece(r *bufio.Reader) {
 		}
 	case "12":
 		b.GetBuildingData("tomasal")
-    apData, err := apartment.LoadAparmentData(filePath, apartmentSheet) 
+    apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
+    fmt.Println("soy appdata" , apData)
    	if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
     fmt.Println(apData)
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+    fmt.Println("soy ret" , ret)
+
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
 		waterData, err := loadWaterData(filePath, waterPath, 4)
+    fmt.Println("soy waterData" , waterData)
+
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
