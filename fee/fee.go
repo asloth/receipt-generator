@@ -500,6 +500,7 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 			fmt.Sprintf("S/. %.2f", ap.waterFee),
 			fmt.Sprintf("S/. %.2f", ap.maintenanceFee),
 			fmt.Sprintf("S/. %.2f", ap.liftMaintenanceFee),
+			fmt.Sprintf("S/. %.2f", ap.refund),
 		}
 		// Data for the second column of the receipt
 		otherData = []string{
@@ -508,6 +509,8 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 			fmt.Sprintf("S/. %.2f", ap.electricitySSGG),
 			fmt.Sprintf("S/. %.2f", ap.electricityBCI),
 			fmt.Sprintf("S/. %.2f", ap.administrationFee),
+			fmt.Sprintf("S/. %.2f", ap.fine),
+
 		}
 	case "torrereal":
 		ownerData = []string{
