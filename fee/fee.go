@@ -1,11 +1,13 @@
 package fee
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
 
+	"github.com/asloth/receipt-generator/apartment"
 	"github.com/asloth/receipt-generator/building"
 	"github.com/asloth/receipt-generator/receipt"
 	"github.com/asloth/receipt-generator/water"
@@ -73,7 +75,23 @@ func LoadFeeDetailData(filePath, sheetName string) ([]FeeDetail, error) {
 	return ret, nil
 }
 
-func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterDate string, wData map[string]water.WaterMonthData, b *building.Building) error {
+func findApartmentByID(id string, myAp []apartment.Apartment) *apartment.Apartment {
+    for i := range myAp {
+        if myAp[i].Number == id {
+            return &myAp[i]
+        }
+    }
+    return nil // Return nil if the struct with the given ID is not found
+}
+
+func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterDate string, wData map[string]water.WaterMonthData, b *building.Building, apData *[]apartment.Apartment) error {
+  apList := *apData
+  
+  myAp := findApartmentByID(ap.ApartmentNumber,apList)
+
+  if myAp==nil {
+    return errors.New("Numero de departamento no existe") 
+  }
 	buildng := *b
 	var heightHeader float64 = 30
 	var contentSize float64 = 10
@@ -123,7 +141,7 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	// SECTION DATOS DEL USUARIO
 	receipt.SubHeader(&m, colorMolio, "DETALLE DEL CONSUMO DE LA CUOTA")
 
-	Detail(&m, backgroundColor, contentSize, rowHeight, ap, &buildng)
+	Detail(&m, backgroundColor, contentSize, rowHeight, ap, myAp)
 
 	// SECTION WATER DETAIL INFORMATION
 	if buildng.HaveWater {
@@ -221,20 +239,31 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	return nil
 }
 
-func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight float64, ap *FeeDetail, buildng *building.Building) {
+func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight float64, ap *FeeDetail, myApartment *apartment.Apartment) {
 	m := *pdf
 	var ownerData []string
 	var otherData []string
+  var itemsByColumn int
+	var FirstColumn []string  // Defining the fields for the first column of the receipt
+	var SecondColumn []string // Defining the fields for the second column of the receipt
 
-	// Defining the fields for the first column of the receipt
-	FirstColumn := buildng.FirstColumn
-
-	// Defining the fields for the second column of the receipt
-	SecondColumn := buildng.SecondColumn
-
-	switch strings.ToLower(buildng.Nickname) {
-	
-	}
+  if len(ap.Amounts) + 1 % 2 == 0 {
+    itemsByColumn = len(ap.Amounts) / 2+1 // La cantidad de elementos que iran por columna
+  } 
+  
+  FirstColumn = append(FirstColumn, "Propietario: ")
+  ownerData = append(ownerData, myApartment.Owner)
+  var j int = 1
+  for key, value := range ap.Amounts {
+    if j < itemsByColumn {
+      FirstColumn = append(FirstColumn, key)
+      ownerData = append(ownerData, fmt.Sprintf("S/. %.2f", value))
+      j++
+      continue
+    }
+    SecondColumn = append(SecondColumn, key)
+    otherData = append(otherData, fmt.Sprintf("S/. %.2f", value))
+  }
 
 	// Reading the data and painting it into the receipt
 	for i, v := range FirstColumn {

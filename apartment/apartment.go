@@ -8,10 +8,10 @@ import (
 )
 
 type Apartment struct {
-	number          string
-	owner           string
-	parking         string
-  deposit         string
+	Number          string
+	Owner           string
+	Parking         string
+  Deposit         string
 }
 
 func LoadAparmentData (filePath, sheetName string) ([]Apartment, error) {
@@ -57,13 +57,13 @@ func LoadAparmentData (filePath, sheetName string) ([]Apartment, error) {
           if len(colCell) == 0 {
 						break out
 					}
-          ap.number = colCell
+          ap.Number = colCell
         case 1:
-          ap.owner = colCell
+          ap.Owner = colCell
         case 2:
-          ap.parking = colCell
+          ap.Parking = colCell
         case 3:
-          ap.deposit = colCell
+          ap.Deposit = colCell
           break inside
         }
 			}
