@@ -164,7 +164,7 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 
 	//IMPORTES FACTURADOS SECTION TABLE
 	monto := fmt.Sprintf("S/. %.2f", ap.Amounts["CUOTA"])
-  fmt.Println("pase CUOTA")
+  fmt.Println("pase CUOTA", ap.Amounts["CUOTA"])
 
 	m.SetBackgroundColor(colorMolio)
 	m.SetBorder(true)
@@ -247,14 +247,17 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 	var FirstColumn []string  // Defining the fields for the first column of the receipt
 	var SecondColumn []string // Defining the fields for the second column of the receipt
 
-  if len(ap.Amounts) + 1 % 2 == 0 {
-    itemsByColumn = len(ap.Amounts) / 2+1 // La cantidad de elementos que iran por columna
+  if len(ap.Amounts) % 2 == 0 {
+    itemsByColumn = (len(ap.Amounts)+1) / 2 // La cantidad de elementos que iran por columna
   } 
   
   FirstColumn = append(FirstColumn, "Propietario: ")
   ownerData = append(ownerData, myApartment.Owner)
   var j int = 1
   for key, value := range ap.Amounts {
+    if strings.ToUpper(key) == "CUOTA" {
+      continue
+    }
     if j < itemsByColumn {
       FirstColumn = append(FirstColumn, key)
       ownerData = append(ownerData, fmt.Sprintf("S/. %.2f", value))
