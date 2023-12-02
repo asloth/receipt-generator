@@ -152,7 +152,6 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 
 		waterData := []string{fmt.Sprintf("S/. %.2f", wData[ap.ApartmentNumber].CommonWater), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].LastMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].CurrentMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].WaterConsumedThisMonth)}
     
-    fmt.Println("pase waterDataaaaaaaaaaaaaaaaaa")
 		// Get water data from this month
 		monthWaterData := water.GetWaterDataByBuilding(b.Nickname)
 		recData := []string{fmt.Sprintf("%.2f", monthWaterData.Consumo_rec), fmt.Sprintf("%.2f", monthWaterData.Rec_soles), fmt.Sprintf("%.2f", monthWaterData.Soles_m3), waterDate}
@@ -163,8 +162,8 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	}
 
 	//IMPORTES FACTURADOS SECTION TABLE
-	monto := fmt.Sprintf("S/. %.2f", ap.Amounts["CUOTA"])
-  fmt.Println("pase CUOTA", ap.Amounts["CUOTA"])
+	monto := fmt.Sprintf("S/. %.2f", ap.Amounts["cuota"])
+  fmt.Println("pase CUOTA", ap.Amounts["cuota"])
 
 	m.SetBackgroundColor(colorMolio)
 	m.SetBorder(true)
@@ -241,23 +240,23 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 
 func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight float64, ap *FeeDetail, myApartment *apartment.Apartment) {
 	m := *pdf
+  totalItems := len(ap.Amounts)-1 
 	var ownerData []string
 	var otherData []string
-  var itemsByColumn int
+  var itemsByColumn int = totalItems / 2
 	var FirstColumn []string  // Defining the fields for the first column of the receipt
 	var SecondColumn []string // Defining the fields for the second column of the receipt
 
-  if len(ap.Amounts) % 2 == 0 {
-    itemsByColumn = (len(ap.Amounts)+1) / 2 // La cantidad de elementos que iran por columna
+  if totalItems % 2 != 0 {
+    itemsByColumn++ // La cantidad de elementos que iran por columna
   } 
-  
-  FirstColumn = append(FirstColumn, "Propietario: ")
-  ownerData = append(ownerData, myApartment.Owner)
-  var j int = 1
+  fmt.Println("soy itemsByColumn", itemsByColumn)
+  var j int = 0
   for key, value := range ap.Amounts {
-    if strings.ToUpper(key) == "CUOTA" {
+    if key == "cuota"{
       continue
     }
+
     if j < itemsByColumn {
       FirstColumn = append(FirstColumn, key)
       ownerData = append(ownerData, fmt.Sprintf("S/. %.2f", value))
@@ -266,6 +265,11 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
     }
     SecondColumn = append(SecondColumn, key)
     otherData = append(otherData, fmt.Sprintf("S/. %.2f", value))
+  }
+
+  if len(FirstColumn)!=len(SecondColumn) {
+    SecondColumn = append(SecondColumn, " ")
+    otherData = append(otherData, " " )
   }
 
 	// Reading the data and painting it into the receipt
