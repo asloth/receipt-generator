@@ -12,6 +12,7 @@ type Apartment struct {
 	Owner           string
 	Parking         string
   Deposit         string
+  ParticipationPercentage string
 }
 
 func LoadAparmentData (filePath, sheetName string) ([]Apartment, error) {
@@ -64,6 +65,8 @@ func LoadAparmentData (filePath, sheetName string) ([]Apartment, error) {
           ap.Parking = colCell
         case 3:
           ap.Deposit = colCell
+        case 4:
+          ap.ParticipationPercentage = colCell
           break inside
         }
 			}

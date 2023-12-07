@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 
@@ -137,7 +138,9 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 			Blue:  255,
 		},
 	})
-
+	// SECCION DATOS DEL DPTO
+  receipt.SubHeader(&m, colorMolio, "DATOS DEL DEPARTAMENTO")
+  
 	// SECTION DATOS DEL USUARIO
 	receipt.SubHeader(&m, colorMolio, "DETALLE DEL CONSUMO DE LA CUOTA")
 
@@ -163,7 +166,6 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 
 	//IMPORTES FACTURADOS SECTION TABLE
 	monto := fmt.Sprintf("S/. %.2f", ap.Amounts["cuota"])
-  fmt.Println("pase CUOTA", ap.Amounts["cuota"])
 
 	m.SetBackgroundColor(colorMolio)
 	m.SetBorder(true)
@@ -275,5 +277,20 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 	// Reading the data and painting it into the receipt
 	for i, v := range FirstColumn {
 		receipt.DataOwner(&m, backgroundColor, rowHeight, contentSize, v, ownerData[i], SecondColumn[i], otherData[i])
+	}
+}
+
+func printAparmentData(m *pdf.Maroto, backgroundColor color.Color, contentSize float64, ap *apartment.Apartment ) {
+	// Get the type of the struct
+	structType := reflect.TypeOf(ap)
+  fieldName := []string{"N. DPTO: ", "PROPIETARIO: ", "PARTICIPACION: ","ESTACIONAMIENTO: ", "DEPOSITO: "}
+
+	// Loop over the struct fields
+	for i := 0; i < structType.NumField(); i++ {
+		field := structType.Field(i)
+		fieldValue := reflect.ValueOf(ap).Field(i)
+    receipt.ApartmentData(m, backgroundColor, contentSize, fieldName[i], fieldValue.String())
+    
+		fmt.Printf("Field Name: %s, Field Value: %v\n", field.Name, fieldValue.Interface())
 	}
 }
