@@ -140,7 +140,8 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	})
 	// SECCION DATOS DEL DPTO
   receipt.SubHeader(&m, colorMolio, "DATOS DEL DEPARTAMENTO")
-  
+ 
+  printAparmentData(&m,backgroundColor,contentSize,myAp)
 	// SECTION DATOS DEL USUARIO
 	receipt.SubHeader(&m, colorMolio, "DETALLE DEL CONSUMO DE LA CUOTA")
 
@@ -252,7 +253,6 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
   if totalItems % 2 != 0 {
     itemsByColumn++ // La cantidad de elementos que iran por columna
   } 
-  fmt.Println("soy itemsByColumn", itemsByColumn)
   var j int = 0
   for key, value := range ap.Amounts {
     if key == "cuota"{
@@ -280,17 +280,18 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 	}
 }
 
-func printAparmentData(m *pdf.Maroto, backgroundColor color.Color, contentSize float64, ap *apartment.Apartment ) {
+func printAparmentData(pdf *pdf.Maroto, backgroundColor color.Color, contentSize float64, ap *apartment.Apartment ) {
 	// Get the type of the struct
-	structType := reflect.TypeOf(ap)
-  fieldName := []string{"N. DPTO: ", "PROPIETARIO: ", "PARTICIPACION: ","ESTACIONAMIENTO: ", "DEPOSITO: "}
+  m := *pdf
+	structType := reflect.TypeOf(*ap)
+  fieldName := []string{"N. DPTO: ", "PROPIETARIO: ", "ESTACIONAMIENTO: ", "DEPOSITO: ", "PARTICIPACION: "}
 
 	// Loop over the struct fields
 	for i := 0; i < structType.NumField(); i++ {
-		field := structType.Field(i)
-		fieldValue := reflect.ValueOf(ap).Field(i)
-    receipt.ApartmentData(m, backgroundColor, contentSize, fieldName[i], fieldValue.String())
-    
-		fmt.Printf("Field Name: %s, Field Value: %v\n", field.Name, fieldValue.Interface())
+		fieldValue := reflect.ValueOf(*ap).Field(i)
+    if len(fieldValue.String()) == 0 {
+      continue
+    }
+    receipt.ApartmentData(&m, backgroundColor, contentSize, fieldName[i], fieldValue.String())
 	}
 }

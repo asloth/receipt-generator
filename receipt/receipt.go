@@ -183,7 +183,8 @@ func ApartmentData(pdf *pdf.Maroto, backgroundColor color.Color, contentSize flo
 
 	m := *pdf
   m.SetBackgroundColor(backgroundColor)
-	m.Row(4, func() {
+
+	m.Row(7, func() {
 		m.Col(4, func() {
 			m.Text(field,
 				props.Text{
@@ -196,8 +197,8 @@ func ApartmentData(pdf *pdf.Maroto, backgroundColor color.Color, contentSize flo
 			m.Text(value,
 				props.Text{
 					Size:  contentSize,
-					Style: consts.Bold,
-					Align: consts.Left,
+					Style: consts.Normal,
+					Align: consts.Left,          
 				})
 		})
 	})
