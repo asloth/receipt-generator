@@ -52,11 +52,11 @@ func GetWaterDataByBuilding(name string) *WaterByMonth {
 		return &gpr
 	case "nitoa":
 		gpr := WaterByMonth{
-			Consume:     288.01,
-			Consumo_rec: 312.00, //casi no sirve para nada
-			Rec_soles:   1090.30,
+			Consume:     295.02,
+			Consumo_rec: 292.00, //casi no sirve para nada
+			Rec_soles:   1056.70,
 		}
-		gpr.Soles_m3 = gpr.Rec_soles / gpr.Consumo_rec
+		gpr.Soles_m3 = gpr.Rec_soles / gpr.Consume
 		return &gpr
 	case "valera":
 		gpr := WaterByMonth{

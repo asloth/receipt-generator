@@ -1,6 +1,8 @@
 package receipt
 
 import (
+	"strings"
+
 	"github.com/asloth/receipt-generator/building"
 
 	"github.com/johnfercher/maroto/pkg/color"
@@ -59,8 +61,8 @@ func DataOwner(pdf *pdf.Maroto, backgroundColor color.Color, rowHeight float64, 
 	var columnData uint = 4
 	m.Row(9, func() {
 		m.Col(column1, func() {
-			m.Text(prop1, props.Text{
-				Size:            9,
+			m.Text(strings.ToUpper(prop1), props.Text{
+				Size:            8,
 				Align:           consts.Left,
 				Style:           consts.Bold,
 				VerticalPadding: 3,
@@ -73,8 +75,8 @@ func DataOwner(pdf *pdf.Maroto, backgroundColor color.Color, rowHeight float64, 
 			})
 		})
 		m.Col(3, func() {
-			m.Text(prop2, props.Text{
-				Size:            9,
+			m.Text(strings.ToUpper(prop2), props.Text{
+				Size:            8,
 				Align:           consts.Left,
 				Style:           consts.Bold,
 				VerticalPadding: 3,
