@@ -84,7 +84,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Address = "C. LAS PALOMAS 204 - LIMATAMBO - SURQUILLO"
 		b.Email = "administracion@elmolio.com"
 		b.Bank = "BCP"
-		b.BankAccount = "19492161547070"
+		b.BankAccount = "19492161547070 / CCI: 00219419216154707091"
 		b.BankAccountOwner = "VEGA GABRIELA-O-CHERO AMELIA"
 		b.Picture = "files/nitoa.png"
 		b.FirstColumn = []string{"PROPIETARIO: ", "DPTO: ", "AGUA COMUN: ", "AGUA X DPTO: ", "LUZ SSGG: ", "LUZ BCI: ", "TOTAL AGUA Y LUZ: ", "INCREMENTO APROBADO ASAMBLEA 2023: "}
@@ -161,6 +161,18 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "PARTICIPACION: "}
 		b.SecondColumn = []string{"AGUA: ", "CUOTA ANTERIOR: ", "4,000 MÁS 7%: "}
+		b.HaveWater = true
+  case "balcones":
+		b.Name = "LOS BALCONES DE SAN BLAS"
+		b.Nickname = "BALCONES"
+		b.Address = "LOS FAISANES 342 - CHORRILLOS"
+		b.Email = "administracion@elmolio.com"
+		b.Bank = "BCP"
+		b.BankAccount = "1948287857024"
+		b.BankAccountOwner = "LOS BALCONES DE SAN BLAS"
+		b.Picture = "files/default.png"
+		b.FirstColumn = []string{"NOMBRE: "}
+		b.SecondColumn = []string{"AGUA: "}
 		b.HaveWater = true
 	}
 }

@@ -86,6 +86,7 @@ func generateRece(r *bufio.Reader) {
 	fmt.Println("10. SAN BORJA SUR")
 	fmt.Println("11. MONTE REAL")
 	fmt.Println("12. TOMASAL")
+	fmt.Println("13. BALCONES")
 
 	option := ""
 	getData(reader, &option)
@@ -331,6 +332,34 @@ func generateRece(r *bufio.Reader) {
 				fmt.Println(err)
 			}
 		}
+  case "13":
+		b.GetBuildingData("balcones")
+    apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
+    fmt.Println("soy appdata" , apData)
+   	if err != nil { 
+			fmt.Println("Error reading apartment data" + err.Error())
+		}
+    fmt.Println(apData)
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+    fmt.Println("soy ret" , ret)
+
+		if err != nil {
+			fmt.Println("Error reading fee data" + err.Error())
+		}
+		waterData, err := loadWaterData(filePath, waterPath, 4)
+    fmt.Println("soy waterData" , waterData)
+
+		if err != nil {
+			fmt.Println("Error reading the water data" + err.Error())
+		}
+		for _, apar := range ret {
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData)
+			if err != nil {
+				fmt.Println(apar.ApartmentNumber)
+				fmt.Println(err)
+			}
+		}
+    // TERMINA EL CASE
 	}
 
 }
@@ -508,6 +537,7 @@ func sendEmails( r *bufio.Reader) {
 	fmt.Println("10. SBS")
 	fmt.Println("11. MONTE REAL")
 	fmt.Println("12. TOMASAL")
+  fmt.Println("13. BALCONES")
 
 	option := ""
 	getData(reader, &option)
@@ -593,6 +623,13 @@ func sendEmails( r *bufio.Reader) {
 			panic(err)
 		}
 		sendingEmail(ret, b, period)
+	case "13":
+		b.GetBuildingData("balcones")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period)
 	}
 
 }
@@ -619,10 +656,10 @@ func sendingEmail(ret []fee.FeeDetail, b building.Building, period string) {
 	for _, apar := range ret {
 		allEmails := *email.GetEmails(b.Nickname)
 		fmt.Println("Enviando email a " + apar.ApartmentNumber + " con correo :" + allEmails[apar.ApartmentNumber][0])
-		err := e.SendReceipt(allEmails[apar.ApartmentNumber][0], period, b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.ApartmentNumber+".pdf", &body)
+		err := e.SendReceipt(allEmails[apar.ApartmentNumber][0], period, "output/"+ b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.ApartmentNumber+".pdf", &body)
 		if len(allEmails[apar.ApartmentNumber][1]) > 0 {
 			fmt.Println("Enviando email a " + apar.ApartmentNumber + " con correo :" + allEmails[apar.ApartmentNumber][1])
-			err = e.SendReceipt(allEmails[apar.ApartmentNumber][1], period, b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.ApartmentNumber+".pdf", &body)
+			err = e.SendReceipt(allEmails[apar.ApartmentNumber][1], period, "output/"+b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.ApartmentNumber+".pdf", &body)
 		}
 		if err != nil {
 			fmt.Println(err)
