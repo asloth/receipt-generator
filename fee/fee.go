@@ -85,7 +85,7 @@ func findApartmentByID(id string, myAp []apartment.Apartment) *apartment.Apartme
     return nil // Return nil if the struct with the given ID is not found
 }
 
-func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterDate string, wData map[string]water.WaterMonthData, b *building.Building, apData *[]apartment.Apartment) error {
+func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterDate string, wData map[string]water.WaterMonthData, b *building.Building, apData *[]apartment.Apartment, wGeneralData water.WaterByMonth) error {
   apList := *apData
   
   myAp := findApartmentByID(ap.ApartmentNumber,apList)

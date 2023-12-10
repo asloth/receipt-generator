@@ -14,6 +14,7 @@ import (
 	"github.com/asloth/receipt-generator/building"
 	"github.com/asloth/receipt-generator/email"
 	"github.com/asloth/receipt-generator/fee"
+	"github.com/asloth/receipt-generator/utils"
 	"github.com/asloth/receipt-generator/water"
 	"github.com/xuri/excelize/v2"
 )
@@ -66,13 +67,17 @@ func generateRece(r *bufio.Reader) {
 	apartmentSheet := ""
 	getData(reader, &apartmentSheet)
 
-	fmt.Println("Ingrese el nombre de la hoja donde se encuentran el agua")
+	fmt.Println("Ingrese el nombre de la hoja donde se encuentran el agua POR DEPARTAMENTO")
 	waterPath := "AGUA"
 	getData(reader, &waterPath)
 
-	fmt.Println("Ingrese el nombre de la hoja donde se encuentran los propietarios ordenados")
+	fmt.Println("Ingrese el nombre de la hoja donde se encuentran los montos de cuotas")
 	sheetName := "Propietarios ordenados"
 	getData(reader, &sheetName)
+
+  fmt.Println("Ingrese el nombre donde estan los datos de agua del recibo")
+  sheetNameWaterBuilding := ""
+  getData(reader, &sheetNameWaterBuilding)
 
 	fmt.Println("ELIJA EL EDIFICIO DEL CUAL DESEA GENERAR RECIBOS")
 	fmt.Println("2. BELMONTE")
@@ -107,9 +112,14 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
 
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -129,9 +139,14 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
 
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -151,8 +166,14 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -172,8 +193,14 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -193,8 +220,14 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -214,8 +247,14 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -235,8 +274,14 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -256,8 +301,14 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -277,8 +328,14 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -295,11 +352,19 @@ func generateRece(r *bufio.Reader) {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
 		waterData, err := loadWaterData(filePath, waterPath, 3)
+
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+   
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		} 
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -325,8 +390,15 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
+
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -348,12 +420,18 @@ func generateRece(r *bufio.Reader) {
 		}
 		waterData, err := loadWaterData(filePath, waterPath, 4)
     fmt.Println("soy waterData" , waterData)
-
-		if err != nil {
+    if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
