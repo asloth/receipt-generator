@@ -156,9 +156,8 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 
 		waterData := []string{fmt.Sprintf("S/. %.2f", wData[ap.ApartmentNumber].CommonWater), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].LastMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].CurrentMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].WaterConsumedThisMonth)}
     
-		// Get water data from this month
-		monthWaterData := water.GetWaterDataByBuilding(b.Nickname)
-		recData := []string{fmt.Sprintf("%.2f", monthWaterData.Consumo_rec), fmt.Sprintf("%.2f", monthWaterData.Rec_soles), fmt.Sprintf("%.2f", monthWaterData.Soles_m3), waterDate}
+		// Get water data from this month 
+		recData := []string{wGeneralData.Consumo_rec, wGeneralData.Rec_soles, wGeneralData.Soles_m3, waterDate}
 
 		for i, fieldFirstColumn := range waterDetailsFirstColumn {
 			receipt.DataOwner(&m, backgroundColor, rowHeight, contentSize, fieldFirstColumn, waterData[i], waterDetailsSecondColumn[i], recData[i])
