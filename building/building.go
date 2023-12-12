@@ -120,7 +120,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Address = "CARLOS ALAYZA Y ROEL 2561 - 2555 - LINCE"
 		b.Email = "administracion@elmolio.com"
 		b.Bank = "BCP"
-		b.BankAccount = "305-2646967-0-46"
+    b.BankAccount = "305-2646967-0-46 / CCI: OO230500264696704612"	
 		b.BankAccountOwner = "EL MOLIO - CARLOS ALAYZA"
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "AGUA X DPTO.: ", "PERSONAL: ", "MAN. ALARMAS CONTRA INCENDIO: ", "MAN. PUERTA LEVADIZA: ", "REINTEGRO SEDAPAL: "}

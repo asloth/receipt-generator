@@ -57,35 +57,35 @@ func DataOwner(pdf *pdf.Maroto, backgroundColor color.Color, rowHeight float64, 
 	m := *pdf
 	m.SetBackgroundColor(backgroundColor)
 	m.SetBorder(false)
-	var column1 uint = 3
-	var columnData uint = 4
+	var column1 uint = 4
+	var columnData uint = 2
 	m.Row(9, func() {
 		m.Col(column1, func() {
 			m.Text(strings.ToUpper(prop1), props.Text{
 				Size:            8,
 				Align:           consts.Left,
 				Style:           consts.Bold,
-				VerticalPadding: 3,
-				Top:             1,
+				VerticalPadding: 0,
+				Top:             4,
 			})
-		})
+    })
 		m.Col(columnData, func() {
 			m.Text(data1, props.Text{
-				Top: 1,
+				Top: 4,
 			})
 		})
-		m.Col(3, func() {
+		m.Col(column1, func() {
 			m.Text(strings.ToUpper(prop2), props.Text{
 				Size:            8,
 				Align:           consts.Left,
 				Style:           consts.Bold,
-				VerticalPadding: 3,
-				Top:             1,
+				VerticalPadding: 0,
+				Top:             4,
 			})
 		})
 		m.Col(2, func() {
 			m.Text(data2, props.Text{
-				Top: 1,
+				Top: 4,
 			})
 		})
 	})
