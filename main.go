@@ -6,20 +6,39 @@ import (
 	"fmt"
 	"os"
 
-	// "os"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/asloth/receipt-generator/apartment"
 	"github.com/asloth/receipt-generator/building"
 	"github.com/asloth/receipt-generator/email"
 	"github.com/asloth/receipt-generator/fee"
+	"github.com/asloth/receipt-generator/utils"
 	"github.com/asloth/receipt-generator/water"
 	"github.com/xuri/excelize/v2"
 )
 
-func main2() {
-	reader := bufio.NewReader(os.Stdin)
+func main(){
+  reader := bufio.NewReader(os.Stdin)
+	fmt.Println("PARA QUE SOY BUENO")
+	fmt.Println("-----------------")
+	fmt.Println("1. GENERAR RECIBOS")
+  fmt.Println("2. ENVIAR RECIBOS POR CORREO")
+  opti := "1"
+	getData(reader, &opti)
+
+  switch opti{
+  case "1":
+    generateRece(reader)
+  case "2":
+    sendEmails(reader)
+  }
+
+}
+
+func generateRece(r *bufio.Reader) {
+	reader := r
 	fmt.Println("GENERAR RECIBOS")
 	fmt.Println("---------------------")
 
@@ -36,9 +55,6 @@ func main2() {
 	periodo := "AGOSTO-2022"
 	getReceiptData(reader, "periodo", &periodo, false)
 
-	totalPresupuesto := "28,974.00"
-	getFloatData(reader, "presupuesto", &totalPresupuesto)
-
 	waterRead := ""
 	getReceiptData(reader, "fecha de lectura del agua (dd/mm/aa)", &waterRead, true)
 
@@ -47,16 +63,23 @@ func main2() {
 	getData(reader, &name)
 	filePath := "cuotas/" + name + ".xlsx"
 
-	fmt.Println("Ingrese el nombre de la hoja donde se encuentran el agua")
+	fmt.Println("Ingrese el nombre de la hoja donde se encuentra la data de los departamentos")
+	apartmentSheet := ""
+	getData(reader, &apartmentSheet)
+
+	fmt.Println("Ingrese el nombre de la hoja donde se encuentran el agua POR DEPARTAMENTO")
 	waterPath := "AGUA"
 	getData(reader, &waterPath)
 
-	fmt.Println("Ingrese el nombre de la hoja donde se encuentran los propietarios ordenados")
+	fmt.Println("Ingrese el nombre de la hoja donde se encuentran los montos de cuotas")
 	sheetName := "Propietarios ordenados"
 	getData(reader, &sheetName)
 
+  fmt.Println("Ingrese el nombre donde estan los datos de agua del recibo")
+  sheetNameWaterBuilding := ""
+  getData(reader, &sheetNameWaterBuilding)
+
 	fmt.Println("ELIJA EL EDIFICIO DEL CUAL DESEA GENERAR RECIBOS")
-	fmt.Println("1. GRAN PARQUE ROMA")
 	fmt.Println("2. BELMONTE")
 	fmt.Println("3. TORRE REAL")
 	fmt.Println("4. MIRADOR")
@@ -68,48 +91,36 @@ func main2() {
 	fmt.Println("10. SAN BORJA SUR")
 	fmt.Println("11. MONTE REAL")
 	fmt.Println("12. TOMASAL")
+	fmt.Println("13. BALCONES")
+	fmt.Println("14. KILLA")
 
 	option := ""
 	getData(reader, &option)
 
 	var b building.Building
 	switch option {
-	case "1":
-		b.GetBuildingData("gpr")
-		b.Budget = totalPresupuesto
-
-		ret, err := loadApartmentData(filePath, sheetName)
-
-		if err != nil {
-			fmt.Println("Error reading apartment data" + err.Error())
-		}
-		waterData, err := loadWaterData(filePath, waterPath, 3)
-		if err != nil {
-			fmt.Println("Error reading the water data" + err.Error())
-		}
-
-		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
-			if err != nil {
-				fmt.Println(apar.number)
-				fmt.Println(err)
-			}
-		}
 	case "2":
 		b.GetBuildingData("belmonte")
-		b.Budget = totalPresupuesto
-
+    apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
+    if err != nil { 
+			fmt.Println("Error reading aparment data" + err.Error())
+		} 
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 3)
+		waterData, err := loadWaterData(filePath, waterPath, 4)
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
 
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -117,19 +128,26 @@ func main2() {
 		}
 	case "3":
 		b.GetBuildingData("torrereal")
-		b.Budget = totalPresupuesto
-
+    apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
+    if err != nil { 
+			fmt.Println("Error reading aparment data" + err.Error())
+		} 
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 3)
+		waterData, err := loadWaterData(filePath, waterPath, 4)
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
 
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -137,17 +155,26 @@ func main2() {
 		}
 	case "4":
 		b.GetBuildingData("mirador")
-		b.Budget = totalPresupuesto
+    apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
+    if err != nil { 
+			fmt.Println("Error reading aparment data" + err.Error())
+		}
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 3)
+		waterData, err := loadWaterData(filePath, waterPath, 4)
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -155,17 +182,26 @@ func main2() {
 		}
 	case "5":
 		b.GetBuildingData("nitoa")
-		b.Budget = totalPresupuesto
+    apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
+    if err != nil { 
+			fmt.Println("Error reading aparment data" + err.Error())
+		}
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 3)
+		waterData, err := loadWaterData(filePath, waterPath, 4)
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -173,17 +209,26 @@ func main2() {
 		}
 	case "6":
 		b.GetBuildingData("valera")
-		b.Budget = totalPresupuesto
+    apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
+    if err != nil { 
+			fmt.Println("Error reading aparment data" + err.Error())
+		}
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 3)
+		waterData, err := loadWaterData(filePath, waterPath, 4)
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -191,17 +236,26 @@ func main2() {
 		}
 	case "7":
 		b.GetBuildingData("golf")
-		b.Budget = totalPresupuesto
+    apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
+    if err != nil { 
+			fmt.Println("Error reading aparment data" + err.Error())
+		}
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 3)
+		waterData, err := loadWaterData(filePath, waterPath, 4)
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -209,17 +263,26 @@ func main2() {
 		}
 	case "8":
 		b.GetBuildingData("mora")
-		b.Budget = totalPresupuesto
+    apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
+    if err != nil { 
+			fmt.Println("Error reading aparment data" + err.Error())
+		}
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 3)
+		waterData, err := loadWaterData(filePath, waterPath, 4)
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -227,17 +290,26 @@ func main2() {
 		}
 	case "9":
 		b.GetBuildingData("alayza")
-		b.Budget = totalPresupuesto
+    apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
+    if err != nil { 
+			fmt.Println("Error reading aparment data" + err.Error())
+		}
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 3)
+		waterData, err := loadWaterData(filePath, waterPath, 4)
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -245,17 +317,26 @@ func main2() {
 		}
 	case "10":
 		b.GetBuildingData("sbs")
-		b.Budget = totalPresupuesto
+    apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
+    if err != nil { 
+			fmt.Println("Error reading aparment data" + err.Error())
+		}
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 3)
+		waterData, err := loadWaterData(filePath, waterPath, 4)
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -263,17 +344,28 @@ func main2() {
 		}
 	case "11":
 		b.GetBuildingData("montereal")
-		b.Budget = totalPresupuesto
+    apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
+    if err != nil { 
+			fmt.Println("Error reading aparment data" + err.Error())
+		}
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 3)
+		waterData, err := loadWaterData(filePath, waterPath, 4)
+
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+   
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		} 
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
@@ -281,22 +373,105 @@ func main2() {
 		}
 	case "12":
 		b.GetBuildingData("tomasal")
-		b.Budget = totalPresupuesto
+    apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
+    fmt.Println("soy appdata" , apData)
+   	if err != nil { 
+			fmt.Println("Error reading apartment data" + err.Error())
+		}
+    fmt.Println(apData)
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+    fmt.Println("soy ret" , ret)
+
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 3)
+		waterData, err := loadWaterData(filePath, waterPath, 4)
+    fmt.Println("soy waterData" , waterData)
+
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
+
 		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b)
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
 				fmt.Println(apar.ApartmentNumber)
 				fmt.Println(err)
 			}
 		}
+  case "13":
+		b.GetBuildingData("balcones")
+    apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
+    fmt.Println("soy appdata" , apData)
+   	if err != nil { 
+			fmt.Println("Error reading apartment data" + err.Error())
+		}
+    fmt.Println(apData)
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+    fmt.Println("soy ret" , ret)
+
+		if err != nil {
+			fmt.Println("Error reading fee data" + err.Error())
+		}
+		waterData, err := loadWaterData(filePath, waterPath, 4)
+    fmt.Println("soy waterData" , waterData)
+    if err != nil {
+			fmt.Println("Error reading the water data" + err.Error())
+		}
+
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
+		for _, apar := range ret {
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
+			if err != nil {
+				fmt.Println(apar.ApartmentNumber)
+				fmt.Println(err)
+			}
+		}
+  case "14":
+		b.GetBuildingData("killa")
+    apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
+    fmt.Println("soy appdata" , apData)
+   	if err != nil { 
+			fmt.Println("Error reading apartment data" + err.Error())
+		}
+    fmt.Println(apData)
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+    fmt.Println("soy ret" , ret)
+
+		if err != nil {
+			fmt.Println("Error reading fee data" + err.Error())
+		}
+		waterData, err := loadWaterData(filePath, waterPath, 4)
+    fmt.Println("soy waterData" , waterData)
+    if err != nil {
+			fmt.Println("Error reading the water data" + err.Error())
+		}
+
+    waterGeneralData,err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding,3)
+    fmt.Println("soy waterGeneralData",waterGeneralData)
+
+		if err != nil {
+			fmt.Println("Error reading the water general data" + err.Error())
+		}
+		for _, apar := range ret {
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
+			if err != nil {
+				fmt.Println(apar.ApartmentNumber)
+				fmt.Println(err)
+			}
+		}
+    // TERMINA EL CASE
 	}
 
 }
@@ -372,118 +547,6 @@ func getFloatData(r *bufio.Reader, question string, data *string) {
 	}
 }
 
-func loadApartmentData(filePath, sheetName string) ([]Apartment, error) {
-	// Open the spreadsheet
-	xlsxFile, err := excelize.OpenFile(filePath)
-
-	if err != nil {
-		fmt.Println(err.Error())
-		return nil, err
-	}
-	defer func() {
-		// Close the spreadsheet.
-		if err := xlsxFile.Close(); err != nil {
-			fmt.Println(err)
-		}
-	}()
-	// Get all the rows in the
-	rows, err := xlsxFile.GetRows(sheetName)
-
-	if err != nil {
-		return nil, err
-	}
-
-	cols := []string{}
-
-	ret := []Apartment{}
-
-out:
-	for i, row := range rows {
-		if i == 0 {
-			for _, colCell := range row {
-				cols = append(cols, colCell)
-			}
-			fmt.Println("Column information", cols)
-		} else {
-			ap := Apartment{}
-		inside:
-			for j, colCell := range row {
-				switch strings.ToLower(cols[j]) {
-				case "propietario":
-					if len(colCell) == 0 {
-						break out
-					}
-					ap.owner = colCell
-				case "depa":
-					ap.number = colCell
-					// if err != nil {
-					// 	fmt.Println("error en depa")
-					// 	ap.number = 0.0
-					// }
-				case "área depa":
-					ap.totalArea, err = strconv.ParseFloat(colCell, 64)
-					if err != nil {
-						fmt.Println("error en aread", ap.totalArea)
-						ap.totalArea = 0.0
-					}
-				case "área est":
-					ap.parkingArea, err = strconv.ParseFloat(colCell, 64)
-					if err != nil {
-						ap.parkingArea = 0.0
-					}
-				case "total":
-					ap.total, err = strconv.ParseFloat(colCell, 64)
-					if err != nil {
-						ap.total = 0.0
-					}
-					break inside
-				case "multa":
-					ap.fine, err = strconv.ParseFloat(colCell, 64)
-					if err != nil {
-						ap.fine = 0.0
-					}
-				case "cuota":
-					ap.maintenance, err = strconv.ParseFloat(colCell, 64)
-					if err != nil {
-						ap.maintenance = 0.0
-					}
-				case "cuota ext":
-					ap.maintenance_ext, err = strconv.ParseFloat(colCell, 64)
-					if err != nil {
-						ap.maintenance_ext = 0.0
-					}
-				case "porcentaje":
-					if len(colCell) == 0 {
-						colCell = "--"
-					}
-					ap.percentaje, _ = strconv.ParseFloat(colCell, 64)
-				case "estaciona":
-					if len(colCell) == 0 {
-						colCell = "--"
-					}
-					ap.parking = colCell
-				case "agua":
-					ap.waterComsuption, err = strconv.ParseFloat(colCell, 64)
-					if err != nil {
-						ap.waterComsuption = 0.0
-					}
-				case "deposito":
-					if len(colCell) == 0 {
-						colCell = "--"
-					}
-					ap.deposit = append(ap.deposit, colCell)
-				default:
-					continue
-
-				}
-			}
-			ret = append(ret, ap)
-		}
-
-	}
-	return ret, nil
-}
-
 func loadWaterData(filePath, sheetName string, finalColumn int) (map[string]water.WaterMonthData, error) {
 	// Open the spreadsheet
 	xlsxFile, err := excelize.OpenFile(filePath)
@@ -536,9 +599,15 @@ out:
 						temp.CurrentMonth = 0.0
 					}
 				case 3:
+          fmt.Println("i am consumption: ",colCell)
 					temp.WaterConsumedThisMonth, err = strconv.ParseFloat(colCell, 64)
 					if err != nil {
 						temp.WaterConsumedThisMonth = 0.0
+					}
+        case 4:
+          temp.CommonWater, err = strconv.ParseFloat(colCell, 64) 
+          if err != nil {
+						temp.CommonWater = 0.0
 					}
 				default:
 					continue
@@ -551,8 +620,8 @@ out:
 	return ret, nil
 }
 
-func main() {
-	reader := bufio.NewReader(os.Stdin)
+func sendEmails( r *bufio.Reader) {
+	reader := r
 	fmt.Println("ENVIAR RECIBOS POR CORREO")
 	fmt.Println("---------------------")
 
@@ -570,7 +639,6 @@ func main() {
 	getData(reader, &period)
 
 	fmt.Println("ELIJA EL EDIFICIO DEL CUAL DESEA ENVIAR LOS RECIBOS")
-	fmt.Println("1. GRAN PARQUE ROMA")
 	fmt.Println("2. BELMONTE")
 	fmt.Println("3. TORRE REAL")
 	fmt.Println("4. MIRADOR")
@@ -582,6 +650,8 @@ func main() {
 	fmt.Println("10. SBS")
 	fmt.Println("11. MONTE REAL")
 	fmt.Println("12. TOMASAL")
+  fmt.Println("13. BALCONES")
+  fmt.Println("14. KILLA")
 
 	option := ""
 	getData(reader, &option)
@@ -589,14 +659,7 @@ func main() {
 	var b building.Building
 
 	switch option {
-	case "1":
-		b.GetBuildingData("gpr")
-		ret, err := loadApartmentData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
 		// test := ret[len(ret)-19:] Utilizado para solo seleccionar a los ultimos 19 dptos
-		sendingEmailbyApartment(ret, b, period)
 	case "2":
 		b.GetBuildingData("belmonte")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
@@ -674,6 +737,20 @@ func main() {
 			panic(err)
 		}
 		sendingEmail(ret, b, period)
+	case "13":
+		b.GetBuildingData("balcones")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period)
+  case "14":
+		b.GetBuildingData("killa")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period)
 	}
 
 }
@@ -700,10 +777,10 @@ func sendingEmail(ret []fee.FeeDetail, b building.Building, period string) {
 	for _, apar := range ret {
 		allEmails := *email.GetEmails(b.Nickname)
 		fmt.Println("Enviando email a " + apar.ApartmentNumber + " con correo :" + allEmails[apar.ApartmentNumber][0])
-		err := e.SendReceipt(allEmails[apar.ApartmentNumber][0], period, b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.ApartmentNumber+".pdf", &body)
+		err := e.SendReceipt(allEmails[apar.ApartmentNumber][0], period, "output/"+ b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.ApartmentNumber+".pdf", &body)
 		if len(allEmails[apar.ApartmentNumber][1]) > 0 {
 			fmt.Println("Enviando email a " + apar.ApartmentNumber + " con correo :" + allEmails[apar.ApartmentNumber][1])
-			err = e.SendReceipt(allEmails[apar.ApartmentNumber][1], period, b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.ApartmentNumber+".pdf", &body)
+			err = e.SendReceipt(allEmails[apar.ApartmentNumber][1], period, "output/"+b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.ApartmentNumber+".pdf", &body)
 		}
 		if err != nil {
 			fmt.Println(err)
@@ -717,39 +794,3 @@ func sendingEmail(ret []fee.FeeDetail, b building.Building, period string) {
 	e.Desconnect()
 }
 
-func sendingEmailbyApartment(ret []Apartment, b building.Building, period string) {
-	var body bytes.Buffer
-	//CAMBIAR NOMBRE CUOTA
-	email.GetTemplate("email/templates/maintenance.html", &body, period, b.Email)
-
-	e := &email.EmailService{
-		Host:     "smtp.gmail.com",
-		Port:     587,
-		Username: "soporte-administrativo@elmolio.net",
-	}
-	err := e.SetNewDialer()
-	if err != nil {
-		panic(err)
-	}
-
-	err = e.Connect()
-	if err != nil {
-		panic(err)
-	}
-
-	for _, apar := range ret {
-		allEmails := *email.GetEmails(b.Nickname)
-		fmt.Println(allEmails[apar.number][0])
-		err := e.SendReceipt(allEmails[apar.number][0], period, b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.number+".pdf", &body)
-
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		fmt.Println("Email enviado exitosamente a " + apar.number)
-
-	}
-
-	e.Desconnect()
-}

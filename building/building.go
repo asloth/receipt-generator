@@ -59,11 +59,11 @@ func (b *Building) GetBuildingData(name string) {
 		b.Nickname = "VALERA"
 		b.Address = "Jr. Gral. Varela 871-879 - Breña"
 		b.Email = "administrador@elmolio.com"
-		b.Bank = "BCP"
-		b.BankAccount = "191-71949491-0-50"
-		b.BankAccountOwner = "SIGUAS GALVEZ CORY NATHALI"
+		b.Bank = "BBVA"
+		b.BankAccount = "OO1101100200477594"
+		b.BankAccountOwner = "HENRY ALVAREZ / SIGUAS GALVEZ CORY NATHALI"
 		b.Picture = "files/valera.jpeg"
-		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "PARTICIPACION(%): ", "ESTACIONAMIENTO (%): ", "DPTO (%): ", "LUZ BCI: ", "LUZ SSGG: "}
+		b.FirstColumn = []string{"NOMBRE: "}
 		b.SecondColumn = []string{"AGUA X DPTO.: ", "RECARGA EXTINTORES: ", "REPARACIÓN ASC. DISCAPACITADOS: ", "SERV. ADMINISTRACION: ", "INSUMOS FERRETERIA: ", "CUOTA ESTACIONAMIENTO: ", "CUOTA X DPTO.: "}
 		b.HaveWater = true
 	case "mirador":
@@ -84,7 +84,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Address = "C. LAS PALOMAS 204 - LIMATAMBO - SURQUILLO"
 		b.Email = "administracion@elmolio.com"
 		b.Bank = "BCP"
-		b.BankAccount = "19492161547070"
+		b.BankAccount = "19492161547070 / CCI: 00219419216154707091"
 		b.BankAccountOwner = "VEGA GABRIELA-O-CHERO AMELIA"
 		b.Picture = "files/nitoa.png"
 		b.FirstColumn = []string{"PROPIETARIO: ", "DPTO: ", "AGUA COMUN: ", "AGUA X DPTO: ", "LUZ SSGG: ", "LUZ BCI: ", "TOTAL AGUA Y LUZ: ", "INCREMENTO APROBADO ASAMBLEA 2023: "}
@@ -108,8 +108,8 @@ func (b *Building) GetBuildingData(name string) {
 		b.Address = "FEDERICO VILLAREAL 454 - MIRAFLORES"
 		b.Email = "administracion@elmolio.com"
 		b.Bank = "BBVA"
-		b.BankAccount = "OO1104260200287653"
-		b.BankAccountOwner = "DIAZ MAMANI NATALY YULIANA Y/O BENZAQUEN VASQUEZ YAIR"
+    b.BankAccount = "0011 0426 0200302091 / CCI: 011 426 000200302091 40"
+		b.BankAccountOwner = "ANA LUISA JOVE / GISELLA INCIO"
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "AGUA X DPTO.: ", "AGUA COMUN: "}
 		b.SecondColumn = []string{"LUZ SSGG: ", "MANTENIMIENTOS PREVENTIVOS: ", "MONTO CONTINGENCIAS:", "ADMINISTRACION: "}
@@ -120,7 +120,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Address = "CARLOS ALAYZA Y ROEL 2561 - 2555 - LINCE"
 		b.Email = "administracion@elmolio.com"
 		b.Bank = "BCP"
-		b.BankAccount = "305-2646967-0-46"
+    b.BankAccount = "305-2646967-0-46 / CCI: OO230500264696704612"	
 		b.BankAccountOwner = "EL MOLIO - CARLOS ALAYZA"
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "AGUA X DPTO.: ", "PERSONAL: ", "MAN. ALARMAS CONTRA INCENDIO: ", "MAN. PUERTA LEVADIZA: ", "REINTEGRO SEDAPAL: "}
@@ -135,8 +135,8 @@ func (b *Building) GetBuildingData(name string) {
 		b.BankAccount = "3059864513051"
 		b.BankAccountOwner = "EL MOLIO - SAN BORJA SUR"
 		b.Picture = "files/default.png"
-		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "AGUA X DPTO.: ", "GASTOS BANCARIOS: ", "INTERNET: "}
-		b.SecondColumn = []string{"LUZ SSGG: ", "PERSONAL LIMPIEZA: ", "SERV. ADMINISTRACION:", "INSUMOS DE LIMPIEZA: ", "FONDO CONTINGENCIA: "}
+		b.FirstColumn = []string{"NOMBRE: "}
+		b.SecondColumn = []string{"LUZ SSGG: "}
 		b.HaveWater = true
 	case "montereal":
 		b.Name = "MONTE REAL"
@@ -161,6 +161,30 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "PARTICIPACION: "}
 		b.SecondColumn = []string{"AGUA: ", "CUOTA ANTERIOR: ", "4,000 MÁS 7%: "}
+		b.HaveWater = true
+  case "balcones":
+		b.Name = "LOS BALCONES DE SAN BLAS"
+		b.Nickname = "BALCONES"
+		b.Address = "LOS FAISANES 342 - CHORRILLOS"
+		b.Email = "administracion@elmolio.com"
+		b.Bank = "BCP"
+		b.BankAccount = "1948287857024"
+		b.BankAccountOwner = "LOS BALCONES DE SAN BLAS"
+		b.Picture = "files/default.png"
+		b.FirstColumn = []string{"NOMBRE: "}
+		b.SecondColumn = []string{"AGUA: "}
+		b.HaveWater = true
+  case "killa":
+		b.Name = "EDIFICIO RESIDENCIAL KILLA"
+		b.Nickname = "KILLA"
+		b.Address = "MALECON SUPERIOR 1201 - PUNTA HERMOSA"
+		b.Email = "administracion@elmolio.com"
+		b.Bank = "BCP"
+		b.BankAccount = "194-9354551-0-12"
+		b.BankAccountOwner = "MALECON SUPERIOR 1201 Y AVENIDA COSTA PERUANA"
+		b.Picture = "files/default.png"
+		b.FirstColumn = []string{"NOMBRE: "}
+		b.SecondColumn = []string{"AGUA: "}
 		b.HaveWater = true
 	}
 }
