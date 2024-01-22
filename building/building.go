@@ -39,8 +39,8 @@ func (b *Building) GetBuildingData(name string) {
 		b.BankAccount = "193-90343163-0-18"
 		b.BankAccountOwner = "DE LA PUENTE MARIA / ODARIS LUCENA"
 		b.Picture = "files/belmonte.jpeg"
-    b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "AGUA: ", "MAN. PREVENTIVO: ", "MAN. ASCENSOR: ", "DIF. MES ANTERIOR: "}
-    b.SecondColumn = []string{"MATERIALES LIMPIEZA: ", "MANTENIMIENTO JARDINES: ", "LUZ SSGG: ", "LUZ BCI: ", "ADMINISTRACION Y PERSONAL: ", "MULTA: "}
+		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "AGUA: ", "MAN. PREVENTIVO: ", "MAN. ASCENSOR: ", "DIF. MES ANTERIOR: "}
+		b.SecondColumn = []string{"MATERIALES LIMPIEZA: ", "MANTENIMIENTO JARDINES: ", "LUZ SSGG: ", "LUZ BCI: ", "ADMINISTRACION Y PERSONAL: ", "MULTA: "}
 		b.HaveWater = true
 	case "torrereal":
 		b.Name = "EDIFICIO TORRE REAL"
@@ -64,7 +64,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.BankAccountOwner = "HENRY ALVAREZ / SIGUAS GALVEZ CORY NATHALI"
 		b.Picture = "files/valera.jpeg"
 		b.FirstColumn = []string{"NOMBRE: "}
-		b.SecondColumn = []string{"AGUA X DPTO.: ", "RECARGA EXTINTORES: ", "REPARACIÓN ASC. DISCAPACITADOS: ", "SERV. ADMINISTRACION: ", "INSUMOS FERRETERIA: ", "CUOTA ESTACIONAMIENTO: ", "CUOTA X DPTO.: "}
+		b.SecondColumn = []string{}
 		b.HaveWater = true
 	case "mirador":
 		b.Name = "EDIFICIO MIRADOR 2"
@@ -108,7 +108,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Address = "FEDERICO VILLAREAL 454 - MIRAFLORES"
 		b.Email = "administracion@elmolio.com"
 		b.Bank = "BBVA"
-    b.BankAccount = "0011 0426 0200302091 / CCI: 011 426 000200302091 40"
+		b.BankAccount = "0011 0426 0200302091 / CCI: 011 426 000200302091 40"
 		b.BankAccountOwner = "ANA LUISA JOVE / GISELLA INCIO"
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "AGUA X DPTO.: ", "AGUA COMUN: "}
@@ -120,7 +120,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Address = "CARLOS ALAYZA Y ROEL 2561 - 2555 - LINCE"
 		b.Email = "administracion@elmolio.com"
 		b.Bank = "BCP"
-    b.BankAccount = "305-2646967-0-46 / CCI: OO230500264696704612"	
+		b.BankAccount = "305-2646967-0-46 / CCI: OO230500264696704612"
 		b.BankAccountOwner = "EL MOLIO - CARLOS ALAYZA"
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "AGUA X DPTO.: ", "PERSONAL: ", "MAN. ALARMAS CONTRA INCENDIO: ", "MAN. PUERTA LEVADIZA: ", "REINTEGRO SEDAPAL: "}
@@ -159,10 +159,10 @@ func (b *Building) GetBuildingData(name string) {
 		b.BankAccount = "305-8969463-0-42"
 		b.BankAccountOwner = "EL MOLIO - TOMASAL"
 		b.Picture = "files/default.png"
-		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "PARTICIPACION: "}
-		b.SecondColumn = []string{"AGUA: ", "CUOTA ANTERIOR: ", "4,000 MÁS 7%: "}
+		b.FirstColumn = []string{}
+		b.SecondColumn = []string{}
 		b.HaveWater = true
-  case "balcones":
+	case "balcones":
 		b.Name = "LOS BALCONES DE SAN BLAS"
 		b.Nickname = "BALCONES"
 		b.Address = "LOS FAISANES 342 - CHORRILLOS"
@@ -174,7 +174,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.FirstColumn = []string{"NOMBRE: "}
 		b.SecondColumn = []string{"AGUA: "}
 		b.HaveWater = true
-  case "killa":
+	case "killa":
 		b.Name = "EDIFICIO RESIDENCIAL KILLA"
 		b.Nickname = "KILLA"
 		b.Address = "MALECON SUPERIOR 1201 - PUNTA HERMOSA"
@@ -186,5 +186,17 @@ func (b *Building) GetBuildingData(name string) {
 		b.FirstColumn = []string{"NOMBRE: "}
 		b.SecondColumn = []string{"AGUA: "}
 		b.HaveWater = true
+	case "gcc":
+		b.Name = "GRAN CENTRAL COLONIAL"
+		b.Nickname = "GCC"
+		b.Address = "GENERAL OSCAR R BENAVIDES 2703 - CERCADO DE LIMA"
+		b.Email = "administracion@elmolio.com"
+		b.Bank = "BCP"
+		b.BankAccount = "3058123355097/OO230500812335509719"
+		b.BankAccountOwner = "EL MOLIO"
+		b.Picture = "files/default.png"
+		b.FirstColumn = []string{"NOMBRE: "}
+		b.SecondColumn = []string{"AGUA: "}
+		b.HaveWater = false
 	}
 }
