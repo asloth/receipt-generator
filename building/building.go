@@ -47,12 +47,12 @@ func (b *Building) GetBuildingData(name string) {
 		b.Nickname = "TORREREAL"
 		b.Address = "JIRON DANIEL OLAECHEA 175 - JESÚS MARÍA"
 		b.Email = "administradorlimaeste@elmolio.com"
-		b.Bank = "INTERBANK"
-		b.BankAccount = "6393372392454"
-		b.BankAccountOwner = "NOLES COTITO MARIELA INES"
+		b.Bank = "BCP"
+		b.BankAccount = "193-95303003-0-58"
+		b.BankAccountOwner = "Reynaldo Martín Soza Martínez"
 		b.Picture = "files/torrereal.jpeg"
-		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "PARTICIPACION: ", "ESTACIONAMIENTO: ", "DEPOSITO: ", "AGUA: ", "FONDO DE RESERVA: ", "FONDO MANTENIMIENTO: "}
-		b.SecondColumn = []string{"MAN. ASCENSOR: ", "INSUMOS LIMPIEZA: ", "LUZ SSGG: ", "LUZ BCI: ", "ADMINISTRACION Y PERSONAL: ", "MULTA: ", "SALDO A FAVOR: ", "MORA: "}
+		b.FirstColumn = []string{}
+		b.SecondColumn = []string{}
 		b.HaveWater = true
 	case "valera":
 		b.Name = "EDIFICIO VARELA III"
