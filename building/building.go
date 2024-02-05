@@ -30,6 +30,16 @@ func (b *Building) GetBuildingData(name string) {
 		b.BankAccountOwner = "C. RECAUDADORA GRAN PARQUE ROMA"
 		b.Picture = "files/parque-roma-logo.jpg"
 		b.HaveWater = true
+	case "elite":
+		b.Name = "ÉLITE CASUARINAS"
+		b.Nickname = "ELITE"
+		b.Address = "LOS LIRIOS - SANTIAGO DE SURCO"
+		b.Email = "administracion@elmolio.com"
+		b.Bank = "BBVA"
+		b.BankAccount = "001101860100065358"
+		b.BankAccountOwner = "LOTE 25 DE LA MANZANA G1 JIRON LOS LIRIOS"
+		b.Picture = "files/default.png"
+		b.HaveWater = true
 	case "belmonte":
 		b.Name = "EDIFICIO BELMONTE"
 		b.Nickname = "BELMONTE"
@@ -39,8 +49,8 @@ func (b *Building) GetBuildingData(name string) {
 		b.BankAccount = "193-90343163-0-18"
 		b.BankAccountOwner = "DE LA PUENTE MARIA / ODARIS LUCENA"
 		b.Picture = "files/belmonte.jpeg"
-		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "AGUA: ", "MAN. PREVENTIVO: ", "MAN. ASCENSOR: ", "DIF. MES ANTERIOR: "}
-		b.SecondColumn = []string{"MATERIALES LIMPIEZA: ", "MANTENIMIENTO JARDINES: ", "LUZ SSGG: ", "LUZ BCI: ", "ADMINISTRACION Y PERSONAL: ", "MULTA: "}
+		b.FirstColumn = []string{}
+		b.SecondColumn = []string{}
 		b.HaveWater = true
 	case "torrereal":
 		b.Name = "EDIFICIO TORRE REAL"
@@ -58,7 +68,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Name = "EDIFICIO VARELA III"
 		b.Nickname = "VALERA"
 		b.Address = "Jr. Gral. Varela 871-879 - Breña"
-		b.Email = "administrador@elmolio.com"
+		b.Email = "administracion@elmolio.com"
 		b.Bank = "BBVA"
 		b.BankAccount = "OO1101100200477594"
 		b.BankAccountOwner = "HENRY ALVAREZ / SIGUAS GALVEZ CORY NATHALI"
@@ -75,8 +85,8 @@ func (b *Building) GetBuildingData(name string) {
 		b.BankAccount = "19374206534093"
 		b.BankAccountOwner = "ROSA CACEDA/GONZALO CERDA"
 		b.Picture = "files/mirador.jpeg"
-		b.FirstColumn = []string{"NOMBRE: ", "DEPARTAMENTO: ", "AGUA TOTAL: ", "AGUA X DPTO: ", "MAN. ASCENSOR: ", "PORTERO JERSON: ", "PORTERO ROBERTO: "}
-		b.SecondColumn = []string{"MATERIALES LIMPIEZA: ", "PERSONAL LIMPIEZA: ", "DESCANSERO: ", "MANTENIMIENTO JARDINES: ", "LUZ SSGG: ", "LUZ BCI: ", "ADMINISTRACION: "}
+		b.FirstColumn = []string{}
+		b.SecondColumn = []string{}
 		b.HaveWater = true
 	case "nitoa":
 		b.Name = "EDIFICIO NITOA I"
@@ -87,8 +97,8 @@ func (b *Building) GetBuildingData(name string) {
 		b.BankAccount = "19492161547070 / CCI: 00219419216154707091"
 		b.BankAccountOwner = "VEGA GABRIELA-O-CHERO AMELIA"
 		b.Picture = "files/nitoa.png"
-		b.FirstColumn = []string{"PROPIETARIO: ", "DPTO: ", "AGUA COMUN: ", "AGUA X DPTO: ", "LUZ SSGG: ", "LUZ BCI: ", "TOTAL AGUA Y LUZ: ", "INCREMENTO APROBADO ASAMBLEA 2023: "}
-		b.SecondColumn = []string{"SANEAMIENTO Y LIMPIEZA: ", "MAN. PREVENTIVOS: ", "MAN. CORRECTIVO: ", "SEGURIDAD: ", "ADMINISTRACION: ", "MORA: ", "REDONDEO DEL MES: ", "SUBTOTAL: "}
+		b.FirstColumn = []string{}
+		b.SecondColumn = []string{}
 		b.HaveWater = true
 	case "golf":
 		b.Name = "EDIFICIO GOLF PARK"
