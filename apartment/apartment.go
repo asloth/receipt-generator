@@ -8,17 +8,18 @@ import (
 )
 
 type Apartment struct {
-	Number          string
-	Owner           string
-	Parking         string
-  Deposit         string
-  ParticipationPercentage string
+	Number                  string
+	Owner                   string
+	Parking                 string
+	Deposit                 string
+	ParticipationPercentage string
+	FirstEmail              string
+	SecondEmail             string
 }
 
-func LoadAparmentData (filePath, sheetName string) ([]Apartment, error) {
+func LoadAparmentData(filePath, sheetName string) ([]Apartment, error) {
 	// Open the spreadsheet
 	xlsxFile, err := excelize.OpenFile(filePath)
-
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -39,9 +40,9 @@ func LoadAparmentData (filePath, sheetName string) ([]Apartment, error) {
 
 	cols := []string{}
 
-  ret := []Apartment{}
+	ret := []Apartment{}
 
-  out:
+out:
 	for i, row := range rows {
 		if i == 0 {
 			for _, colCell := range row {
@@ -49,29 +50,43 @@ func LoadAparmentData (filePath, sheetName string) ([]Apartment, error) {
 			}
 			fmt.Println("Column information", cols)
 		} else {
-      ap := Apartment{}
-      inside:
+			ap := Apartment{}
+		inside:
 			for j, colCell := range row {
-				colCell = strings.TrimSpace(strings.ToUpper(colCell)) //el valor de la celda 
-        switch j {
-        case 0:
-          if len(colCell) == 0 {
+				colCell = strings.TrimSpace(strings.ToUpper(colCell)) //el valor de la celda
+				switch j {
+				case 0:
+					if len(colCell) == 0 {
 						break out
 					}
-          ap.Number = colCell
-        case 1:
-          ap.Owner = colCell
-        case 2:
-          ap.Parking = colCell
-        case 3:
-          ap.Deposit = colCell
-        case 4:
-          ap.ParticipationPercentage = colCell
-          break inside
-        }
+					ap.Number = colCell
+				case 1:
+					ap.Owner = colCell
+				case 2:
+					ap.Parking = colCell
+				case 3:
+					ap.Deposit = colCell
+				case 4:
+					ap.ParticipationPercentage = colCell
+				case 5:
+					ap.FirstEmail = strings.ToLower(strings.TrimSpace(colCell))
+				case 6:
+					ap.SecondEmail = strings.ToLower(strings.TrimSpace(colCell))
+					break inside
+				}
 			}
-      ret = append(ret, ap)
+			ret = append(ret, ap)
 		}
 	}
 	return ret, nil
+}
+
+func GetItemByFieldValue(myArray []Apartment, fieldValue string) *Apartment {
+	for i := range myArray {
+		if myArray[i].Number == fieldValue {
+			return &myArray[i]
+		}
+		// Add additional conditions for other fields as needed
+	}
+	return nil // Return nil if the item with the specified field value is not found
 }
