@@ -54,7 +54,6 @@ func LoadFeeDetailData(filePath, sheetName string) ([]FeeDetail, error) {
 			for _, colCell := range row {
 				cols = append(cols, colCell)
 			}
-			fmt.Println("Column information", cols)
 		} else {
 			ap := FeeDetail{}
 			ap2 := make(map[string]float64)

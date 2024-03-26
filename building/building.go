@@ -63,7 +63,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/torrereal.jpeg"
 		b.FirstColumn = []string{}
 		b.SecondColumn = []string{}
-		b.HaveWater = true
+		b.HaveWater = false
 	case "valera":
 		b.Name = "EDIFICIO VARELA III"
 		b.Nickname = "VALERA"
@@ -123,7 +123,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{}
 		b.SecondColumn = []string{}
-		b.HaveWater = true
+		b.HaveWater = false
 	case "alayza":
 		b.Name = "CARLOS ALAYZA"
 		b.Nickname = "ALAYZA"
@@ -136,6 +136,18 @@ func (b *Building) GetBuildingData(name string) {
 		b.FirstColumn = []string{}
 		b.SecondColumn = []string{}
 		b.HaveWater = true
+	case "avila":
+		b.Name = "PARQUE AVILA"
+		b.Nickname = "AVILA"
+		b.Address = "JIRON MALAGA"
+		b.Email = "administracion@elmolio.com"
+		b.Bank = "BBVA"
+		b.BankAccount = "001101770200532647"
+		b.BankAccountOwner = "RICARDO GUZMAN"
+		b.Picture = "files/default.png"
+		b.FirstColumn = []string{}
+		b.SecondColumn = []string{}
+		b.HaveWater = false
 	case "sbs":
 		b.Name = "SAN BORJA SUR"
 		b.Nickname = "SBS"
@@ -147,7 +159,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{}
 		b.SecondColumn = []string{}
-		b.HaveWater = true
+		b.HaveWater = false
 	case "montereal":
 		b.Name = "MONTE REAL"
 		b.Nickname = "MONTEREAL"

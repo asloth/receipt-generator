@@ -14,7 +14,6 @@ import (
 	"github.com/asloth/receipt-generator/building"
 	"github.com/asloth/receipt-generator/email"
 	"github.com/asloth/receipt-generator/fee"
-	"github.com/asloth/receipt-generator/utils"
 	"github.com/asloth/receipt-generator/water"
 	"github.com/xuri/excelize/v2"
 )
@@ -67,34 +66,13 @@ func generateRece(r *bufio.Reader) {
 	apartmentSheet := ""
 	getData(reader, &apartmentSheet)
 
-	fmt.Println("Ingrese el nombre de la hoja donde se encuentran el agua POR DEPARTAMENTO")
-	waterPath := "AGUA"
-	getData(reader, &waterPath)
-
 	fmt.Println("Ingrese el nombre de la hoja donde se encuentran los montos de cuotas")
 	sheetName := "Propietarios ordenados"
 	getData(reader, &sheetName)
 
-	fmt.Println("Ingrese el nombre donde estan los datos de agua del recibo")
-	sheetNameWaterBuilding := ""
-	getData(reader, &sheetNameWaterBuilding)
-
 	fmt.Println("ELIJA EL EDIFICIO DEL CUAL DESEA GENERAR RECIBOS")
-	fmt.Println("2. BELMONTE")
-	fmt.Println("3. TORRE REAL")
-	fmt.Println("4. MIRADOR")
-	fmt.Println("5. NITOA")
-	fmt.Println("6. VALERA")
-	fmt.Println("7. GOLF PARK")
-	fmt.Println("8. MORA")
-	fmt.Println("9. ALAYZA")
-	fmt.Println("10. SAN BORJA SUR")
-	fmt.Println("11. MONTE REAL")
-	fmt.Println("12. TOMASAL")
-	fmt.Println("13. BALCONES")
-	fmt.Println("14. KILLA")
-	fmt.Println("15. GRAN CENTRAL COLONIAL")
-	fmt.Println("16. ELITE")
+	printBuilding()
+
 	option := ""
 	getData(reader, &option)
 
@@ -110,16 +88,8 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 4)
-		if err != nil {
-			fmt.Println("Error reading the water data" + err.Error())
-		}
-		waterGeneralData, err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding, 3)
-		fmt.Println("soy waterGeneralData", waterGeneralData)
-
-		if err != nil {
-			fmt.Println("Error reading the water general data" + err.Error())
-		}
+		waterData := make(map[string]water.WaterMonthData)
+		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
 			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
@@ -133,20 +103,13 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading aparment data" + err.Error())
 		}
+		fmt.Println("Departamentos cargados.")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 4)
-		if err != nil {
-			fmt.Println("Error reading the water data" + err.Error())
-		}
-		waterGeneralData, err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding, 3)
-		fmt.Println("soy waterGeneralData", waterGeneralData)
-
-		if err != nil {
-			fmt.Println("Error reading the water general data" + err.Error())
-		}
+		waterData := make(map[string]water.WaterMonthData)
+		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
 			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
@@ -164,16 +127,8 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 4)
-		if err != nil {
-			fmt.Println("Error reading the water data" + err.Error())
-		}
-		waterGeneralData, err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding, 3)
-		fmt.Println("soy waterGeneralData", waterGeneralData)
-
-		if err != nil {
-			fmt.Println("Error reading the water general data" + err.Error())
-		}
+		waterData := make(map[string]water.WaterMonthData)
+		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
 			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
@@ -191,16 +146,8 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 4)
-		if err != nil {
-			fmt.Println("Error reading the water data" + err.Error())
-		}
-		waterGeneralData, err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding, 3)
-		fmt.Println("soy waterGeneralData", waterGeneralData)
-
-		if err != nil {
-			fmt.Println("Error reading the water general data" + err.Error())
-		}
+		waterData := make(map[string]water.WaterMonthData)
+		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
 			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
@@ -218,16 +165,8 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 4)
-		if err != nil {
-			fmt.Println("Error reading the water data" + err.Error())
-		}
-		waterGeneralData, err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding, 3)
-		fmt.Println("soy waterGeneralData", waterGeneralData)
-
-		if err != nil {
-			fmt.Println("Error reading the water general data" + err.Error())
-		}
+		waterData := make(map[string]water.WaterMonthData)
+		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
 			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
@@ -245,16 +184,8 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 4)
-		if err != nil {
-			fmt.Println("Error reading the water data" + err.Error())
-		}
-		waterGeneralData, err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding, 3)
-		fmt.Println("soy waterGeneralData", waterGeneralData)
-
-		if err != nil {
-			fmt.Println("Error reading the water general data" + err.Error())
-		}
+		waterData := make(map[string]water.WaterMonthData)
+		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
 			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
@@ -268,20 +199,14 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading aparment data" + err.Error())
 		}
+		fmt.Println("Directorio cargado")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 4)
-		if err != nil {
-			fmt.Println("Error reading the water data" + err.Error())
-		}
-		waterGeneralData, err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding, 3)
-		fmt.Println("soy waterGeneralData", waterGeneralData)
-
-		if err != nil {
-			fmt.Println("Error reading the water general data" + err.Error())
-		}
+		fmt.Println("Cuotas cargadas")
+		waterData := make(map[string]water.WaterMonthData)
+		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
 			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
@@ -295,20 +220,15 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading aparment data" + err.Error())
 		}
+		fmt.Println("Directorio cargado")
+
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 4)
-		if err != nil {
-			fmt.Println("Error reading the water data" + err.Error())
-		}
-		waterGeneralData, err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding, 3)
-		fmt.Println("soy waterGeneralData", waterGeneralData)
-
-		if err != nil {
-			fmt.Println("Error reading the water general data" + err.Error())
-		}
+		fmt.Println("Cuotas cargadas")
+		waterData := make(map[string]water.WaterMonthData)
+		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
 			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
@@ -322,20 +242,14 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading aparment data" + err.Error())
 		}
+		fmt.Println("Directorio cargado")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 4)
-		if err != nil {
-			fmt.Println("Error reading the water data" + err.Error())
-		}
-		waterGeneralData, err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding, 3)
-		fmt.Println("soy waterGeneralData", waterGeneralData)
-
-		if err != nil {
-			fmt.Println("Error reading the water general data" + err.Error())
-		}
+		fmt.Println("Cuotas cargadas")
+		waterData := make(map[string]water.WaterMonthData)
+		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
 			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
@@ -349,22 +263,14 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading aparment data" + err.Error())
 		}
+		fmt.Println("Directorio cargado")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 4)
-
-		if err != nil {
-			fmt.Println("Error reading the water data" + err.Error())
-		}
-
-		waterGeneralData, err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding, 3)
-		fmt.Println("soy waterGeneralData", waterGeneralData)
-
-		if err != nil {
-			fmt.Println("Error reading the water general data" + err.Error())
-		}
+		fmt.Println("Cuotas cargadas")
+		waterData := make(map[string]water.WaterMonthData)
+		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
 			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
@@ -379,22 +285,12 @@ func generateRece(r *bufio.Reader) {
 			fmt.Println("Error reading apartment data" + err.Error())
 		}
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		fmt.Println("soy ret", ret)
 
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 4)
-
-		if err != nil {
-			fmt.Println("Error reading the water data" + err.Error())
-		}
-		waterGeneralData, err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding, 3)
-
-		if err != nil {
-			fmt.Println("Error reading the water general data" + err.Error())
-		}
-
+		waterData := make(map[string]water.WaterMonthData)
+		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
 			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
@@ -413,16 +309,8 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 4)
-		if err != nil {
-			fmt.Println("Error reading the water data" + err.Error())
-		}
-
-		waterGeneralData, err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding, 3)
-
-		if err != nil {
-			fmt.Println("Error reading the water general data" + err.Error())
-		}
+		waterData := make(map[string]water.WaterMonthData)
+		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
 			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
@@ -442,16 +330,9 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 4)
-		if err != nil {
-			fmt.Println("Error reading the water data" + err.Error())
-		}
-
-		waterGeneralData, err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding, 3)
-
-		if err != nil {
-			fmt.Println("Error reading the water general data" + err.Error())
-		}
+		fmt.Println("Cuotas cargadas")
+		waterData := make(map[string]water.WaterMonthData)
+		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
 			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
@@ -473,19 +354,8 @@ func generateRece(r *bufio.Reader) {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
 		fmt.Println("Cuotas cargadas")
-
-		waterData, err := loadWaterData(filePath, waterPath, 4)
-		if err != nil {
-			fmt.Println("Error reading the water data" + err.Error())
-		}
-		fmt.Println("Agua cargada")
-
-		waterGeneralData, err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding, 3)
-		if err != nil {
-			fmt.Println("Error reading the water general data" + err.Error())
-		}
-		fmt.Println("Recibo del agua cargado")
-
+		waterData := make(map[string]water.WaterMonthData)
+		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
 			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
@@ -497,27 +367,38 @@ func generateRece(r *bufio.Reader) {
 	case "16":
 		b.GetBuildingData("elite")
 		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
-		fmt.Println("Cargando data de dptos..")
+		fmt.Println("Directorio cargado")
 		if err != nil {
 			fmt.Println("Error reading apartment data" + err.Error())
 		}
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		fmt.Println("Leyendo hoja de cuotas..")
-
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
-		waterData, err := loadWaterData(filePath, waterPath, 4)
-		fmt.Println("Leyendo agua..")
-		if err != nil {
-			fmt.Println("Error reading the water data" + err.Error())
+		fmt.Println("Cuotas cargadas")
+		waterData := make(map[string]water.WaterMonthData)
+		waterGeneralData := &water.WaterByMonth{}
+		for _, apar := range ret {
+			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
+			if err != nil {
+				fmt.Println(apar.ApartmentNumber)
+				fmt.Println(err)
+			}
 		}
-
-		waterGeneralData, err := utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding, 3)
-
+	case "17":
+		b.GetBuildingData("avila")
+		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
 		if err != nil {
-			fmt.Println("Error reading the water general data" + err.Error())
+			fmt.Println("Error reading aparment data" + err.Error())
 		}
+		fmt.Println("Directorio cargado")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			fmt.Println("Error reading fee data" + err.Error())
+		}
+		fmt.Println("Cuotas cargadas")
+		waterData := make(map[string]water.WaterMonthData)
+		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
 			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
 			if err != nil {
@@ -672,6 +553,24 @@ out:
 	}
 	return ret, nil
 }
+func printBuilding() {
+	fmt.Println("2. BELMONTE")
+	fmt.Println("3. TORRE REAL")
+	fmt.Println("4. MIRADOR")
+	fmt.Println("5. NITOA")
+	fmt.Println("6. VALERA")
+	fmt.Println("7. GOLF PARK")
+	fmt.Println("8. MORA")
+	fmt.Println("9. ALAYZA")
+	fmt.Println("10. SBS")
+	fmt.Println("11. MONTE REAL")
+	fmt.Println("12. TOMASAL")
+	fmt.Println("13. BALCONES")
+	fmt.Println("14. KILLA")
+	fmt.Println("15. GRAN CENTRAL COLONIAL")
+	fmt.Println("16. ELITE")
+	fmt.Println("17. P. AVILA")
+}
 
 func sendEmails(r *bufio.Reader) {
 	reader := r
@@ -696,22 +595,7 @@ func sendEmails(r *bufio.Reader) {
 	getData(reader, &period)
 
 	fmt.Println("ELIJA EL EDIFICIO DEL CUAL DESEA ENVIAR LOS RECIBOS")
-	fmt.Println("2. BELMONTE")
-	fmt.Println("3. TORRE REAL")
-	fmt.Println("4. MIRADOR")
-	fmt.Println("5. NITOA")
-	fmt.Println("6. VALERA")
-	fmt.Println("7. GOLF PARK")
-	fmt.Println("8. MORA")
-	fmt.Println("9. ALAYZA")
-	fmt.Println("10. SBS")
-	fmt.Println("11. MONTE REAL")
-	fmt.Println("12. TOMASAL")
-	fmt.Println("13. BALCONES")
-	fmt.Println("14. KILLA")
-	fmt.Println("15. GRAN CENTRAL COLONIAL")
-	fmt.Println("16. ELITE")
-
+	printBuilding()
 	option := ""
 	getData(reader, &option)
 
@@ -825,6 +709,13 @@ func sendEmails(r *bufio.Reader) {
 		sendingEmail(ret, b, period, allemails)
 	case "16":
 		b.GetBuildingData("elite")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period, allemails)
+	case "17":
+		b.GetBuildingData("avila")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			panic(err)
