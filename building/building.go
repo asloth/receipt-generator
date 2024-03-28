@@ -29,7 +29,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.BankAccount = "3059864512041"
 		b.BankAccountOwner = "C. RECAUDADORA GRAN PARQUE ROMA"
 		b.Picture = "files/parque-roma-logo.jpg"
-		b.HaveWater = true
+		b.HaveWater = false
 	case "elite":
 		b.Name = "ÉLITE CASUARINAS"
 		b.Nickname = "ELITE"
@@ -39,7 +39,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.BankAccount = "001101860100065358"
 		b.BankAccountOwner = "LOTE 25 DE LA MANZANA G1 JIRON LOS LIRIOS"
 		b.Picture = "files/default.png"
-		b.HaveWater = true
+		b.HaveWater = false
 	case "belmonte":
 		b.Name = "EDIFICIO BELMONTE"
 		b.Nickname = "BELMONTE"
@@ -51,7 +51,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/belmonte.jpeg"
 		b.FirstColumn = []string{}
 		b.SecondColumn = []string{}
-		b.HaveWater = true
+		b.HaveWater = false
 	case "torrereal":
 		b.Name = "EDIFICIO TORRE REAL"
 		b.Nickname = "TORREREAL"
@@ -75,7 +75,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/valera.jpeg"
 		b.FirstColumn = []string{"NOMBRE: "}
 		b.SecondColumn = []string{}
-		b.HaveWater = true
+		b.HaveWater = false
 	case "mirador":
 		b.Name = "EDIFICIO MIRADOR 2"
 		b.Nickname = "MIRADOR"
@@ -87,7 +87,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/mirador.jpeg"
 		b.FirstColumn = []string{}
 		b.SecondColumn = []string{}
-		b.HaveWater = true
+		b.HaveWater = false
 	case "nitoa":
 		b.Name = "EDIFICIO NITOA I"
 		b.Nickname = "NITOA"
@@ -99,7 +99,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/nitoa.png"
 		b.FirstColumn = []string{}
 		b.SecondColumn = []string{}
-		b.HaveWater = true
+		b.HaveWater = false
 	case "golf":
 		b.Name = "EDIFICIO GOLF PARK"
 		b.Nickname = "GOLF"
@@ -135,7 +135,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{}
 		b.SecondColumn = []string{}
-		b.HaveWater = true
+		b.HaveWater = false
 	case "avila":
 		b.Name = "PARQUE AVILA"
 		b.Nickname = "AVILA"
@@ -171,7 +171,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{}
 		b.SecondColumn = []string{}
-		b.HaveWater = true
+		b.HaveWater = false
 	case "tomasal":
 		b.Name = "TOMASAL"
 		b.Nickname = "TOMASAL"
@@ -183,7 +183,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{}
 		b.SecondColumn = []string{}
-		b.HaveWater = true
+		b.HaveWater = false
 	case "balcones":
 		b.Name = "LOS BALCONES DE SAN BLAS"
 		b.Nickname = "BALCONES"
@@ -195,7 +195,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{}
 		b.SecondColumn = []string{}
-		b.HaveWater = true
+		b.HaveWater = false
 	case "killa":
 		b.Name = "EDIFICIO RESIDENCIAL KILLA"
 		b.Nickname = "KILLA"
@@ -207,7 +207,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{"NOMBRE: "}
 		b.SecondColumn = []string{"AGUA: "}
-		b.HaveWater = true
+		b.HaveWater = false
 	case "gcc":
 		b.Name = "GRAN CENTRAL COLONIAL"
 		b.Nickname = "GCC"

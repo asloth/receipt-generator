@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"strconv"
 	"strings"
@@ -161,10 +162,12 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading aparment data" + err.Error())
 		}
+		fmt.Println("Directorio cargado")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
+		fmt.Println("Cuotas cargado")
 		waterData := make(map[string]water.WaterMonthData)
 		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
@@ -571,28 +574,48 @@ func printBuilding() {
 	fmt.Println("16. ELITE")
 	fmt.Println("17. P. AVILA")
 }
+func getFilePath(reader *bufio.Reader) string {
+	fmt.Println("Ingrese el nombre del archivo excel, formato XLSX")
+	name := "sheetName"
+	getData(reader, &name)
+	filePath := "cuotas/" + name + ".xlsx"
+	return filePath
+}
+
+func getSheetName(reader *bufio.Reader) string {
+	fmt.Println("Ingrese el nombre de la hoja donde se encuentra la cuota")
+	sheetName := "Propietarios ordenados"
+	getData(reader, &sheetName)
+	return sheetName
+}
+func getSheetDirectory(reader *bufio.Reader) string {
+	fmt.Println("Ingrese el nombre de la hoja donde se encuentran los emails")
+	emails := "DIRECTORIO"
+	getData(reader, &emails)
+	return emails
+}
+func getPeriodName(reader *bufio.Reader) string {
+	fmt.Println("Ingrese el nombre del periodo al que pertenecen los recibos (Mes-A;o)")
+	period := "Febrero-2023"
+	getData(reader, &period)
+	return period
+}
+func getApartmentNumber(reader *bufio.Reader) string {
+	fmt.Println("Ingrese el numero del departamento que desea elegir")
+	number := "Febrero-2023"
+	getData(reader, &number)
+	return number
+}
 
 func sendEmails(r *bufio.Reader) {
 	reader := r
 	fmt.Println("ENVIAR RECIBOS POR CORREO")
 	fmt.Println("---------------------")
-
-	fmt.Println("Ingrese el nombre del archivo excel, formato XLSX")
-	name := "sheetName"
-	getData(reader, &name)
-	filePath := "cuotas/" + name + ".xlsx"
-
-	fmt.Println("Ingrese el nombre de la hoja donde se encuentra la cuota")
-	sheetName := "Propietarios ordenados"
-	getData(reader, &sheetName)
-
-	fmt.Println("Ingrese el nombre de la hoja donde se encuentran los emails")
-	emails := "DIRECTORIO"
-	getData(reader, &emails)
-
-	fmt.Println("Ingrese el nombre del periodo al que pertenecen los recibos (Mes-A;o)")
-	period := "Febrero-2023"
-	getData(reader, &period)
+	
+	filePath := getFilePath(reader)
+	sheetName := getSheetName(reader)
+	emails := getSheetDirectory(reader)
+	period := getPeriodName(reader)
 
 	fmt.Println("ELIJA EL EDIFICIO DEL CUAL DESEA ENVIAR LOS RECIBOS")
 	printBuilding()
@@ -726,9 +749,8 @@ func sendEmails(r *bufio.Reader) {
 
 }
 
-func sendingEmail(ret []fee.FeeDetail, b building.Building, period string, allEmails []apartment.Apartment) {
+func getEmailConnection(period string, b *building.Building) (*email.EmailService, *bytes.Buffer)  {
 	var body bytes.Buffer
-	//CAMBIAR NOMBRE CUOTA
 	email.GetTemplate("email/templates/maintenance.html", &body, period, b.Email)
 	e := &email.EmailService{
 		Host:     "smtp.gmail.com",
@@ -744,25 +766,45 @@ func sendingEmail(ret []fee.FeeDetail, b building.Building, period string, allEm
 	if err != nil {
 		panic(err)
 	}
+	return e, &body
+}
+
+func sendingEmail(ret []fee.FeeDetail, b building.Building, period string, allEmails []apartment.Apartment) {
+	e,body := getEmailConnection(period,&b)
 
 	for _, apar := range ret {
 		email1 := apartment.GetItemByFieldValue(allEmails, apar.ApartmentNumber).FirstEmail
 		email2 := apartment.GetItemByFieldValue(allEmails, apar.ApartmentNumber).SecondEmail
 
 		fmt.Println("Enviando email a " + apar.ApartmentNumber + " con correo :" + email1)
-		err := e.SendReceipt(email1, period, "output/"+b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.ApartmentNumber+".pdf", &body)
+		err := e.SendReceipt(email1, period, "output/"+b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.ApartmentNumber+".pdf", body)
 		if len(email2) > 0 {
 			fmt.Println("Enviando email a " + apar.ApartmentNumber + " con correo :" + email2)
-			err = e.SendReceipt(email2, period, "output/"+b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.ApartmentNumber+".pdf", &body)
+			err = e.SendReceipt(email2, period, "output/"+b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apar.ApartmentNumber+".pdf", body)
 		}
 		if err != nil {
 			fmt.Println(err)
 			continue
 		}
-
 		fmt.Println("Email enviado exitosamente a " + apar.ApartmentNumber)
-
 	}
+	e.Desconnect()
+}
+
+func sendEmailToAparment(period string, b building.Building, apartmentNumber string,allEmails []apartment.Apartment ){
+	e,body := getEmailConnection(period,&b)
+	email1 := apartment.GetItemByFieldValue(allEmails, apartmentNumber).FirstEmail
+	email2 := apartment.GetItemByFieldValue(allEmails, apartmentNumber).SecondEmail
+	fmt.Println("Enviando email a " + apartmentNumber  + " con correo :" + email1)
+	err := e.SendReceipt(email1, period, "output/"+b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apartmentNumber+".pdf", body)
+	if len(email2) > 0 {
+		fmt.Println("Enviando email a " +apartmentNumber + " con correo :" + email2)
+		err = e.SendReceipt(email2, period, "output/"+b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apartmentNumber+".pdf", body)
+	}
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("Email enviado exitosamente a " +apartmentNumber )
 
 	e.Desconnect()
 }
