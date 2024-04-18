@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"strconv"
 	"strings"
@@ -49,14 +48,10 @@ func generateRece(r *bufio.Reader) {
 	fechaVenc := ""
 	getReceiptData(reader, "fecha de vencimiento (dd/mm/aa)", &fechaVenc, true)
 
-	tipoCuota := "ORDINARIO"
-	getReceiptData(reader, "tipo de cuota", &tipoCuota, false)
+	tipoCuota := "ORDINARIA"
 
 	periodo := "AGOSTO-2022"
 	getReceiptData(reader, "periodo", &periodo, false)
-
-	waterRead := ""
-	getReceiptData(reader, "fecha de lectura del agua (dd/mm/aa)", &waterRead, true)
 
 	fmt.Println("Ingrese el nombre del archivo excel, formato XLSX")
 	name := "sheetName"
@@ -85,10 +80,12 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading aparment data" + err.Error())
 		}
+		fmt.Println("Directorio cargado")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
+		fmt.Println("Cuota cargada")
 		waterData := make(map[string]water.WaterMonthData)
 		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
@@ -104,11 +101,12 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading aparment data" + err.Error())
 		}
-		fmt.Println("Departamentos cargados.")
+		fmt.Println("Directorio cargado")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
+		fmt.Println("Cuota cargada")
 		waterData := make(map[string]water.WaterMonthData)
 		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
@@ -183,10 +181,12 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading aparment data" + err.Error())
 		}
+		fmt.Println("Directorio cargado")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
+		fmt.Println("Cuotas cargadas")
 		waterData := make(map[string]water.WaterMonthData)
 		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
@@ -287,11 +287,12 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading apartment data" + err.Error())
 		}
+		fmt.Println("Directorio cargado")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
+		fmt.Println("Cuotas cargadas")
 		waterData := make(map[string]water.WaterMonthData)
 		waterGeneralData := &water.WaterByMonth{}
 		for _, apar := range ret {
@@ -327,9 +328,8 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading apartment data" + err.Error())
 		}
-		fmt.Println(apData)
+		fmt.Println("Directorio cargado")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
 		}
@@ -345,13 +345,11 @@ func generateRece(r *bufio.Reader) {
 		}
 	case "15":
 		b.GetBuildingData("gcc")
-
 		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
 		if err != nil {
 			fmt.Println("Error reading apartment data" + err.Error())
 		}
 		fmt.Println("Directorio cargado")
-
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			fmt.Println("Error reading fee data" + err.Error())
