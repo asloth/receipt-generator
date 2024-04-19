@@ -71,7 +71,7 @@ func generateRece(r *bufio.Reader) {
 
 	option := ""
 	getData(reader, &option)
-
+	waterRead := "BORRAR"
 	var b building.Building
 	switch option {
 	case "2":
