@@ -76,338 +76,58 @@ func generateRece(r *bufio.Reader) {
 	switch option {
 	case "2":
 		b.GetBuildingData("belmonte")
-		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
-		if err != nil {
-			fmt.Println("Error reading aparment data" + err.Error())
-		}
-		fmt.Println("Directorio cargado")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			fmt.Println("Error reading fee data" + err.Error())
-		}
-		fmt.Println("Cuota cargada")
-		waterData := make(map[string]water.WaterMonthData)
-		waterGeneralData := &water.WaterByMonth{}
-		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
-			if err != nil {
-				fmt.Println(apar.ApartmentNumber)
-				fmt.Println(err)
-			}
-		}
 	case "3":
 		b.GetBuildingData("torrereal")
-		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
-		if err != nil {
-			fmt.Println("Error reading aparment data" + err.Error())
-		}
-		fmt.Println("Directorio cargado")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			fmt.Println("Error reading fee data" + err.Error())
-		}
-		fmt.Println("Cuota cargada")
-		waterData := make(map[string]water.WaterMonthData)
-		waterGeneralData := &water.WaterByMonth{}
-		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
-			if err != nil {
-				fmt.Println(apar.ApartmentNumber)
-				fmt.Println(err)
-			}
-		}
 	case "4":
 		b.GetBuildingData("mirador")
-		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
-		if err != nil {
-			fmt.Println("Error reading aparment data" + err.Error())
-		}
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			fmt.Println("Error reading fee data" + err.Error())
-		}
-		waterData := make(map[string]water.WaterMonthData)
-		waterGeneralData := &water.WaterByMonth{}
-		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
-			if err != nil {
-				fmt.Println(apar.ApartmentNumber)
-				fmt.Println(err)
-			}
-		}
 	case "5":
 		b.GetBuildingData("nitoa")
-		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
-		if err != nil {
-			fmt.Println("Error reading aparment data" + err.Error())
-		}
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			fmt.Println("Error reading fee data" + err.Error())
-		}
-		waterData := make(map[string]water.WaterMonthData)
-		waterGeneralData := &water.WaterByMonth{}
-		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
-			if err != nil {
-				fmt.Println(apar.ApartmentNumber)
-				fmt.Println(err)
-			}
-		}
 	case "6":
 		b.GetBuildingData("valera")
-		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
-		if err != nil {
-			fmt.Println("Error reading aparment data" + err.Error())
-		}
-		fmt.Println("Directorio cargado")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			fmt.Println("Error reading fee data" + err.Error())
-		}
-		fmt.Println("Cuotas cargado")
-		waterData := make(map[string]water.WaterMonthData)
-		waterGeneralData := &water.WaterByMonth{}
-		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
-			if err != nil {
-				fmt.Println(apar.ApartmentNumber)
-				fmt.Println(err)
-			}
-		}
 	case "7":
 		b.GetBuildingData("golf")
-		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
-		if err != nil {
-			fmt.Println("Error reading aparment data" + err.Error())
-		}
-		fmt.Println("Directorio cargado")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			fmt.Println("Error reading fee data" + err.Error())
-		}
-		fmt.Println("Cuotas cargadas")
-		waterData := make(map[string]water.WaterMonthData)
-		waterGeneralData := &water.WaterByMonth{}
-		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
-			if err != nil {
-				fmt.Println(apar.ApartmentNumber)
-				fmt.Println(err)
-			}
-		}
 	case "8":
 		b.GetBuildingData("mora")
-		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
-		if err != nil {
-			fmt.Println("Error reading aparment data" + err.Error())
-		}
-		fmt.Println("Directorio cargado")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			fmt.Println("Error reading fee data" + err.Error())
-		}
-		fmt.Println("Cuotas cargadas")
-		waterData := make(map[string]water.WaterMonthData)
-		waterGeneralData := &water.WaterByMonth{}
-		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
-			if err != nil {
-				fmt.Println(apar.ApartmentNumber)
-				fmt.Println(err)
-			}
-		}
 	case "9":
 		b.GetBuildingData("alayza")
-		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
-		if err != nil {
-			fmt.Println("Error reading aparment data" + err.Error())
-		}
-		fmt.Println("Directorio cargado")
-
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			fmt.Println("Error reading fee data" + err.Error())
-		}
-		fmt.Println("Cuotas cargadas")
-		waterData := make(map[string]water.WaterMonthData)
-		waterGeneralData := &water.WaterByMonth{}
-		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
-			if err != nil {
-				fmt.Println(apar.ApartmentNumber)
-				fmt.Println(err)
-			}
-		}
 	case "10":
 		b.GetBuildingData("sbs")
-		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
-		if err != nil {
-			fmt.Println("Error reading aparment data" + err.Error())
-		}
-		fmt.Println("Directorio cargado")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			fmt.Println("Error reading fee data" + err.Error())
-		}
-		fmt.Println("Cuotas cargadas")
-		waterData := make(map[string]water.WaterMonthData)
-		waterGeneralData := &water.WaterByMonth{}
-		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
-			if err != nil {
-				fmt.Println(apar.ApartmentNumber)
-				fmt.Println(err)
-			}
-		}
 	case "11":
 		b.GetBuildingData("montereal")
-		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
-		if err != nil {
-			fmt.Println("Error reading aparment data" + err.Error())
-		}
-		fmt.Println("Directorio cargado")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			fmt.Println("Error reading fee data" + err.Error())
-		}
-		fmt.Println("Cuotas cargadas")
-		waterData := make(map[string]water.WaterMonthData)
-		waterGeneralData := &water.WaterByMonth{}
-		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
-			if err != nil {
-				fmt.Println(apar.ApartmentNumber)
-				fmt.Println(err)
-			}
-		}
 	case "12":
 		b.GetBuildingData("tomasal")
-		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
-		if err != nil {
-			fmt.Println("Error reading apartment data" + err.Error())
-		}
-		fmt.Println("Directorio cargado")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			fmt.Println("Error reading fee data" + err.Error())
-		}
-		fmt.Println("Cuotas cargadas")
-		waterData := make(map[string]water.WaterMonthData)
-		waterGeneralData := &water.WaterByMonth{}
-		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
-			if err != nil {
-				fmt.Println(apar.ApartmentNumber)
-				fmt.Println(err)
-			}
-		}
 	case "13":
 		b.GetBuildingData("balcones")
-		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
-		if err != nil {
-			fmt.Println("Error reading apartment data" + err.Error())
-		}
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-
-		if err != nil {
-			fmt.Println("Error reading fee data" + err.Error())
-		}
-		waterData := make(map[string]water.WaterMonthData)
-		waterGeneralData := &water.WaterByMonth{}
-		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
-			if err != nil {
-				fmt.Println(apar.ApartmentNumber)
-				fmt.Println(err)
-			}
-		}
 	case "14":
 		b.GetBuildingData("killa")
-		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
-		if err != nil {
-			fmt.Println("Error reading apartment data" + err.Error())
-		}
-		fmt.Println("Directorio cargado")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			fmt.Println("Error reading fee data" + err.Error())
-		}
-		fmt.Println("Cuotas cargadas")
-		waterData := make(map[string]water.WaterMonthData)
-		waterGeneralData := &water.WaterByMonth{}
-		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
-			if err != nil {
-				fmt.Println(apar.ApartmentNumber)
-				fmt.Println(err)
-			}
-		}
 	case "15":
 		b.GetBuildingData("gcc")
-		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
-		if err != nil {
-			fmt.Println("Error reading apartment data" + err.Error())
-		}
-		fmt.Println("Directorio cargado")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			fmt.Println("Error reading fee data" + err.Error())
-		}
-		fmt.Println("Cuotas cargadas")
-		waterData := make(map[string]water.WaterMonthData)
-		waterGeneralData := &water.WaterByMonth{}
-		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
-			if err != nil {
-				fmt.Println(apar.ApartmentNumber)
-				fmt.Println(err)
-			}
-		}
-
 	case "16":
 		b.GetBuildingData("elite")
-		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
-		fmt.Println("Directorio cargado")
-		if err != nil {
-			fmt.Println("Error reading apartment data" + err.Error())
-		}
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			fmt.Println("Error reading fee data" + err.Error())
-		}
-		fmt.Println("Cuotas cargadas")
-		waterData := make(map[string]water.WaterMonthData)
-		waterGeneralData := &water.WaterByMonth{}
-		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
-			if err != nil {
-				fmt.Println(apar.ApartmentNumber)
-				fmt.Println(err)
-			}
-		}
 	case "17":
 		b.GetBuildingData("avila")
-		apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
-		if err != nil {
-			fmt.Println("Error reading aparment data" + err.Error())
-		}
-		fmt.Println("Directorio cargado")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			fmt.Println("Error reading fee data" + err.Error())
-		}
-		fmt.Println("Cuotas cargadas")
-		waterData := make(map[string]water.WaterMonthData)
-		waterGeneralData := &water.WaterByMonth{}
-		for _, apar := range ret {
-			err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
-			if err != nil {
-				fmt.Println(apar.ApartmentNumber)
-				fmt.Println(err)
-			}
-		}
+	case "18":
+		b.GetBuildingData("huascar")
 		// TERMINA EL CASE
+	}
+	apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
+	if err != nil {
+		fmt.Println("Error reading aparment data" + err.Error())
+	}
+	fmt.Println("Directorio cargado")
+	ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+	if err != nil {
+		fmt.Println("Error reading fee data" + err.Error())
+	}
+	fmt.Println("Cuotas cargadas")
+	waterData := make(map[string]water.WaterMonthData)
+	waterGeneralData := &water.WaterByMonth{}
+	for _, apar := range ret {
+		err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData)
+		if err != nil {
+			fmt.Println(apar.ApartmentNumber)
+			fmt.Println(err)
+		}
 	}
 
 }
@@ -571,6 +291,7 @@ func printBuilding() {
 	fmt.Println("15. GRAN CENTRAL COLONIAL")
 	fmt.Println("16. ELITE")
 	fmt.Println("17. P. AVILA")
+	fmt.Println("18. HUASCAR")
 }
 func getFilePath(reader *bufio.Reader) string {
 	fmt.Println("Ingrese el nombre del archivo excel, formato XLSX")
@@ -737,6 +458,13 @@ func sendEmails(r *bufio.Reader) {
 		sendingEmail(ret, b, period, allemails)
 	case "17":
 		b.GetBuildingData("avila")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period, allemails)
+	case "18":
+		b.GetBuildingData("huascar")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			panic(err)

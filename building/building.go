@@ -220,5 +220,17 @@ func (b *Building) GetBuildingData(name string) {
 		b.FirstColumn = []string{"NOMBRE: "}
 		b.SecondColumn = []string{"AGUA: "}
 		b.HaveWater = false
+	case "huascar":
+		b.Name = "EDIFICIO HUASCAR"
+		b.Nickname = "HUASCAR"
+		b.Address = "JIRON VARELA Y ORBEGOZO 439 - SURQUILLO"
+		b.Email = "administracion@elmolio.com"
+		b.Bank = "BCP"
+		b.BankAccount = "19310371405066"
+		b.BankAccountOwner = "ARACELI VALDERRAMA"
+		b.Picture = "files/default.png"
+		b.FirstColumn = []string{"NOMBRE: "}
+		b.SecondColumn = []string{"AGUA: "}
+		b.HaveWater = false
 	}
 }
