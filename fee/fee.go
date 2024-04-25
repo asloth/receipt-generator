@@ -286,7 +286,7 @@ func printAparmentData(pdf *pdf.Maroto, backgroundColor color.Color, contentSize
 
 	// Loop over the struct fields
 	for i := 0; i < structType.NumField(); i++ {
-		if (i>4) {
+		if i > 4 {
 			continue
 		}
 		fieldValue := reflect.ValueOf(*ap).Field(i)

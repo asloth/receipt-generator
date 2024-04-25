@@ -47,7 +47,7 @@ func ReceiptHeader(pdf *pdf.Maroto, heightHeader float64, b *building.Building) 
 		})
 		m.Col(colWidth, func() {
 			_ = m.FileImage(b.Picture, props.Rect{
-				Center: true, 
+				Center: true,
 			})
 		})
 	})
@@ -68,7 +68,7 @@ func DataOwner(pdf *pdf.Maroto, backgroundColor color.Color, rowHeight float64, 
 				VerticalPadding: 0,
 				Top:             4,
 			})
-    })
+		})
 		m.Col(columnData, func() {
 			m.Text(data1, props.Text{
 				Top: 4,
@@ -184,7 +184,7 @@ func Resumen(pdf *pdf.Maroto, backgroundColor color.Color, contentSize float64, 
 func ApartmentData(pdf *pdf.Maroto, backgroundColor color.Color, contentSize float64, field, value string) {
 
 	m := *pdf
-  m.SetBackgroundColor(backgroundColor)
+	m.SetBackgroundColor(backgroundColor)
 
 	m.Row(7, func() {
 		m.Col(4, func() {
@@ -200,7 +200,7 @@ func ApartmentData(pdf *pdf.Maroto, backgroundColor color.Color, contentSize flo
 				props.Text{
 					Size:  contentSize,
 					Style: consts.Normal,
-					Align: consts.Left,          
+					Align: consts.Left,
 				})
 		})
 	})

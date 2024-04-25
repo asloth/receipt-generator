@@ -8,8 +8,8 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func LoadWaterBuilding(filePath,sheetName string, finalColumn int) (*water.WaterByMonth,error)  {
- // Open the spreadsheet
+func LoadWaterBuilding(filePath, sheetName string, finalColumn int) (*water.WaterByMonth, error) {
+	// Open the spreadsheet
 	xlsxFile, err := excelize.OpenFile(filePath)
 
 	if err != nil {
@@ -29,7 +29,7 @@ func LoadWaterBuilding(filePath,sheetName string, finalColumn int) (*water.Water
 		fmt.Println(err)
 		return nil, err
 	}
-  
+
 	real_consumption, err := strconv.ParseFloat(rows[1][1], 64)
 	recep_consumption, err := strconv.ParseFloat(rows[2][1], 64)
 	total_charge, err := strconv.ParseFloat(rows[3][1], 64)
@@ -41,5 +41,5 @@ func LoadWaterBuilding(filePath,sheetName string, finalColumn int) (*water.Water
 	ret.Rec_soles = fmt.Sprintf("S/. %.2f", total_charge)
 	ret.Soles_m3 = fmt.Sprintf("S/. %.2f", charge_per_m3)
 
-	return &ret, nil 
+	return &ret, nil
 }

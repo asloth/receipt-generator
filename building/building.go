@@ -232,5 +232,17 @@ func (b *Building) GetBuildingData(name string) {
 		b.FirstColumn = []string{"NOMBRE: "}
 		b.SecondColumn = []string{"AGUA: "}
 		b.HaveWater = false
+	case "rosapark":
+		b.Name = "LA ROSA PARK"
+		b.Nickname = "ROSAPARK"
+		b.Address = "PASAJE QUIÑONES 195 - JESUS MARÍA"
+		b.Email = "administracion@elmolio.com"
+		b.Bank = "BBVA"
+		b.BankAccount = "OO1101840200742364"
+		b.BankAccountOwner = "CECILIA PAOLA RAMOS/VICENTE PEDRO GUTIERREZ"
+		b.Picture = "files/default.png"
+		b.FirstColumn = []string{"NOMBRE: "}
+		b.SecondColumn = []string{"AGUA: "}
+		b.HaveWater = false
 	}
 }

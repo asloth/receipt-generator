@@ -108,6 +108,8 @@ func generateRece(r *bufio.Reader) {
 		b.GetBuildingData("avila")
 	case "18":
 		b.GetBuildingData("huascar")
+	case "19":
+		b.GetBuildingData("rosapark")
 		// TERMINA EL CASE
 	}
 	apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
@@ -292,6 +294,7 @@ func printBuilding() {
 	fmt.Println("16. ELITE")
 	fmt.Println("17. P. AVILA")
 	fmt.Println("18. HUASCAR")
+	fmt.Println("19. ROSA PARK")
 }
 func getFilePath(reader *bufio.Reader) string {
 	fmt.Println("Ingrese el nombre del archivo excel, formato XLSX")
@@ -330,7 +333,7 @@ func sendEmails(r *bufio.Reader) {
 	reader := r
 	fmt.Println("ENVIAR RECIBOS POR CORREO")
 	fmt.Println("---------------------")
-	
+
 	filePath := getFilePath(reader)
 	sheetName := getSheetName(reader)
 	emails := getSheetDirectory(reader)
@@ -470,12 +473,19 @@ func sendEmails(r *bufio.Reader) {
 			panic(err)
 		}
 		sendingEmail(ret, b, period, allemails)
+	case "19":
+		b.GetBuildingData("rosapark")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period, allemails)
 
 	}
 
 }
 
-func getEmailConnection(period string, b *building.Building) (*email.EmailService, *bytes.Buffer)  {
+func getEmailConnection(period string, b *building.Building) (*email.EmailService, *bytes.Buffer) {
 	var body bytes.Buffer
 	email.GetTemplate("email/templates/maintenance.html", &body, period, b.Email)
 	e := &email.EmailService{
@@ -496,7 +506,7 @@ func getEmailConnection(period string, b *building.Building) (*email.EmailServic
 }
 
 func sendingEmail(ret []fee.FeeDetail, b building.Building, period string, allEmails []apartment.Apartment) {
-	e,body := getEmailConnection(period,&b)
+	e, body := getEmailConnection(period, &b)
 
 	for _, apar := range ret {
 		email1 := apartment.GetItemByFieldValue(allEmails, apar.ApartmentNumber).FirstEmail
@@ -517,20 +527,20 @@ func sendingEmail(ret []fee.FeeDetail, b building.Building, period string, allEm
 	e.Desconnect()
 }
 
-func sendEmailToAparment(period string, b building.Building, apartmentNumber string,allEmails []apartment.Apartment ){
-	e,body := getEmailConnection(period,&b)
+func sendEmailToAparment(period string, b building.Building, apartmentNumber string, allEmails []apartment.Apartment) {
+	e, body := getEmailConnection(period, &b)
 	email1 := apartment.GetItemByFieldValue(allEmails, apartmentNumber).FirstEmail
 	email2 := apartment.GetItemByFieldValue(allEmails, apartmentNumber).SecondEmail
-	fmt.Println("Enviando email a " + apartmentNumber  + " con correo :" + email1)
+	fmt.Println("Enviando email a " + apartmentNumber + " con correo :" + email1)
 	err := e.SendReceipt(email1, period, "output/"+b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apartmentNumber+".pdf", body)
 	if len(email2) > 0 {
-		fmt.Println("Enviando email a " +apartmentNumber + " con correo :" + email2)
+		fmt.Println("Enviando email a " + apartmentNumber + " con correo :" + email2)
 		err = e.SendReceipt(email2, period, "output/"+b.Nickname+"-RECIBOS-"+strings.ToUpper(period)+"/MANTENIMIENTO-"+strings.ToUpper(period)+"_DPTO-"+apartmentNumber+".pdf", body)
 	}
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("Email enviado exitosamente a " +apartmentNumber )
+	fmt.Println("Email enviado exitosamente a " + apartmentNumber)
 
 	e.Desconnect()
 }

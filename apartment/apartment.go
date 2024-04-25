@@ -90,3 +90,5 @@ func GetItemByFieldValue(myArray []Apartment, fieldValue string) *Apartment {
 	}
 	return nil // Return nil if the item with the specified field value is not found
 }
+
+func GetAllApartments() {}
