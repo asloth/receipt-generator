@@ -142,8 +142,8 @@ func (b *Building) GetBuildingData(name string) {
 		b.Address = "JIRON MALAGA"
 		b.Email = "administracion@elmolio.com"
 		b.Bank = "BBVA"
-		b.BankAccount = "001101770200532647"
-		b.BankAccountOwner = "RICARDO GUZMAN"
+		b.BankAccount = "001107870200364600"
+		b.BankAccountOwner = "Ricardo Guzmán y Cecilia Fuchs"
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{}
 		b.SecondColumn = []string{}
