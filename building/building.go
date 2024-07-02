@@ -76,6 +76,18 @@ func (b *Building) GetBuildingData(name string) {
 		b.FirstColumn = []string{"NOMBRE: "}
 		b.SecondColumn = []string{}
 		b.HaveWater = false
+	case "sanjose":
+		b.Name = "CABALLERIZAS DE SAN JOSE"
+		b.Nickname = "sanjose"
+		b.Address = "Dist. El Carmen - Chincha"
+		b.Email = "administracion@elmolio.com"
+		b.Bank = "BCP"
+		b.BankAccount = "19391258783086 / CCI: OO219319125878308615"
+		b.BankAccountOwner = "PATRICIA VERA / MÓNICA ENRIQUEZ"
+		b.Picture = "files/default.png"
+		b.FirstColumn = []string{"NOMBRE: "}
+		b.SecondColumn = []string{}
+		b.HaveWater = false
 	case "mirador":
 		b.Name = "EDIFICIO MIRADOR 2"
 		b.Nickname = "MIRADOR"
@@ -142,7 +154,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Address = "JIRON MALAGA"
 		b.Email = "administracion@elmolio.com"
 		b.Bank = "BBVA"
-		b.BankAccount = "001107870200364600"
+		b.BankAccount = "001107870200364600 / CCI: O1178700020036460093"
 		b.BankAccountOwner = "Ricardo Guzmán y Cecilia Fuchs"
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{}

@@ -164,7 +164,7 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	}
 
 	//IMPORTES FACTURADOS SECTION TABLE
-	monto := fmt.Sprintf("S/. %.2f", ap.Amounts["cuota"])
+	monto := fmt.Sprintf("%.2f", ap.Amounts["cuota"])
 
 	m.SetBackgroundColor(colorMolio)
 	m.SetBorder(true)
@@ -259,12 +259,12 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 
 		if j < itemsByColumn {
 			FirstColumn = append(FirstColumn, key)
-			ownerData = append(ownerData, fmt.Sprintf("S/. %.2f", value))
+			ownerData = append(ownerData, fmt.Sprintf("%.2f", value))
 			j++
 			continue
 		}
 		SecondColumn = append(SecondColumn, key)
-		otherData = append(otherData, fmt.Sprintf("S/. %.2f", value))
+		otherData = append(otherData, fmt.Sprintf("%.2f", value))
 	}
 
 	if len(FirstColumn) != len(SecondColumn) {
