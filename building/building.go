@@ -51,7 +51,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/belmonte.jpeg"
 		b.FirstColumn = []string{}
 		b.SecondColumn = []string{}
-		b.HaveWater = true
+		b.HaveWater = false
 	case "rio":
 		b.Name = "EDIFICIO RÍO DE JANEIRO"
 		b.Nickname = "RIO"
@@ -123,7 +123,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/nitoa.png"
 		b.FirstColumn = []string{}
 		b.SecondColumn = []string{}
-		b.HaveWater = true
+		b.HaveWater = false
 	case "golf":
 		b.Name = "EDIFICIO GOLF PARK"
 		b.Nickname = "GOLF"
@@ -219,7 +219,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{}
 		b.SecondColumn = []string{}
-		b.HaveWater = true
+		b.HaveWater = false
 	case "killa":
 		b.Name = "EDIFICIO RESIDENCIAL KILLA"
 		b.Nickname = "KILLA"
@@ -243,7 +243,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{"NOMBRE: "}
 		b.SecondColumn = []string{"AGUA: "}
-		b.HaveWater = false
+		b.HaveWater = true
 	case "huascar":
 		b.Name = "EDIFICIO HUASCAR"
 		b.Nickname = "HUASCAR"
@@ -267,6 +267,6 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{"NOMBRE: "}
 		b.SecondColumn = []string{"AGUA: "}
-		b.HaveWater = true
+		b.HaveWater = false
 	}
 }
