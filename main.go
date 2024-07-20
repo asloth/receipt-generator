@@ -112,6 +112,8 @@ func generateRece(r *bufio.Reader) {
 		b.GetBuildingData("rosapark")
 	case "20":
 		b.GetBuildingData("sanjose")
+	case "21":
+		b.GetBuildingData("rio")
 		// TERMINA EL CASE
 	}
 	apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
@@ -298,6 +300,7 @@ func printBuilding() {
 	fmt.Println("18. HUASCAR")
 	fmt.Println("19. ROSA PARK")
 	fmt.Println("20. CABALLERIZAS SAN JOSE")
+	fmt.Println("21. RIO")
 }
 func getFilePath(reader *bufio.Reader) string {
 	fmt.Println("Ingrese el nombre del archivo excel, formato XLSX")
@@ -485,6 +488,13 @@ func sendEmails(r *bufio.Reader) {
 		sendingEmail(ret, b, period, allemails)
 	case "20":
 		b.GetBuildingData("sanjose")
+		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+		if err != nil {
+			panic(err)
+		}
+		sendingEmail(ret, b, period, allemails)
+	case "21":
+		b.GetBuildingData("rio")
 		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 		if err != nil {
 			panic(err)
