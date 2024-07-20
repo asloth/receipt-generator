@@ -63,7 +63,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{}
 		b.SecondColumn = []string{}
-		b.HaveWater = false
+		b.HaveWater = true
 	case "torrereal":
 		b.Name = "EDIFICIO TORRE REAL"
 		b.Nickname = "TORREREAL"
