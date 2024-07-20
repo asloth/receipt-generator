@@ -53,7 +53,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.SecondColumn = []string{}
 		b.HaveWater = true
 	case "rio":
-		b.Name = "EDIFICIO RESIDENCIAL RÍO DE JANEIRO"
+		b.Name = "EDIFICIO RÍO DE JANEIRO"
 		b.Nickname = "RIO"
 		b.Address = "Calle Río de Janeiro - 256 - Miraflores"
 		b.Email = "administracion@elmolio.com"
