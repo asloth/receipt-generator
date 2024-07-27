@@ -267,6 +267,6 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{"NOMBRE: "}
 		b.SecondColumn = []string{"AGUA: "}
-		b.HaveWater = false
+		b.HaveWater = true
 	}
 }
