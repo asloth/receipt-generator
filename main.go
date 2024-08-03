@@ -133,13 +133,14 @@ func generateRece(r *bufio.Reader) {
 		fmt.Println("Ingrese el nombre de la hoja donde se encuentran el agua POR DEPARTAMENTO")
 		waterPath := "AGUA"
 		getData(reader, &waterPath)
-		fmt.Println("Ingrese el nombre de la hoja donde se encuentran los datos del recibo del agua")
-		sheetNameWaterBuilding:=""
-		getData(reader,&sheetNameWaterBuilding)
 		waterData, err = loadWaterData(filePath, waterPath, 4)
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
+		
+		fmt.Println("Ingrese el nombre de la hoja donde se encuentran los datos del recibo del agua")
+		sheetNameWaterBuilding:=""
+		getData(reader,&sheetNameWaterBuilding)
 		waterGeneralData, err = utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding, 3)
 
 		if err != nil {
