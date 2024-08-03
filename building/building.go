@@ -70,7 +70,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Address = "JIRON DANIEL OLAECHEA 175 - JESÚS MARÍA"
 		b.Email = "administradorlimaeste@elmolio.com"
 		b.Bank = "BCP"
-		b.BankAccount = "193-95303003-0-58"
+		b.BankAccount = "19399644215020 / CCI: 00219319964421502015"
 		b.BankAccountOwner = "Reynaldo Martín Soza Martínez"
 		b.Picture = "files/torrereal.jpeg"
 		b.FirstColumn = []string{}
@@ -262,7 +262,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Address = "PASAJE QUIÑONES 195 - JESUS MARÍA"
 		b.Email = "administracion@elmolio.com"
 		b.Bank = "BBVA"
-		b.BankAccount = "OO1101840200742364"
+		b.BankAccount = "OO1101840200742364 / CCI: 01118400020074236499"
 		b.BankAccountOwner = "CECILIA PAOLA RAMOS/VICENTE PEDRO GUTIERREZ"
 		b.Picture = "files/default.png"
 		b.FirstColumn = []string{"NOMBRE: "}
