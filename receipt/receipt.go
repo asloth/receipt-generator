@@ -5,20 +5,19 @@ import (
 
 	"github.com/asloth/receipt-generator/building"
 	"github.com/johnfercher/maroto/v2/pkg/components/col"
+	"github.com/johnfercher/maroto/v2/pkg/components/image"
 	"github.com/johnfercher/maroto/v2/pkg/components/text"
-	"github.com/johnfercher/maroto/v2/pkg/consts"
 	"github.com/johnfercher/maroto/v2/pkg/consts/align"
 	"github.com/johnfercher/maroto/v2/pkg/consts/fontfamily"
 	"github.com/johnfercher/maroto/v2/pkg/consts/fontstyle"
 	"github.com/johnfercher/maroto/v2/pkg/core"
 	"github.com/johnfercher/maroto/v2/pkg/props"
-	"github.com/johnfercher/maroto/v2/pkg/components/image"
 )
 
 func ReceiptHeader(pdf *core.Maroto, heightHeader float64, b *building.Building) {
 	m := *pdf
 	
-	var colWidth int = 4
+	var colWidth int = 6
 
 	col1 := col.New(colWidth)
 	col1.Add(
@@ -47,24 +46,24 @@ func ReceiptHeader(pdf *core.Maroto, heightHeader float64, b *building.Building)
 
 	m.AddRow(heightHeader, 
 		image.NewFromFileCol(
-			2,
+			3,
 			"files/molio-logo.jpg",
 			props.Rect{	
-			Center: true,
+				Center: true,
 			},
 		),
 		col1,
 		image.NewFromFileCol(
-			2,
+			3,
 			b.Picture,
 			props.Rect{	
-			Center: true,
+				Center: true,
 			},
 		),
 	)
 }
 
-func DataOwner(pdf *core.Maroto, backgroundColor props.Color, rowHeight float64, contentSize float64, prop1, data1, prop2, data2 string) {
+func DataOwner(pdf *core.Maroto, rowHeight float64, contentSize float64, prop1, data1, prop2, data2 string) {
 	m := *pdf
 	var column1 int = 4
 	var columnData int = 2
@@ -72,7 +71,7 @@ func DataOwner(pdf *core.Maroto, backgroundColor props.Color, rowHeight float64,
 		text.NewCol(column1,strings.ToUpper(prop1),
 			props.Text{
 				Size:            8,
-				Align:           align.Center,
+				Align:           align.Left,
 				Style:           fontstyle.Bold,
 				VerticalPadding: 0,
 				Top:             4,
@@ -83,7 +82,7 @@ func DataOwner(pdf *core.Maroto, backgroundColor props.Color, rowHeight float64,
 		}),
 		text.NewCol(column1,strings.ToUpper(prop2), props.Text{
 			Size:            8,
-			Align:           align.Center,
+			Align:           align.Left,
 			Style:           fontstyle.Bold,
 			VerticalPadding: 0,
 			Top:             4,
@@ -94,117 +93,101 @@ func DataOwner(pdf *core.Maroto, backgroundColor props.Color, rowHeight float64,
 	)
 }
 
-func PayInfo(pdf *pdf.Maroto, colorMolio props.Color, b *building.Building) {
+func PayInfo(pdf *core.Maroto, headerColStyle *props.Cell, contentColStyle *props.Cell, b *building.Building) {
 	m := *pdf
-
-	headers := []string{"BANCO", "CUENTA BANCARIA", "TITULAR DE CUENTA"}
-	contents := [][]string{
-		{b.Bank, b.BankAccount, b.BankAccountOwner},
-	}
-
-	m.TableList(headers, contents,  TableList{
-		HeaderProp: props.TableListContent{
-			Family:    fontfamily.Arial,
-			Style:     fontstyle.Bold,
-			Size:      11.0,
-			GridSizes: []uint{4, 4, 4},
-		},
-		ContentProp: props.TableListContent{
-			Family:    fontfamily.Courier,
-			Style:     fontstyle.Normal,
-			Size:      10.0,
-			GridSizes: []uint{4, 4, 4},
-		},
+	headerTextStyle := props.Text{
+		Size: 11,
+		Style: fontstyle.Bold,
 		Align: align.Center,
-		HeaderContentSpace:     0.01,
-		VerticalContentPadding: 4.0,
-		AlternatedBackground: &props.Color{
-			Red:   255,
-			Green: 255,
-			Blue:  255,
-		},
-	})
+		Family: fontfamily.Arial,
+		Top: 2,
+	}
+	headers := []core.Col{
+		text.NewCol(4,"BANCO",headerTextStyle).WithStyle(headerColStyle),
+		text.NewCol(4,"CUENTA BANCARIA",headerTextStyle).WithStyle(headerColStyle),
+		text.NewCol(4,"TITULAR DE CUENTA",headerTextStyle).WithStyle(headerColStyle),
+	}
+	
+	contentTextStyle := props.Text{
+		Family:    fontfamily.Courier,
+		Style:     fontstyle.Normal,
+		Size:      10.0,
+		Align: align.Center,
+	}
+	contents := []core.Col{
+		text.NewCol(4,b.Bank,contentTextStyle).WithStyle(contentColStyle),
+		text.NewCol(4,b.BankAccount,contentTextStyle).WithStyle(contentColStyle),
+		text.NewCol(4,b.BankAccountOwner,contentTextStyle).WithStyle(contentColStyle),
+	}
+	m.AddRow(8, headers...)
+	m.AddRow(12, contents...)
 }
 
-func SubHeader(pdf *pdf.Maroto, colorMolio props.Color, subtitulo string) {
+func SubHeader(pdf *core.Maroto, subtitulo string, colStyleHeader *props.Cell) {
 	m := *pdf
-	m.SetBorder(true)
-	m.SetBackgroundColor(colorMolio)
-	m.AddRow(7, func() {
-		m.Col(12, func() {
-			m.Text(subtitulo,
-				props.Text{
-					Size:  12,
-					Style: consts.Bold,
-					Align: consts.Center,
-				})
-		})
-	})
+	m.AddRow(7,
+		text.NewCol(12,subtitulo,
+			props.Text{
+				Size:  12,
+				Style: fontstyle.Bold,
+				Align: align.Center,
+			}).WithStyle(colStyleHeader),
+	)
 }
 
-func Footer(pdf *pdf.Maroto, backgroundColor props.Color, contentSize float64) {
+func Footer(pdf *core.Maroto, backgroundColor props.Color, contentSize float64) {
 	m := *pdf
-	m.SetBackgroundColor(backgroundColor)
-	m.AddRow(10, func() {
-		m.Col(12, func() {
-			m.Text("1. Se deja por escrito que el incumplimiento del pago esta sujeto a mora.",
+	m.AddRow(10, 
+			text.NewCol(12,"1. Se deja por escrito que el incumplimiento del pago esta sujeto a mora.",
 				props.Text{
 					Size:  contentSize,
-					Align: consts.Left,
-				})
-			m.Text("2. El Propietario autoriza el corte de suministro de agua por incumplimiento de pago.",
+					Align: align.Left,
+				}),
+			text.NewCol(12,"2. El Propietario autoriza el corte de suministro de agua por incumplimiento de pago.",
 				props.Text{
 					Size:  contentSize,
-					Align: consts.Left,
+					Align: align.Left,
 					Top:   5,
-				})
-		})
-	})
+				}),
+	)
 }
 
-func Resumen(pdf *pdf.Maroto, backgroundColor props.Color, contentSize float64, field, amount string) {
+func Resumen(pdf *core.Maroto, colStyleCenterContent *props.Cell,contentSize float64, field, amount string) {
 	m := *pdf
-	m.AddRow(7, func() {
-		m.Col(10, func() {
-			m.Text(field,
-				props.Text{
-					Size:  contentSize,
-					Style: consts.Bold,
-					Align: consts.Left,
-				})
-		})
-		m.Col(2, func() {
-			m.Text(amount,
-				props.Text{
-					Size:  contentSize,
-					Style: consts.Bold,
-					Align: consts.Center,
-				})
-		})
-	})
+	m.AddRow(7, 
+		text.NewCol(10,field,
+			props.Text{
+				Size:  contentSize,
+				Style: fontstyle.Bold,
+				Top: 1,
+				Align: align.Left,
+			}).WithStyle(colStyleCenterContent),
+		text.NewCol(2,amount,
+			props.Text{
+				Size:  contentSize,
+				Style: fontstyle.Bold,
+				Top: 1,
+				Align: align.Center,
+			}).WithStyle(colStyleCenterContent),
+	)
 }
 
-func ApartmentData(pdf *pdf.Maroto, backgroundColor props.Color, contentSize float64, field, value string) {
-
+func ApartmentData(pdf *core.Maroto, colStyleCenterContent *props.Cell, contentSize float64, field, value string){
 	m := *pdf
-	m.SetBackgroundColor(backgroundColor)
 
-	m.AddRow(7, func() {
-		m.Col(4, func() {
-			m.Text(field,
-				props.Text{
-					Size:  contentSize,
-					Style: consts.Bold,
-					Align: consts.Right,
-				})
-		})
-		m.Col(8, func() {
-			m.Text(value,
-				props.Text{
-					Size:  contentSize,
-					Style: consts.Normal,
-					Align: consts.Left,
-				})
-		})
-	})
+	m.AddRow(7, 
+		text.NewCol(4,field,
+			props.Text{
+				Size:  contentSize,
+				Style: fontstyle.Bold,
+				Align: align.Right,
+			}).WithStyle(colStyleCenterContent),
+		text.NewCol(8,value,
+			props.Text{
+				Size:  contentSize,
+				Left: 2,
+				Style: fontstyle.Normal,
+				Align: align.Left,
+			}).WithStyle(colStyleCenterContent),
+	)
 }

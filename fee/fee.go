@@ -12,10 +12,15 @@ import (
 	"github.com/asloth/receipt-generator/building"
 	"github.com/asloth/receipt-generator/receipt"
 	"github.com/asloth/receipt-generator/water"
-	"github.com/johnfercher/maroto/pkg/color"
-	"github.com/johnfercher/maroto/pkg/consts"
-	"github.com/johnfercher/maroto/pkg/pdf"
-	"github.com/johnfercher/maroto/pkg/props"
+	"github.com/johnfercher/maroto/v2"
+	"github.com/johnfercher/maroto/v2/pkg/components/line"
+	"github.com/johnfercher/maroto/v2/pkg/components/text"
+	"github.com/johnfercher/maroto/v2/pkg/consts/align"
+	"github.com/johnfercher/maroto/v2/pkg/consts/border"
+	"github.com/johnfercher/maroto/v2/pkg/consts/fontfamily"
+	"github.com/johnfercher/maroto/v2/pkg/consts/fontstyle"
+	"github.com/johnfercher/maroto/v2/pkg/core"
+	"github.com/johnfercher/maroto/v2/pkg/props"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -96,126 +101,130 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	var heightHeader float64 = 30
 	var contentSize float64 = 10
 	var rowHeight float64 = 7
-	colorMolio := color.Color{
+	colorMolio := &props.Color{
 		Red:   148,
 		Green: 235, //bajar un poco hasta 200
 		Blue:  66,
 	}
-	backgroundColor := color.NewWhite()
-	m := pdf.NewMaroto(consts.Portrait, consts.A4)
+	m := maroto.New()
 	// Header
 	receipt.ReceiptHeader(&m, heightHeader, &buildng)
+	
+	m.AddRow(9,line.NewCol(12)) 
 
 	// tabla inicial
-	headers := []string{"TIPO CUOTA", "F. EMISION", "F. VCTO.", "PERIODO"}
-	contents := [][]string{
-		{tipoCuota, fechaEmision, fechaVenc, periodo},
+	colStyleHeader := &props.Cell{
+		BackgroundColor: colorMolio,
+	        BorderType:      border.Full,
+		BorderColor:     &props.BlackColor,
+		BorderThickness: 0.3,
 	}
-	m.Line(10)
-	m.SetBorder(true)
-	m.SetBackgroundColor(colorMolio)
 
-	m.TableList(headers, contents, props.TableList{
-		HeaderProp: props.TableListContent{
-			Family:    consts.Arial,
-			Style:     consts.Bold,
-			Size:      11.0,
-			GridSizes: []uint{3, 3, 3, 3},
-		},
-		ContentProp: props.TableListContent{
-			Family:    consts.Courier,
-			Style:     consts.Normal,
-			Size:      10.0,
-			GridSizes: []uint{3, 3, 3, 3},
-		},
-		Align:                  consts.Center,
-		HeaderContentSpace:     0.01,
-		VerticalContentPadding: 4.0,
-		AlternatedBackground: &color.Color{
-			Red:   255,
-			Green: 255,
-			Blue:  255,
-		},
-	})
+	colStyleCenterContent := &props.Cell{
+	        BorderType:      border.Full,
+		BorderColor:     &props.BlackColor,
+		BorderThickness: 0.3,
+	}
+	headerText := props.Text{
+		Family:    fontfamily.Arial,
+		Style:     fontstyle.Bold,
+		Size:      11.0,
+		Top: 1,
+		Align: align.Center,
+		Color: &props.BlackColor,
+	}
+
+	headers := []core.Col{
+		text.NewCol(3,"TIPO CUOTA",headerText).WithStyle(colStyleHeader),
+		text.NewCol(3,"F. EMISION",headerText).WithStyle(colStyleHeader),
+		text.NewCol(3,"F. VCTO.",headerText).WithStyle(colStyleHeader),
+		text.NewCol(3,"PERIODO",headerText).WithStyle(colStyleHeader),
+	}
+
+	contentCenterCell := props.Text{
+		Family:    fontfamily.Courier,
+		Style:     fontstyle.Normal,
+		Top: 1,
+		Size:      10.0,
+		Align: align.Center,
+		Color: &props.BlackColor,
+	}
+	contents := []core.Col{
+		text.NewCol(3,tipoCuota,contentCenterCell).WithStyle(colStyleCenterContent),
+		text.NewCol(3,fechaEmision,contentCenterCell).WithStyle(colStyleCenterContent),
+		text.NewCol(3,fechaVenc,contentCenterCell).WithStyle(colStyleCenterContent),
+		text.NewCol(3,periodo,contentCenterCell).WithStyle(colStyleCenterContent),
+	}
+	m.AddRow(7,headers...)	
+	m.AddRow(9,contents...)	
 	// SECCION DATOS DEL DPTO
-	receipt.SubHeader(&m, colorMolio, "DATOS DEL DEPARTAMENTO")
+	receipt.SubHeader(&m, "DATOS DEL DEPARTAMENTO", colStyleHeader)
 
-	printAparmentData(&m, backgroundColor, contentSize, myAp)
+	printAparmentData(&m, colStyleCenterContent, contentSize, myAp)
 	// SECTION DATOS DEL USUARIO
-	receipt.SubHeader(&m, colorMolio, "DETALLE DEL CONSUMO DE LA CUOTA")
+	receipt.SubHeader(&m, "DETALLE DEL CONSUMO DE LA CUOTA",colStyleHeader)
 
-	Detail(&m, backgroundColor, contentSize, rowHeight, ap, myAp)
+	Detail(&m, contentSize, rowHeight, ap, myAp)
 
 	// SECTION WATER DETAIL INFORMATION
 	if buildng.HaveWater {
-		receipt.SubHeader(&m, colorMolio, "DETALLE DEL CONSUMO DE AGUA")
+		receipt.SubHeader(&m,"DETALLE DEL CONSUMO DE AGUA", colStyleHeader)
 		// Defining the fields of the first column
 		waterDetailsFirstColumn := []string{"AGUA COMUN: ", "LECTURA ANTERIOR (m3): ", "LECTURA ACTUAL (m3): ", "CONSUMO (m3): "}
 		waterDetailsSecondColumn := []string{"CONSUMO REC: ", "S/. REC: ", "SOLES / M3: ", ""}
-		fmt.Println(wData)
 		waterData := []string{fmt.Sprintf("S/. %.2f", wData[ap.ApartmentNumber].CommonWater), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].LastMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].CurrentMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].WaterConsumedThisMonth)}
 
 		// Get water data from this month
 		recData := []string{wGeneralData.Consumo_rec, wGeneralData.Rec_soles, wGeneralData.Soles_m3, ""}
 
 		for i, fieldFirstColumn := range waterDetailsFirstColumn {
-			receipt.DataOwner(&m, backgroundColor, rowHeight, contentSize, fieldFirstColumn, waterData[i], waterDetailsSecondColumn[i], recData[i])
+			receipt.DataOwner(&m, rowHeight, contentSize, fieldFirstColumn, waterData[i], waterDetailsSecondColumn[i], recData[i])
 		}
 	}
 
 	//IMPORTES FACTURADOS SECTION TABLE
 	monto := fmt.Sprintf("%.2f", ap.Amounts["cuota"])
 
-	m.SetBackgroundColor(colorMolio)
-	m.SetBorder(true)
-	m.Row(7, func() {
-		m.Col(10, func() {
-			m.Text("IMPORTES FACTURADOS",
-				props.Text{
-					Size:  12,
-					Style: consts.Bold,
-					Align: consts.Center,
-				})
-		})
-		m.Col(2, func() {
-			m.Text("IMPORTE",
-				props.Text{
-					Size:  12,
-					Style: consts.Bold,
-					Align: consts.Center,
-				})
-		})
-	})
+	m.AddRow(7, 
+		text.NewCol(10,"IMPORTES FACTURADOS",
+			props.Text{
+				Size:  12,
+				Style: fontstyle.Bold,
+				Align: align.Center,
+			}).WithStyle(colStyleHeader),
+		text.NewCol(2,"IMPORTE",
+			props.Text{
+				Size:  12,
+				Style: fontstyle.Bold,
+				Align: align.Center,
+			}).WithStyle(colStyleHeader),
+	)
 
-	m.SetBackgroundColor(backgroundColor)
-	receipt.Resumen(&m, backgroundColor, contentSize, "MANTENIMIENTO ", monto)
+	receipt.Resumen(&m, colStyleCenterContent, contentSize, "MANTENIMIENTO ", monto)
 
-	m.SetBackgroundColor(colorMolio)
-	m.SetBorder(true)
-	m.Row(7, func() {
-		m.Col(10, func() {
-			m.Text("TOTAL A PAGAR S/.",
-				props.Text{
-					Size:  12,
-					Style: consts.Bold,
-					Align: consts.Center,
-				})
-		})
-		m.Col(2, func() {
-			m.Text(monto,
-				props.Text{
-					Size:  12,
-					Style: consts.Bold,
-					Align: consts.Center,
-				})
-		})
-	})
-	m.SetBackgroundColor(backgroundColor)
-	m.Row(7, func() {})
+	m.AddRow(7, 
+		text.NewCol(10,"TOTAL A PAGAR S/.",
+			props.Text{
+				Size:  12,
+				Style: fontstyle.Bold,
+				Top: 1,
+				Align: align.Center,
+			},
+		).WithStyle(colStyleHeader),
+		text.NewCol(2,monto,
+			props.Text{
+				Size:  12,
+				Top: 1,
+				Style: fontstyle.Bold,
+				Align: align.Center,
+			},
+		).WithStyle(colStyleHeader),
+	)
+	m.AddRow(7)
 
 	// PAY INFORMACION
-	receipt.SubHeader(&m, colorMolio, "INFORMACION DE PAGO")
-	receipt.PayInfo(&m, colorMolio, &buildng)
+	receipt.SubHeader(&m, "INFORMACION DE PAGO", colStyleHeader)
+	receipt.PayInfo(&m, colStyleHeader,colStyleCenterContent, &buildng)
 
 	//FOOTER : AVISOS IMPORTANTES DE LA BOLETA
 	//receipt.SubHeader(&m, colorMolio, "AVISO IMPORTANTE")
@@ -230,16 +239,20 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	fileName := "MANTENIMIENTO-" + periodo + "_DPTO-" + ap.ApartmentNumber + ".pdf"
 
 	// Save the receipt into the directory
-	err := m.OutputFileAndClose("output/" + buildng.Nickname + "-RECIBOS-" + periodo + "/" + fileName)
-
+	document, err := m.Generate()
 	if err != nil {
 		fmt.Println(err)
+	}
+	faildoc := document.Save("output/" + buildng.Nickname + "-RECIBOS-" + periodo + "/" + fileName)
+
+	if err != nil {
+		fmt.Println(faildoc)
 	}
 
 	return nil
 }
 
-func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight float64, ap *FeeDetail, myApartment *apartment.Apartment) {
+func Detail(pdf *core.Maroto, contentSize, rowHeight float64, ap *FeeDetail, myApartment *apartment.Apartment) {
 	m := *pdf
 	totalItems := len(ap.Amounts) - 1
 	var ownerData []string
@@ -274,11 +287,11 @@ func Detail(pdf *pdf.Maroto, backgroundColor color.Color, contentSize, rowHeight
 
 	// Reading the data and painting it into the receipt
 	for i, v := range FirstColumn {
-		receipt.DataOwner(&m, backgroundColor, rowHeight, contentSize, v, ownerData[i], SecondColumn[i], otherData[i])
+		receipt.DataOwner(&m, rowHeight, contentSize, v, ownerData[i], SecondColumn[i], otherData[i])
 	}
 }
 
-func printAparmentData(pdf *pdf.Maroto, backgroundColor color.Color, contentSize float64, ap *apartment.Apartment) {
+func printAparmentData(pdf *core.Maroto, colSyleCenterContent *props.Cell, contentSize float64, ap *apartment.Apartment) {
 	// Get the type of the struct
 	m := *pdf
 	structType := reflect.TypeOf(*ap)
@@ -293,6 +306,6 @@ func printAparmentData(pdf *pdf.Maroto, backgroundColor color.Color, contentSize
 		if len(fieldValue.String()) == 0 {
 			continue
 		}
-		receipt.ApartmentData(&m, backgroundColor, contentSize, fieldName[i], fieldValue.String())
+		receipt.ApartmentData(&m, colSyleCenterContent, contentSize, fieldName[i], fieldValue.String())
 	}
 }
