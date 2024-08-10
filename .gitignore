@@ -35,3 +35,5 @@ go.work
 *.pdf
 .env
 email/data.go
+
+contometer/*
