@@ -90,7 +90,7 @@ func findApartmentByID(id string, myAp []apartment.Apartment) *apartment.Apartme
 	return nil // Return nil if the struct with the given ID is not found
 }
 
-func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterDate string, wData map[string]water.WaterMonthData, b *building.Building, apData *[]apartment.Apartment, wGeneralData water.WaterByMonth) error {
+func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterDate string, wData map[string]water.WaterMonthData, b *building.Building, apData *[]apartment.Apartment, wGeneralData water.WaterByMonth, cont *string) error {
 	apList := *apData
 
 	myAp := findApartmentByID(ap.ApartmentNumber, apList)
@@ -112,7 +112,14 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 		Build()
 	m := maroto.New(cfg)
 	// Header
-	receipt.ReceiptHeader(&m, heightHeader, &buildng)
+	addCont := parseYesNo(*cont)
+	pathCont := "contometer/"+buildng.Nickname+"/"+periodo+"/"+ap.ApartmentNumber+".jpeg"
+	if addCont {
+		if !fileExists(pathCont) {
+			pathCont = b.Picture
+		}
+	}
+	receipt.ReceiptHeader(&m, heightHeader, &buildng, &pathCont)
 	
 	m.AddRow(2) 
 	m.AddRow(5,line.NewCol(12)) 
@@ -167,16 +174,16 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 
 	printAparmentData(&m, colStyleCenterContent, contentSize, myAp)
 	// SECTION DATOS DEL USUARIO
-	receipt.SubHeader(&m, "DETALLE DEL CONSUMO DE LA CUOTA",colStyleHeader)
+	receipt.SubHeader(&m, "DETALLE DE LA CUOTA",colStyleHeader)
 
 	Detail(&m, contentSize, rowHeight, ap, myAp)
 
 	// SECTION WATER DETAIL INFORMATION
 	if buildng.HaveWater {
-		receipt.SubHeader(&m,"DETALLE DEL CONSUMO DE AGUA", colStyleHeader)
+		receipt.SubHeader(&m,"CONSUMOS INDIVIDUALES", colStyleHeader)
 		// Defining the fields of the first column
-		waterDetailsFirstColumn := []string{"AGUA COMUN: ", "LECTURA ANTERIOR (m3): ", "LECTURA ACTUAL (m3): ", "CONSUMO (m3): "}
-		waterDetailsSecondColumn := []string{"CONSUMO REC: ", "S/. REC: ", "SOLES / M3: ", ""}
+		waterDetailsFirstColumn := []string{"CONSUMO COMUN: ", "LECTURA ANTERIOR: ", "LECTURA ACTUAL: ", "CONSUMO: "}
+		waterDetailsSecondColumn := []string{"CONSUMO REC: ", "S/. REC: ", "COSTO UNITARIO: ", ""}
 		waterData := []string{fmt.Sprintf("S/. %.2f", wData[ap.ApartmentNumber].CommonWater), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].LastMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].CurrentMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].WaterConsumedThisMonth)}
 
 		// Get water data from this month
@@ -212,9 +219,6 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	receipt.SubHeader(&m, "INFORMACION DE PAGO", colStyleHeader)
 	receipt.PayInfo(&m, colStyleHeader,colStyleCenterContent, &buildng)
 
-	//FOOTER : AVISOS IMPORTANTES DE LA BOLETA
-	//receipt.SubHeader(&m, colorMolio, "AVISO IMPORTANTE")
-	//receipt.Footer(&m, backgroundColor, contentSize)
 
 	// Create the directory to store the receipts
 	if err := os.Mkdir("output/"+buildng.Nickname+"-RECIBOS-"+periodo, os.ModePerm); err != nil {
@@ -277,6 +281,21 @@ func Detail(pdf *core.Maroto, contentSize, rowHeight float64, ap *FeeDetail, myA
 	}
 }
 
+func parseYesNo(input string) bool {
+	normalizedInput := strings.TrimSpace(input) // Trim surrounding spaces
+	normalizedInput = strings.ToUpper(normalizedInput) // Convert to uppercase
+
+	if normalizedInput == "Y" {
+		return true
+	} else if normalizedInput == "N" {
+		return false
+	}
+	
+	// Handle unexpected input (optional)
+	fmt.Printf("Invalid input: %s. Please provide 'y' or 'n'.\n", input)
+	return false
+}
+
 func printAparmentData(pdf *core.Maroto, colSyleCenterContent *props.Cell, contentSize float64, ap *apartment.Apartment) {
 	// Get the type of the struct
 	m := *pdf
@@ -294,4 +313,13 @@ func printAparmentData(pdf *core.Maroto, colSyleCenterContent *props.Cell, conte
 		}
 		receipt.ApartmentData(&m, colSyleCenterContent, contentSize, fieldName[i], fieldValue.String())
 	}
+}
+
+// Function to check if a file exists at the given path
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return err == nil
 }

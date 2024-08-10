@@ -14,7 +14,7 @@ import (
 	"github.com/johnfercher/maroto/v2/pkg/props"
 )
 
-func ReceiptHeader(pdf *core.Maroto, heightHeader float64, b *building.Building) {
+func ReceiptHeader(pdf *core.Maroto, heightHeader float64, b *building.Building, pathCont *string) {
 	m := *pdf
 	
 	var colWidth int = 6
@@ -57,10 +57,10 @@ func ReceiptHeader(pdf *core.Maroto, heightHeader float64, b *building.Building)
 		col1,
 		image.NewFromFileCol(
 			3,
-			b.Picture,
+			*pathCont,
 			props.Rect{	
 				Center: true,
-				Percent: 90,
+				//Percent: 90,
 			},
 		),
 	)
