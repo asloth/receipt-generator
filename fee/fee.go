@@ -15,6 +15,7 @@ import (
 	"github.com/johnfercher/maroto/v2"
 	"github.com/johnfercher/maroto/v2/pkg/components/line"
 	"github.com/johnfercher/maroto/v2/pkg/components/text"
+	"github.com/johnfercher/maroto/v2/pkg/config"
 	"github.com/johnfercher/maroto/v2/pkg/consts/align"
 	"github.com/johnfercher/maroto/v2/pkg/consts/border"
 	"github.com/johnfercher/maroto/v2/pkg/consts/fontfamily"
@@ -106,11 +107,15 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 		Green: 235, //bajar un poco hasta 200
 		Blue:  66,
 	}
-	m := maroto.New()
+	cfg := config.NewBuilder().
+	        WithConcurrentMode(7).
+		Build()
+	m := maroto.New(cfg)
 	// Header
 	receipt.ReceiptHeader(&m, heightHeader, &buildng)
 	
-	m.AddRow(9,line.NewCol(12)) 
+	m.AddRow(2) 
+	m.AddRow(5,line.NewCol(12)) 
 
 	// tabla inicial
 	colStyleHeader := &props.Cell{
@@ -129,7 +134,7 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 		Family:    fontfamily.Arial,
 		Style:     fontstyle.Bold,
 		Size:      11.0,
-		Top: 1,
+		Top: 0.5,
 		Align: align.Center,
 		Color: &props.BlackColor,
 	}
@@ -184,41 +189,22 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 
 	//IMPORTES FACTURADOS SECTION TABLE
 	monto := fmt.Sprintf("%.2f", ap.Amounts["cuota"])
-
+	resumenTextProps := props.Text{
+				Size:  12,
+				Style: fontstyle.Bold,
+				Top: 0.5,
+				Align: align.Center,
+			}
 	m.AddRow(7, 
-		text.NewCol(10,"IMPORTES FACTURADOS",
-			props.Text{
-				Size:  12,
-				Style: fontstyle.Bold,
-				Align: align.Center,
-			}).WithStyle(colStyleHeader),
-		text.NewCol(2,"IMPORTE",
-			props.Text{
-				Size:  12,
-				Style: fontstyle.Bold,
-				Align: align.Center,
-			}).WithStyle(colStyleHeader),
+		text.NewCol(10,"IMPORTES FACTURADOS", resumenTextProps).WithStyle(colStyleHeader),
+		text.NewCol(2,"IMPORTE",resumenTextProps).WithStyle(colStyleHeader),
 	)
 
 	receipt.Resumen(&m, colStyleCenterContent, contentSize, "MANTENIMIENTO ", monto)
 
 	m.AddRow(7, 
-		text.NewCol(10,"TOTAL A PAGAR S/.",
-			props.Text{
-				Size:  12,
-				Style: fontstyle.Bold,
-				Top: 1,
-				Align: align.Center,
-			},
-		).WithStyle(colStyleHeader),
-		text.NewCol(2,monto,
-			props.Text{
-				Size:  12,
-				Top: 1,
-				Style: fontstyle.Bold,
-				Align: align.Center,
-			},
-		).WithStyle(colStyleHeader),
+		text.NewCol(10,"TOTAL A PAGAR S/.", resumenTextProps).WithStyle(colStyleHeader),
+		text.NewCol(2,monto,resumenTextProps).WithStyle(colStyleHeader),
 	)
 	m.AddRow(7)
 

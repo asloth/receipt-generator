@@ -50,6 +50,8 @@ func ReceiptHeader(pdf *core.Maroto, heightHeader float64, b *building.Building)
 			"files/molio-logo.jpg",
 			props.Rect{	
 				Center: true,
+				Percent: 95,
+				
 			},
 		),
 		col1,
@@ -58,6 +60,7 @@ func ReceiptHeader(pdf *core.Maroto, heightHeader float64, b *building.Building)
 			b.Picture,
 			props.Rect{	
 				Center: true,
+				Percent: 90,
 			},
 		),
 	)
@@ -73,22 +76,20 @@ func DataOwner(pdf *core.Maroto, rowHeight float64, contentSize float64, prop1, 
 				Size:            8,
 				Align:           align.Left,
 				Style:           fontstyle.Bold,
-				VerticalPadding: 0,
-				Top:             4,
+				Top:             2,
 			},
 		),
 		text.NewCol(columnData,data1, props.Text{
-			Top: 4,
+			Top: 2,
 		}),
 		text.NewCol(column1,strings.ToUpper(prop2), props.Text{
 			Size:            8,
 			Align:           align.Left,
 			Style:           fontstyle.Bold,
-			VerticalPadding: 0,
-			Top:             4,
+			Top:             2,
 		}),
 		text.NewCol(2,data2, props.Text{
-			Top: 4,
+			Top: 2,
 		}),
 	)
 }
@@ -111,6 +112,7 @@ func PayInfo(pdf *core.Maroto, headerColStyle *props.Cell, contentColStyle *prop
 	contentTextStyle := props.Text{
 		Family:    fontfamily.Courier,
 		Style:     fontstyle.Normal,
+		Top: 1,
 		Size:      10.0,
 		Align: align.Center,
 	}
@@ -130,6 +132,7 @@ func SubHeader(pdf *core.Maroto, subtitulo string, colStyleHeader *props.Cell) {
 			props.Text{
 				Size:  12,
 				Style: fontstyle.Bold,
+				Top: 0.5,
 				Align: align.Center,
 			}).WithStyle(colStyleHeader),
 	)
