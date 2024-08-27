@@ -113,7 +113,7 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	m := maroto.New(cfg)
 	// Header
 	addCont := parseYesNo(*cont)
-	pathCont := "contometer/"+buildng.Nickname+"/"+periodo+"/"+ap.ApartmentNumber+".jpeg"
+	pathCont := "contometer/"+buildng.Nickname+"/"+periodo+"/"+ap.ApartmentNumber+".jpg"
 	if addCont {
 		if !fileExists(pathCont) {
 			pathCont = b.Picture
