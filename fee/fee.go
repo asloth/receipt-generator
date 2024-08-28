@@ -90,7 +90,7 @@ func findApartmentByID(id string, myAp []apartment.Apartment) *apartment.Apartme
 	return nil // Return nil if the struct with the given ID is not found
 }
 
-func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterDate string, wData map[string]water.WaterMonthData, b *building.Building, apData *[]apartment.Apartment, wGeneralData water.WaterByMonth, cont *string) error {
+func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterDate string, wData map[string]water.WaterMonthData, b *building.Building, apData *[]apartment.Apartment, wGeneralData water.WaterByMonth, cont *string, fileEx *string) error {
 	apList := *apData
 
 	myAp := findApartmentByID(ap.ApartmentNumber, apList)
@@ -113,7 +113,7 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	m := maroto.New(cfg)
 	// Header
 	addCont := parseYesNo(*cont)
-	pathCont := "contometer/"+buildng.Nickname+"/"+periodo+"/"+ap.ApartmentNumber+".jpg"
+	pathCont := "contometer/"+buildng.Nickname+"/"+periodo+"/"+ap.ApartmentNumber+"."+*fileEx
 	if addCont {
 		if !fileExists(pathCont) {
 			pathCont = b.Picture

@@ -130,6 +130,7 @@ func generateRece(r *bufio.Reader) {
 	waterData := make(map[string]water.WaterMonthData)
 	waterGeneralData := &water.WaterByMonth{}
 	addContometer := "n"
+	fileExtension := "jpeg"
 	if b.HaveWater {
 		fmt.Println("Ingrese el nombre de la hoja donde se encuentran el agua POR DEPARTAMENTO")
 		waterPath := "AGUA"
@@ -142,6 +143,9 @@ func generateRece(r *bufio.Reader) {
 		fmt.Println("Desea agregar los contometros? (y/N)")
 		getData(reader,&addContometer)
 		
+		fmt.Println("Ingrese la extension de las imagenes de los contometros (png/jpeg/jpg)")
+		getData(reader,&fileExtension)
+		
 		fmt.Println("Ingrese el nombre de la hoja donde se encuentran los datos del recibo del agua")
 		sheetNameWaterBuilding:=""
 		getData(reader,&sheetNameWaterBuilding)
@@ -152,7 +156,7 @@ func generateRece(r *bufio.Reader) {
 		}
 	} 
 	for _, apar := range ret {
-		err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData, &addContometer)
+		err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData, &addContometer,&fileExtension)
 		if err != nil {
 			fmt.Println(apar.ApartmentNumber)
 			fmt.Println(err)
