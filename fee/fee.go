@@ -171,12 +171,12 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	m.AddRow(6,headers...)	
 	m.AddRow(5,contents...)	
 	// SECCION DATOS DEL DPTO
-	m.AddRow(3) 
+	m.AddRow(5) 
 	receipt.SubHeader(&m, "DATOS DEL DEPARTAMENTO", colStyleHeader)
 	printAparmentData(&m, colStyleCenterContent, contentSize, myAp)
 
 	// SECTION DATOS DEL USUARIO
-	m.AddRow(3) 
+	m.AddRow(5) 
 	receipt.SubHeader(&m, "DETALLE DE LA CUOTA",colStyleHeader)
 	resumenTextProps := props.Text{
 				Style: fontstyle.Bold,
@@ -195,10 +195,10 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 		text.NewCol(10,"TOTAL A PAGAR ", resumenTextProps).WithStyle(colStyleHeader),
 		text.NewCol(2,"S/. "+monto,resumenTextProps).WithStyle(colStyleHeader),
 	)
-	m.AddRow(7)
+	m.AddRow(5)
 	// SECTION WATER DETAIL INFORMATION
 	if buildng.HaveWater {
-		receipt.SubHeader(&m,"CONSUMO DE AGUA", colStyleHeader)
+		receipt.SubHeader(&m,"CONSUMO INDIVIDUAL", colStyleHeader)
 		// Defining the fields of the first column
 		waterHeader := []core.Col{
 			text.NewCol(4,"LECTURA ANTERIOR",headerText).WithStyle(colStyleHeader),
@@ -216,9 +216,7 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 		m.AddRow(5,waterContents...)	
 	}
 
-	m.AddRow(7)
-	//IMPORTES FACTURADOS SECTION TABLE
-
+	m.AddRow(5)
 	// PAY INFORMACION
 	receipt.SubHeader(&m, "INFORMACION DE PAGO", colStyleHeader)
 	if len(strings.TrimSpace(myAp.Tower)) > 0 {
