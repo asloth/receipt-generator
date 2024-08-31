@@ -8,6 +8,7 @@ import (
 	"github.com/johnfercher/maroto/v2/pkg/components/image"
 	"github.com/johnfercher/maroto/v2/pkg/components/text"
 	"github.com/johnfercher/maroto/v2/pkg/consts/align"
+	"github.com/johnfercher/maroto/v2/pkg/consts/border"
 	"github.com/johnfercher/maroto/v2/pkg/consts/fontfamily"
 	"github.com/johnfercher/maroto/v2/pkg/consts/fontstyle"
 	"github.com/johnfercher/maroto/v2/pkg/core"
@@ -94,10 +95,31 @@ func DataOwner(pdf *core.Maroto, rowHeight float64, contentSize float64, prop1, 
 	)
 }
 
-func PayInfo(pdf *core.Maroto, headerColStyle *props.Cell, contentColStyle *props.Cell, b *building.Building) {
+func PrintDetailFeeOneColumn(pdf *core.Maroto, rowHeight float64, contentSize float64, prop1, data1 string) {
+	m := *pdf
+	var column1 int = 10
+	var columnData int = 2
+	m.AddRow(5, 
+		text.NewCol(column1,strings.ToUpper(prop1),
+			props.Text{
+				Align:           align.Left,
+			},
+		),
+		text.NewCol(columnData, "S/."+data1, props.Text{
+			Align: align.Center,
+		}),
+	).WithStyle(
+		&props.Cell{
+			BorderType:      border.Bottom,
+			BorderColor:     &props.BlackColor,
+		},
+	)
+}
+
+func PayInfo(pdf *core.Maroto, headerColStyle *props.Cell, contentColStyle *props.Cell, b *building.RecollectionAccount) {
 	m := *pdf
 	headerTextStyle := props.Text{
-		Size: 11,
+		Size: 9,
 		Style: fontstyle.Bold,
 		Align: align.Center,
 		Family: fontfamily.Arial,
@@ -113,16 +135,20 @@ func PayInfo(pdf *core.Maroto, headerColStyle *props.Cell, contentColStyle *prop
 		Family:    fontfamily.Courier,
 		Style:     fontstyle.Normal,
 		Top: 1,
-		Size:      10.0,
+		Size:      9,
 		Align: align.Center,
+	}
+	accnumber := ""
+	if len(strings.TrimSpace(b.CCI)) > 0 {
+		accnumber =" /CCI: "+ b.CCI
 	}
 	contents := []core.Col{
 		text.NewCol(4,b.Bank,contentTextStyle).WithStyle(contentColStyle),
-		text.NewCol(4,b.BankAccount,contentTextStyle).WithStyle(contentColStyle),
-		text.NewCol(4,b.BankAccountOwner,contentTextStyle).WithStyle(contentColStyle),
+		text.NewCol(4,b.Number+accnumber,contentTextStyle).WithStyle(contentColStyle),
+		text.NewCol(4,b.Owner,contentTextStyle).WithStyle(contentColStyle),
 	}
-	m.AddRow(8, headers...)
-	m.AddRow(12, contents...)
+	m.AddRow(6, headers...)
+	m.AddRow(9, contents...)
 }
 
 func SubHeader(pdf *core.Maroto, subtitulo string, colStyleHeader *props.Cell) {
@@ -130,9 +156,9 @@ func SubHeader(pdf *core.Maroto, subtitulo string, colStyleHeader *props.Cell) {
 	m.AddRow(7,
 		text.NewCol(12,subtitulo,
 			props.Text{
-				Size:  12,
+				Size:  10,
 				Style: fontstyle.Bold,
-				Top: 0.5,
+				Top: 0.8,
 				Align: align.Center,
 			}).WithStyle(colStyleHeader),
 	)

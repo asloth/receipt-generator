@@ -18,6 +18,31 @@ import (
 	"github.com/asloth/receipt-generator/water"
 	"github.com/xuri/excelize/v2"
 )
+var (
+	BuildingOptions = map[string]string{
+		"2":  "belmonte",
+		"3":  "torrereal",
+		"4":  "mirador",
+		"5":  "nitoa",
+		"6":  "valera",
+		"7":  "golf",
+		"8":  "mora",
+		"9":  "alayza",
+		"10": "sbs",
+		"11": "montereal",
+		"12": "tomasal",
+		"13": "balcones",
+		"14": "killa",
+		"15": "gcc",
+		"16": "elite",
+		"17": "avila",
+		"18": "huascar",
+		"19": "rosapark",
+		"20": "sanjose",
+		"21": "rio",
+		"22": "jardines",
+	}
+)
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
@@ -74,49 +99,12 @@ func generateRece(r *bufio.Reader) {
 	getData(reader, &option)
 	waterRead := "BORRAR"
 	var b building.Building
-	switch option {
-	case "2":
-		b.GetBuildingData("belmonte")
-	case "3":
-		b.GetBuildingData("torrereal")
-	case "4":
-		b.GetBuildingData("mirador")
-	case "5":
-		b.GetBuildingData("nitoa")
-	case "6":
-		b.GetBuildingData("valera")
-	case "7":
-		b.GetBuildingData("golf")
-	case "8":
-		b.GetBuildingData("mora")
-	case "9":
-		b.GetBuildingData("alayza")
-	case "10":
-		b.GetBuildingData("sbs")
-	case "11":
-		b.GetBuildingData("montereal")
-	case "12":
-		b.GetBuildingData("tomasal")
-	case "13":
-		b.GetBuildingData("balcones")
-	case "14":
-		b.GetBuildingData("killa")
-	case "15":
-		b.GetBuildingData("gcc")
-	case "16":
-		b.GetBuildingData("elite")
-	case "17":
-		b.GetBuildingData("avila")
-	case "18":
-		b.GetBuildingData("huascar")
-	case "19":
-		b.GetBuildingData("rosapark")
-	case "20":
-		b.GetBuildingData("sanjose")
-	case "21":
-		b.GetBuildingData("rio")
-		// TERMINA EL CASE
+	if buildingName, exists := BuildingOptions[option]; exists {
+		b.GetBuildingData(buildingName)
+	} else {
+		fmt.Println("Edificio no se encuentra.")
 	}
+
 	apData, err := apartment.LoadAparmentData(filePath, apartmentSheet)
 	if err != nil {
 		fmt.Println("Error reading aparment data" + err.Error())
@@ -142,9 +130,11 @@ func generateRece(r *bufio.Reader) {
 		
 		fmt.Println("Desea agregar los contometros? (y/N)")
 		getData(reader,&addContometer)
-		
-		fmt.Println("Ingrese la extension de las imagenes de los contometros (png/jpeg/jpg)")
-		getData(reader,&fileExtension)
+	
+		if strings.ToLower(addContometer)!= "n" {
+			fmt.Println("Ingrese la extension de las imagenes de los contometros (png/jpeg/jpg)")
+			getData(reader,&fileExtension)
+		}
 		
 		fmt.Println("Ingrese el nombre de la hoja donde se encuentran los datos del recibo del agua")
 		sheetNameWaterBuilding:=""
@@ -308,26 +298,10 @@ out:
 	return ret, nil
 }
 func printBuilding() {
-	fmt.Println("2. BELMONTE")
-	fmt.Println("3. TORRE REAL")
-	fmt.Println("4. MIRADOR")
-	fmt.Println("5. NITOA")
-	fmt.Println("6. VALERA")
-	fmt.Println("7. GOLF PARK")
-	fmt.Println("8. MORA")
-	fmt.Println("9. ALAYZA")
-	fmt.Println("10. SBS")
-	fmt.Println("11. MONTE REAL")
-	fmt.Println("12. TOMASAL")
-	fmt.Println("13. BALCONES")
-	fmt.Println("14. KILLA")
-	fmt.Println("15. GRAN CENTRAL COLONIAL")
-	fmt.Println("16. ELITE")
-	fmt.Println("17. P. AVILA")
-	fmt.Println("18. HUASCAR")
-	fmt.Println("19. ROSA PARK")
-	fmt.Println("20. CABALLERIZAS SAN JOSE")
-	fmt.Println("21. RIO")
+	// Iterate over the map and print each key-value pair
+	for key, value := range BuildingOptions {
+		fmt.Printf("%s. %s\n", key, value)
+	}
 }
 func getFilePath(reader *bufio.Reader) string {
 	fmt.Println("Ingrese el nombre del archivo excel, formato XLSX")
@@ -384,150 +358,17 @@ func sendEmails(r *bufio.Reader) {
 
 	var b building.Building
 
-	switch option {
-	// test := ret[len(ret)-19:] Utilizado para solo seleccionar a los ultimos 19 dptos
-	case "2":
-		b.GetBuildingData("belmonte")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-
-		sendingEmail(ret, b, period, allemails)
-	case "3":
-		b.GetBuildingData("torrereal")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "4":
-		b.GetBuildingData("mirador")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "5":
-		b.GetBuildingData("nitoa")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "6":
-		b.GetBuildingData("valera")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "7":
-		b.GetBuildingData("golf")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "8":
-		b.GetBuildingData("mora")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "9":
-		b.GetBuildingData("alayza")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "10":
-		b.GetBuildingData("sbs")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "11":
-		b.GetBuildingData("montereal")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "12":
-		b.GetBuildingData("tomasal")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "13":
-		b.GetBuildingData("balcones")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "14":
-		b.GetBuildingData("killa")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "15":
-		b.GetBuildingData("gcc")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "16":
-		b.GetBuildingData("elite")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "17":
-		b.GetBuildingData("avila")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "18":
-		b.GetBuildingData("huascar")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "19":
-		b.GetBuildingData("rosapark")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "20":
-		b.GetBuildingData("sanjose")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
-	case "21":
-		b.GetBuildingData("rio")
-		ret, err := fee.LoadFeeDetailData(filePath, sheetName)
-		if err != nil {
-			panic(err)
-		}
-		sendingEmail(ret, b, period, allemails)
+	if buildingName, exists := BuildingOptions[option]; exists {
+		b.GetBuildingData(buildingName)
+	} else {
+		fmt.Println("Edificio no se encuentra.")
 	}
+	// test := ret[len(ret)-19:] Utilizado para solo seleccionar a los ultimos 19 dptos
+	ret, err := fee.LoadFeeDetailData(filePath, sheetName)
+	if err != nil {
+		panic(err)
+	}
+	sendingEmail(ret, b, period, allemails)
 
 }
 

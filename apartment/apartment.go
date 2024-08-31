@@ -15,6 +15,7 @@ type Apartment struct {
 	ParticipationPercentage string
 	FirstEmail              string
 	SecondEmail             string
+	Tower string
 }
 
 func LoadAparmentData(filePath, sheetName string) ([]Apartment, error) {
@@ -72,6 +73,8 @@ out:
 					ap.FirstEmail = strings.ToLower(strings.TrimSpace(colCell))
 				case 6:
 					ap.SecondEmail = strings.ToLower(strings.TrimSpace(colCell))
+				case 7:
+					ap.Tower = colCell
 					break inside
 				}
 			}
