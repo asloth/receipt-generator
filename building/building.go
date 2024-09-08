@@ -158,7 +158,7 @@ func (b *Building) GetBuildingData(name string) {
 			CCI: "OO219319125878308615",
 		}
 		b.Picture = "files/default.png"
-		b.HaveWater = false
+		b.HaveWater = true
 	case "mirador":
 		b.Name = "EDIFICIO MIRADOR 2"
 		b.Nickname = "MIRADOR"
