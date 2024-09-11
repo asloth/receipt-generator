@@ -187,7 +187,7 @@ func (b *Building) GetBuildingData(name string) {
 		b.Picture = "files/nitoa.png"
 		b.FirstColumn = []string{}
 		b.SecondColumn = []string{}
-		b.HaveWater = false
+		b.HaveWater = true
 	case "golf":
 		b.Name = "EDIFICIO GOLF PARK"
 		b.Nickname = "GOLF"

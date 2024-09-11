@@ -75,6 +75,7 @@ func generateRece(r *bufio.Reader) {
 	getReceiptData(reader, "fecha de vencimiento (dd/mm/aa)", &fechaVenc, true)
 
 	tipoCuota := "ORDINARIA"
+	getReceiptData(reader, "el tipo de cuota", &tipoCuota, false)
 
 	periodo := "AGOSTO-2022"
 	getReceiptData(reader, "periodo", &periodo, false)
