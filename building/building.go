@@ -338,10 +338,10 @@ func (b *Building) GetBuildingData(name string) {
 		b.Address = "PASAJE QUIÑONES 195 - JESUS MARÍA"
 		b.Email = "administracion@elmolio.com"
 		b.PayData = RecollectionAccount{
-			Number: "OO1101840200742364",
+			Number: "0011-0184-0200750219",
 			Bank: "BBVA",
-			Owner: "CECILIA PAOLA RAMOS/VICENTE PEDRO GUTIERREZ",
-			CCI: "01118400020074236499",
+			Owner: "Guillermo Omar González Cucho / Cesar Camilo Soto Vidal",
+			CCI: "01118400020075021994",
 		}
 		b.Picture = "files/default.png"
 		b.HaveWater = true
