@@ -131,7 +131,7 @@ func (b *Building) GetBuildingData(name string) {
 			Owner: "Mirtha Alvan y Jackeline Giles",
 		}
 		b.Picture = "files/torrereal.jpeg"
-		b.HaveWater = false
+		b.HaveWater = true
 	case "valera":
 		b.Name = "EDIFICIO VARELA III"
 		b.Nickname = "VALERA"

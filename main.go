@@ -92,6 +92,10 @@ func generateRece(r *bufio.Reader) {
 	fmt.Println("Ingrese el nombre de la hoja donde se encuentran los montos de cuotas")
 	sheetName := "Propietarios ordenados"
 	getData(reader, &sheetName)
+	
+	fmt.Println("Ingrese el nombre de la hoja donde se encuentra la hoja de morosidad")
+	indefaultSheet	 := ""
+	getData(reader, &indefaultSheet)
 
 	fmt.Println("ELIJA EL EDIFICIO DEL CUAL DESEA GENERAR RECIBOS")
 	printBuilding()
@@ -111,11 +115,19 @@ func generateRece(r *bufio.Reader) {
 		fmt.Println("Error reading aparment data" + err.Error())
 	}
 	fmt.Println("Directorio cargado")
+	
 	ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 	if err != nil {
 		fmt.Println("Error reading fee data" + err.Error())
 	}
 	fmt.Println("Cuotas cargadas")
+
+	mora,err := fee.LoadInDefaultData(filePath,indefaultSheet)
+	if err != nil {
+		fmt.Println("Error reading indefault data" + err.Error())
+	}
+	fmt.Println("Mora cargada")
+	
 	waterData := make(map[string]water.WaterMonthData)
 	waterGeneralData := &water.WaterByMonth{}
 	addContometer := "n"
@@ -147,7 +159,7 @@ func generateRece(r *bufio.Reader) {
 		}
 	} 
 	for _, apar := range ret {
-		err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData, &addContometer,&fileExtension)
+		err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData, &addContometer,&fileExtension,&mora)
 		if err != nil {
 			fmt.Println(apar.ApartmentNumber)
 			fmt.Println(err)

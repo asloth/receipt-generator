@@ -89,9 +89,18 @@ func findApartmentByID(id string, myAp []apartment.Apartment) *apartment.Apartme
 	}
 	return nil // Return nil if the struct with the given ID is not found
 }
+func findInChargeAmount(id string, myAp []InDefault) *float64{
+	for i := range myAp {
+		if myAp[i].ApartmentNumber == id {
+			return &myAp[i].Amount
+		}
+	}
+	return nil // Return nil if the struct with the given ID is not found
+}
 
-func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterDate string, wData map[string]water.WaterMonthData, b *building.Building, apData *[]apartment.Apartment, wGeneralData water.WaterByMonth, cont *string, fileEx *string) error {
+func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterDate string, wData map[string]water.WaterMonthData, b *building.Building, apData *[]apartment.Apartment, wGeneralData water.WaterByMonth, cont *string, fileEx *string, mora *[]InDefault) error {
 	apList := *apData
+	indefaultList := *mora
 
 	myAp := findApartmentByID(ap.ApartmentNumber, apList)
 
@@ -195,6 +204,14 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 		text.NewCol(10,"TOTAL A PAGAR ", resumenTextProps).WithStyle(colStyleHeader),
 		text.NewCol(2,"S/. "+monto,resumenTextProps).WithStyle(colStyleHeader),
 	)
+	m.AddRow(2)
+	m.AddRow(7, 
+		text.NewCol(10,"IMPORTES VENCIDOS", resumenTextProps).WithStyle(colStyleHeader),
+		text.NewCol(2,"IMPORTE",resumenTextProps).WithStyle(colStyleHeader),
+	)
+	indefaultamount := fmt.Sprintf("%.2f",*findInChargeAmount(ap.ApartmentNumber,indefaultList)) 
+	receipt.PrintDetailFeeOneColumn(&m, rowHeight, contentSize,"CUOTAS ANTERIORES",indefaultamount)
+
 	m.AddRow(5)
 	// SECTION WATER DETAIL INFORMATION
 	if buildng.HaveWater {
