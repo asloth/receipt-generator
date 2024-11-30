@@ -98,9 +98,10 @@ func (b *Building) GetBuildingData(name string) {
 		b.Address = "JIRON DANIEL OLAECHEA 246"
 		b.Email = "administradorlimaeste@elmolio.com"
 		b.PayData = RecollectionAccount{
-			Number: "193-90343163-0-18",
+			Number: "19103422218085",
+			CCI: "00219110342221808551",
 			Bank: "BCP",
-			Owner: "DE LA PUENTE MARIA / ODARIS LUCENA",
+			Owner: "Eric Arancibia",
 		}
 		b.Picture = "files/belmonte.jpeg"
 		b.HaveWater = true
