@@ -124,7 +124,7 @@ func generateRece(r *bufio.Reader) {
 
 	mora,err := fee.LoadInDefaultData(filePath,indefaultSheet)
 	if err != nil {
-		fmt.Println("Error reading indefault data" + err.Error())
+		fmt.Println("Error reading indefault data " + err.Error())
 	}
 	fmt.Println("Mora cargada")
 	

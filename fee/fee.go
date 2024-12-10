@@ -28,6 +28,7 @@ import (
 type FeeDetail struct {
 	ApartmentNumber string
 	Amounts         map[string]float64
+	TotalAmounts         map[string]float64
 }
 
 func LoadFeeDetailData(filePath, sheetName string) ([]FeeDetail, error) {
@@ -52,13 +53,21 @@ func LoadFeeDetailData(filePath, sheetName string) ([]FeeDetail, error) {
 	}
 
 	cols := []string{}
-
+	totalAmounts := make(map[string]float64)
 	ret := []FeeDetail{}
 
 	for i, row := range rows {
 		if i == 0 {
 			for _, colCell := range row {
 				cols = append(cols, colCell)
+			}
+		} else if i == 1 {
+			for j, colCell := range row {
+				colCell = strings.TrimSpace(colCell)               //el valor de la celda
+				col := strings.TrimSpace(strings.ToLower(cols[j])) //el nombre de la columna
+				if j > 0 {
+					totalAmounts[col], err = strconv.ParseFloat(colCell, 64)
+				}
 			}
 		} else {
 			ap := FeeDetail{}
@@ -74,6 +83,7 @@ func LoadFeeDetailData(filePath, sheetName string) ([]FeeDetail, error) {
 				ap2[col], err = strconv.ParseFloat(colCell, 64)
 			}
 			ap.Amounts = ap2
+			ap.TotalAmounts = totalAmounts
 			ret = append(ret, ap)
 		}
 
@@ -109,7 +119,7 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	}
 	buildng := *b
 	var heightHeader float64 = 30
-	var contentSize float64 = 9
+	var contentSize float64 = 10
 	var rowHeight float64 = 7
 	colorMolio := &props.Color{
 		Red:   148,
@@ -194,7 +204,8 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 				Align: align.Center,
 			}
 	m.AddRow(7, 
-		text.NewCol(10,"IMPORTES FACTURADOS", resumenTextProps).WithStyle(colStyleHeader),
+		text.NewCol(8,"IMPORTES FACTURADOS", resumenTextProps).WithStyle(colStyleHeader),
+		text.NewCol(2,"IMPORTE TOTAL",resumenTextProps).WithStyle(colStyleHeader),
 		text.NewCol(2,"IMPORTE",resumenTextProps).WithStyle(colStyleHeader),
 	)
 	DetailFeeOneColumn(&m, contentSize, rowHeight, ap, myAp)
@@ -323,7 +334,8 @@ func DetailFeeOneColumn(pdf *core.Maroto, contentSize, rowHeight float64, ap *Fe
 		if key == "cuota" {
 			continue
 		}
-		receipt.PrintDetailFeeOneColumn(&m, rowHeight, contentSize,key,fmt.Sprintf("%.2f", value))
+		totalServiceAmount := fmt.Sprintf("%.2f",ap.TotalAmounts[key])
+		receipt.PrintDetailFeeTwoColumn(&m, rowHeight, 8,key,fmt.Sprintf("%.2f", value),totalServiceAmount)
 	}
 }
 

@@ -95,6 +95,32 @@ func DataOwner(pdf *core.Maroto, rowHeight float64, contentSize float64, prop1, 
 	)
 }
 
+func PrintDetailFeeTwoColumn(pdf *core.Maroto, rowHeight float64, contentSize float64, prop1, data1, totalAmount string) {
+	m := *pdf
+	var column1 int = 8
+	var columnData int = 2
+	m.AddRow(5, 
+		text.NewCol(column1,strings.ToUpper(prop1),
+			props.Text{
+				Align:           align.Left,
+				Size: contentSize,
+			},
+		),
+		text.NewCol(columnData, "S/."+totalAmount, props.Text{
+			Align: align.Center,
+			Size: contentSize,
+		}),
+		text.NewCol(columnData, "S/."+data1, props.Text{
+			Align: align.Center,
+			Size: contentSize,
+		}),
+	).WithStyle(
+		&props.Cell{
+			BorderType:      border.Bottom,
+			BorderColor:     &props.BlackColor,
+		},
+	)
+}
 func PrintDetailFeeOneColumn(pdf *core.Maroto, rowHeight float64, contentSize float64, prop1, data1 string) {
 	m := *pdf
 	var column1 int = 10
