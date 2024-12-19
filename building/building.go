@@ -44,6 +44,18 @@ func (b *Building) GetBuildingData(name string) {
 		}
 		b.Picture = "files/parque-roma-logo.jpg"
 		b.HaveWater = false
+	case "tampu":
+		b.Name = "TAMPUMACHAY"
+		b.Nickname = "TAMPU"
+		b.Address = "Jr. Tampumachay 229 - Santiago de Surco"
+		b.Email = "administracion@elmolio.com"
+		b.PayData = RecollectionAccount{
+			Number: "19196858198060 / CCI: OO219119685819806051",
+			Bank: "BCP",
+			Owner: "MICHELLE SWAYNE",
+		}
+		b.Picture = "files/default.png"
+		b.HaveWater = false
 	case "jardines":
 		b.Name = "LOS JARDINES DE CHORILLOS"
 		b.Nickname = "JARDINES"

@@ -41,6 +41,7 @@ var (
 		"20": "sanjose",
 		"21": "rio",
 		"22": "jardines",
+		"23": "tampu",
 	}
 )
 
