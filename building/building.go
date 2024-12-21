@@ -56,6 +56,18 @@ func (b *Building) GetBuildingData(name string) {
 		}
 		b.Picture = "files/default.png"
 		b.HaveWater = false
+	case "arenaycamppo":
+		b.Name = "ARENA Y CAMPO"
+		b.Nickname = "arenaycampo"
+		b.Address = "CHOCAYA"
+		b.Email = "administracion@elmolio.com"
+		b.PayData = RecollectionAccount{
+			Number: "305-8123356-0-07",
+			Bank: "BCP",
+			Owner: "EL MOLIO",
+		}
+		b.Picture = "files/default.png"
+		b.HaveWater = false
 	case "jardines":
 		b.Name = "LOS JARDINES DE CHORILLOS"
 		b.Nickname = "JARDINES"

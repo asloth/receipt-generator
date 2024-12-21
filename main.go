@@ -42,6 +42,7 @@ var (
 		"21": "rio",
 		"22": "jardines",
 		"23": "tampu",
+		"24": "arenaycampo",
 	}
 )
 
