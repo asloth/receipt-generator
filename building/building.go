@@ -56,7 +56,7 @@ func (b *Building) GetBuildingData(name string) {
 		}
 		b.Picture = "files/default.png"
 		b.HaveWater = false
-	case "arenaycamppo":
+	case "arenaycampo":
 		b.Name = "ARENA Y CAMPO"
 		b.Nickname = "arenaycampo"
 		b.Address = "CHOCAYA"
