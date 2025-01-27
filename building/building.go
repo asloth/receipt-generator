@@ -56,6 +56,18 @@ func (b *Building) GetBuildingData(name string) {
 		}
 		b.Picture = "files/default.png"
 		b.HaveWater = false
+	case "gpl":
+		b.Name = "GRAN PLAZA LORETO"
+		b.Nickname = "GPL"
+		b.Address = "JIRÓN LORETO 1590 BREÑA - PUEBLO LIBRE"
+		b.Email = "administracion@elmolio.com"
+		b.PayData = RecollectionAccount{
+			Number: "3059864512041",
+			Bank: "BCP",
+			Owner: "LIMA 2000 - EL MOLIO",
+		}
+		b.Picture = "files/default.png"
+		b.HaveWater = false
 	case "arenaycampo":
 		b.Name = "ARENA Y CAMPO"
 		b.Nickname = "arenaycampo"

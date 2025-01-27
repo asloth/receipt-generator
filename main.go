@@ -43,6 +43,7 @@ var (
 		"22": "jardines",
 		"23": "tampu",
 		"24": "arenaycampo",
+		"25": "gpl",
 	}
 )
 
