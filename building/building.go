@@ -55,7 +55,7 @@ func (b *Building) GetBuildingData(name string) {
 			Owner: "MICHELLE SWAYNE",
 		}
 		b.Picture = "files/default.png"
-		b.HaveWater = false
+		b.HaveWater = true
 	case "gpl":
 		b.Name = "GRAN PLAZA LORETO"
 		b.Nickname = "GPL"
