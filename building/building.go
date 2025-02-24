@@ -269,10 +269,10 @@ func (b *Building) GetBuildingData(name string) {
 		b.Address = "JIRON MALAGA"
 		b.Email = "administracion@elmolio.com"
 		b.PayData = RecollectionAccount{
-			Number: "001107870200364600",
-			Bank: "BBVA",
-			Owner: "Ricardo Guzmán y Cecilia Fuchs",
-			CCI: "O1178700020036460093",
+			Number: "0453456596152",
+			Bank: "INTERBANK",
+			Owner: "César Nuñovero y David",
+			CCI: "00304501345659615228",
 		}
 		b.Picture = "files/default.png"
 		b.HaveWater = false
