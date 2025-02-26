@@ -162,10 +162,10 @@ func (b *Building) GetBuildingData(name string) {
 		b.Address = "JIRON DANIEL OLAECHEA 175 - JESÚS MARÍA"
 		b.Email = "administradorlimaeste@elmolio.com"
 		b.PayData = RecollectionAccount{
-			Number: "19399644215020",
-			CCI: "00219319964421502015",
+			Number: "1937118402049",
+			CCI: "00219300711840204914",
 			Bank: "BCP",
-			Owner: "Mirtha Alvan y Jackeline Giles",
+			Owner: "Junta de Propietarios",
 		}
 		b.Picture = "files/torrereal.jpeg"
 		b.HaveWater = true
@@ -320,7 +320,7 @@ func (b *Building) GetBuildingData(name string) {
 	case "balcones":
 		b.Name = "LOS BALCONES DE SAN BLAS"
 		b.Nickname = "BALCONES"
-		b.Address = "LOS FAISANES 342 - CHORRILLOS"
+		b.Address = "LOS FAISANES 379-375 - CHORRILLOS"
 		b.Email = "administracion@elmolio.com"
 		b.PayData = RecollectionAccount{
 			Number: "1948287857024",
