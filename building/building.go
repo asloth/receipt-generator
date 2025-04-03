@@ -335,10 +335,10 @@ func (b *Building) GetBuildingData(name string) {
 		b.Address = "MALECON SUPERIOR 1201 - PUNTA HERMOSA"
 		b.Email = "administracion@elmolio.com"
 		b.PayData = RecollectionAccount{
-			Number: "194-9354551-0-12",
+			Number: "19306609926091",
 			Bank: "BCP",
-			Owner: "MALECON SUPERIOR 1201 Y AVENIDA COSTA PERUANA",
-			CCI: "",
+			Owner: "Jorge Alberto Calderon Rojas",
+			CCI: "00219310660992609111",
 		}
 		b.Picture = "files/default.png"
 		b.HaveWater = false
