@@ -15,7 +15,7 @@ type Apartment struct {
 	ParticipationPercentage string
 	FirstEmail              string
 	SecondEmail             string
-	Tower string
+	Tower                   string
 }
 
 func LoadAparmentData(filePath, sheetName string) ([]Apartment, error) {
@@ -86,7 +86,7 @@ out:
 
 func GetItemByFieldValue(myArray []Apartment, fieldValue string) *Apartment {
 	for i := range myArray {
-		if myArray[i].Number == fieldValue {
+		if strings.EqualFold(myArray[i].Number, fieldValue) {
 			return &myArray[i]
 		}
 		// Add additional conditions for other fields as needed

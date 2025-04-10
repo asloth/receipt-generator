@@ -18,6 +18,7 @@ import (
 	"github.com/asloth/receipt-generator/water"
 	"github.com/xuri/excelize/v2"
 )
+
 var (
 	BuildingOptions = map[string]string{
 		"2":  "belmonte",
@@ -95,9 +96,9 @@ func generateRece(r *bufio.Reader) {
 	fmt.Println("Ingrese el nombre de la hoja donde se encuentran los montos de cuotas")
 	sheetName := "Propietarios ordenados"
 	getData(reader, &sheetName)
-	
+
 	fmt.Println("Ingrese el nombre de la hoja donde se encuentra la hoja de morosidad")
-	indefaultSheet	 := ""
+	indefaultSheet := ""
 	getData(reader, &indefaultSheet)
 
 	fmt.Println("ELIJA EL EDIFICIO DEL CUAL DESEA GENERAR RECIBOS")
@@ -118,19 +119,19 @@ func generateRece(r *bufio.Reader) {
 		fmt.Println("Error reading aparment data" + err.Error())
 	}
 	fmt.Println("Directorio cargado")
-	
+
 	ret, err := fee.LoadFeeDetailData(filePath, sheetName)
 	if err != nil {
 		fmt.Println("Error reading fee data" + err.Error())
 	}
 	fmt.Println("Cuotas cargadas")
 
-	mora,err := fee.LoadInDefaultData(filePath,indefaultSheet)
+	mora, err := fee.LoadInDefaultData(filePath, indefaultSheet)
 	if err != nil {
 		fmt.Println("Error reading indefault data " + err.Error())
 	}
 	fmt.Println("Mora cargada")
-	
+
 	waterData := make(map[string]water.WaterMonthData)
 	waterGeneralData := &water.WaterByMonth{}
 	addContometer := "n"
@@ -143,26 +144,26 @@ func generateRece(r *bufio.Reader) {
 		if err != nil {
 			fmt.Println("Error reading the water data" + err.Error())
 		}
-		
+
 		fmt.Println("Desea agregar los contometros? (y/N)")
-		getData(reader,&addContometer)
-	
-		if strings.ToLower(addContometer)!= "n" {
+		getData(reader, &addContometer)
+
+		if strings.ToLower(addContometer) != "n" {
 			fmt.Println("Ingrese la extension de las imagenes de los contometros (png/jpeg/jpg)")
-			getData(reader,&fileExtension)
+			getData(reader, &fileExtension)
 		}
-		
+
 		fmt.Println("Ingrese el nombre de la hoja donde se encuentran los datos del recibo del agua")
-		sheetNameWaterBuilding:=""
-		getData(reader,&sheetNameWaterBuilding)
+		sheetNameWaterBuilding := ""
+		getData(reader, &sheetNameWaterBuilding)
 		waterGeneralData, err = utils.LoadWaterBuilding(filePath, sheetNameWaterBuilding, 3)
 
 		if err != nil {
 			fmt.Println("Error reading the water general data" + err.Error())
 		}
-	} 
+	}
 	for _, apar := range ret {
-		err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData, &addContometer,&fileExtension,&mora)
+		err := apar.GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo, waterRead, waterData, &b, &apData, *waterGeneralData, &addContometer, &fileExtension, &mora)
 		if err != nil {
 			fmt.Println(apar.ApartmentNumber)
 			fmt.Println(err)
