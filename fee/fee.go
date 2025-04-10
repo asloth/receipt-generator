@@ -28,7 +28,7 @@ import (
 type FeeDetail struct {
 	ApartmentNumber string
 	Amounts         map[string]float64
-	TotalAmounts         map[string]float64
+	TotalAmounts    map[string]float64
 }
 
 func LoadFeeDetailData(filePath, sheetName string) ([]FeeDetail, error) {
@@ -58,15 +58,16 @@ func LoadFeeDetailData(filePath, sheetName string) ([]FeeDetail, error) {
 
 	for i, row := range rows {
 		if i == 0 {
-			for _, colCell := range row {
-				cols = append(cols, colCell)
-			}
+			cols = append(cols, row...)
 		} else if i == 1 {
 			for j, colCell := range row {
 				colCell = strings.TrimSpace(colCell)               //el valor de la celda
 				col := strings.TrimSpace(strings.ToLower(cols[j])) //el nombre de la columna
 				if j > 0 {
 					totalAmounts[col], err = strconv.ParseFloat(colCell, 64)
+					if err != nil {
+						return nil, err
+					}
 				}
 			}
 		} else {
@@ -81,6 +82,10 @@ func LoadFeeDetailData(filePath, sheetName string) ([]FeeDetail, error) {
 					continue inside
 				}
 				ap2[col], err = strconv.ParseFloat(colCell, 64)
+				if err != nil {
+					ap2[col] = 0
+					continue inside
+				}
 			}
 			ap.Amounts = ap2
 			ap.TotalAmounts = totalAmounts
@@ -93,13 +98,13 @@ func LoadFeeDetailData(filePath, sheetName string) ([]FeeDetail, error) {
 
 func findApartmentByID(id string, myAp []apartment.Apartment) *apartment.Apartment {
 	for i := range myAp {
-		if myAp[i].Number == id {
+		if strings.EqualFold(myAp[i].Number, id) {
 			return &myAp[i]
 		}
 	}
 	return nil // Return nil if the struct with the given ID is not found
 }
-func findInChargeAmount(id string, myAp []InDefault) *float64{
+func findInChargeAmount(id string, myAp []InDefault) *float64 {
 	for i := range myAp {
 		if myAp[i].ApartmentNumber == id {
 			return &myAp[i].Amount
@@ -115,7 +120,7 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 	myAp := findApartmentByID(ap.ApartmentNumber, apList)
 
 	if myAp == nil {
-		return errors.New("Numero de departamento no existe")
+		return errors.New("numero de departamento no existe")
 	}
 	buildng := *b
 	var heightHeader float64 = 30
@@ -127,141 +132,139 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 		Blue:  66,
 	}
 	cfg := config.NewBuilder().
-	        WithConcurrentMode(7).
+		WithConcurrentMode(7).
 		Build()
 	m := maroto.New(cfg)
 	// Header
 	addCont := parseYesNo(*cont)
 	pathCont := b.Picture
 	if addCont {
-		tempPathCont := "contometer/"+buildng.Nickname+"/"+periodo+"/"+ap.ApartmentNumber+"."+*fileEx
+		tempPathCont := "contometer/" + buildng.Nickname + "/" + periodo + "/" + ap.ApartmentNumber + "." + *fileEx
 		if fileExists(tempPathCont) {
-			pathCont = tempPathCont 
+			pathCont = tempPathCont
 		}
 	}
 	receipt.ReceiptHeader(&m, heightHeader, &buildng, &pathCont)
-	
-	m.AddRow(2) 
-	m.AddRow(5,line.NewCol(12)) 
+
+	m.AddRow(2)
+	m.AddRow(5, line.NewCol(12))
 
 	// tabla inicial
 	colStyleHeader := &props.Cell{
 		BackgroundColor: colorMolio,
-	        BorderType:      border.Full,
+		BorderType:      border.Full,
 		BorderColor:     &props.BlackColor,
 		BorderThickness: 0.3,
 	}
 
 	colStyleCenterContent := &props.Cell{
-	        BorderType:      border.Full,
+		BorderType:      border.Full,
 		BorderColor:     &props.BlackColor,
 		BorderThickness: 0.3,
 	}
 	headerText := props.Text{
-		Family:    fontfamily.Arial,
-		Style:     fontstyle.Bold,
-		Size:      9.0,
-		Top: 0.5,
-		Align: align.Center,
-		Color: &props.BlackColor,
+		Family: fontfamily.Arial,
+		Style:  fontstyle.Bold,
+		Size:   9.0,
+		Top:    0.5,
+		Align:  align.Center,
+		Color:  &props.BlackColor,
 	}
 
 	headers := []core.Col{
-		text.NewCol(3,"TIPO CUOTA",headerText).WithStyle(colStyleHeader),
-		text.NewCol(3,"F. EMISION",headerText).WithStyle(colStyleHeader),
-		text.NewCol(3,"F. VCTO.",headerText).WithStyle(colStyleHeader),
-		text.NewCol(3,"PERIODO",headerText).WithStyle(colStyleHeader),
+		text.NewCol(3, "TIPO CUOTA", headerText).WithStyle(colStyleHeader),
+		text.NewCol(3, "F. EMISION", headerText).WithStyle(colStyleHeader),
+		text.NewCol(3, "F. VCTO.", headerText).WithStyle(colStyleHeader),
+		text.NewCol(3, "PERIODO", headerText).WithStyle(colStyleHeader),
 	}
 
 	contentCenterCell := props.Text{
-		Family:    fontfamily.Courier,
-		Style:     fontstyle.Normal,
-		Top: 0.5,
-		Size:      9.0,
-		Align: align.Center,
-		Color: &props.BlackColor,
+		Family: fontfamily.Courier,
+		Style:  fontstyle.Normal,
+		Top:    0.5,
+		Size:   9.0,
+		Align:  align.Center,
+		Color:  &props.BlackColor,
 	}
 	contents := []core.Col{
-		text.NewCol(3,tipoCuota,contentCenterCell).WithStyle(colStyleCenterContent),
-		text.NewCol(3,fechaEmision,contentCenterCell).WithStyle(colStyleCenterContent),
-		text.NewCol(3,fechaVenc,contentCenterCell).WithStyle(colStyleCenterContent),
-		text.NewCol(3,periodo,contentCenterCell).WithStyle(colStyleCenterContent),
+		text.NewCol(3, tipoCuota, contentCenterCell).WithStyle(colStyleCenterContent),
+		text.NewCol(3, fechaEmision, contentCenterCell).WithStyle(colStyleCenterContent),
+		text.NewCol(3, fechaVenc, contentCenterCell).WithStyle(colStyleCenterContent),
+		text.NewCol(3, periodo, contentCenterCell).WithStyle(colStyleCenterContent),
 	}
-	m.AddRow(6,headers...)	
-	m.AddRow(5,contents...)	
+	m.AddRow(6, headers...)
+	m.AddRow(5, contents...)
 	// SECCION DATOS DEL DPTO
-	m.AddRow(5) 
+	m.AddRow(5)
 	receipt.SubHeader(&m, "DATOS DEL DEPARTAMENTO", colStyleHeader)
 	printAparmentData(&m, colStyleCenterContent, contentSize, myAp)
 
 	// SECTION DATOS DEL USUARIO
-	m.AddRow(5) 
-	receipt.SubHeader(&m, "DETALLE DE LA CUOTA",colStyleHeader)
+	m.AddRow(5)
+	receipt.SubHeader(&m, "DETALLE DE LA CUOTA", colStyleHeader)
 	resumenTextProps := props.Text{
-				Style: fontstyle.Bold,
-				Size:  10,
-				Top: 0.5,
-				Align: align.Center,
-			}
-	m.AddRow(7, 
-		text.NewCol(8,"IMPORTES FACTURADOS", resumenTextProps).WithStyle(colStyleHeader),
-		text.NewCol(2,"IMPORTE TOTAL",resumenTextProps).WithStyle(colStyleHeader),
-		text.NewCol(2,"IMPORTE",resumenTextProps).WithStyle(colStyleHeader),
+		Style: fontstyle.Bold,
+		Size:  10,
+		Top:   0.5,
+		Align: align.Center,
+	}
+	m.AddRow(7,
+		text.NewCol(8, "IMPORTES FACTURADOS", resumenTextProps).WithStyle(colStyleHeader),
+		text.NewCol(2, "IMPORTE TOTAL", resumenTextProps).WithStyle(colStyleHeader),
+		text.NewCol(2, "IMPORTE", resumenTextProps).WithStyle(colStyleHeader),
 	)
 	DetailFeeOneColumn(&m, contentSize, rowHeight, ap, myAp)
 
 	monto := fmt.Sprintf("%.2f", ap.Amounts["cuota"])
-	m.AddRow(7, 
-		text.NewCol(10,"TOTAL A PAGAR ", resumenTextProps).WithStyle(colStyleHeader),
-		text.NewCol(2,"S/. "+monto,resumenTextProps).WithStyle(colStyleHeader),
+	m.AddRow(7,
+		text.NewCol(10, "TOTAL A PAGAR ", resumenTextProps).WithStyle(colStyleHeader),
+		text.NewCol(2, "S/. "+monto, resumenTextProps).WithStyle(colStyleHeader),
 	)
 	m.AddRow(2)
-	m.AddRow(7, 
-		text.NewCol(10,"IMPORTES VENCIDOS", resumenTextProps).WithStyle(colStyleHeader),
-		text.NewCol(2,"IMPORTE",resumenTextProps).WithStyle(colStyleHeader),
+	m.AddRow(7,
+		text.NewCol(10, "IMPORTES VENCIDOS", resumenTextProps).WithStyle(colStyleHeader),
+		text.NewCol(2, "IMPORTE", resumenTextProps).WithStyle(colStyleHeader),
 	)
-	indefaultamount := fmt.Sprintf("%.2f",*findInChargeAmount(ap.ApartmentNumber,indefaultList)) 
-	receipt.PrintDetailFeeOneColumn(&m, rowHeight, contentSize,"CUOTAS ANTERIORES",indefaultamount)
+	indefaultamount := fmt.Sprintf("%.2f", *findInChargeAmount(ap.ApartmentNumber, indefaultList))
+	receipt.PrintDetailFeeOneColumn(&m, rowHeight, contentSize, "CUOTAS ANTERIORES", indefaultamount)
 
 	m.AddRow(5)
 	// SECTION WATER DETAIL INFORMATION
 	if buildng.HaveWater {
-		receipt.SubHeader(&m,"CONSUMO INDIVIDUAL", colStyleHeader)
+		receipt.SubHeader(&m, "CONSUMO INDIVIDUAL", colStyleHeader)
 		// Defining the fields of the first column
 		waterHeader := []core.Col{
-			text.NewCol(4,"LECTURA ANTERIOR",headerText).WithStyle(colStyleHeader),
-			text.NewCol(4,"LECTURA ACTUAL",headerText).WithStyle(colStyleHeader),
-			text.NewCol(4,"CONSUMO EN M3",headerText).WithStyle(colStyleHeader),
+			text.NewCol(4, "LECTURA ANTERIOR", headerText).WithStyle(colStyleHeader),
+			text.NewCol(4, "LECTURA ACTUAL", headerText).WithStyle(colStyleHeader),
+			text.NewCol(4, "CONSUMO EN M3", headerText).WithStyle(colStyleHeader),
 		}
 		waterData := []string{fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].LastMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].CurrentMonth), fmt.Sprintf("%.2f", wData[ap.ApartmentNumber].WaterConsumedThisMonth)}
 
 		waterContents := []core.Col{
-			text.NewCol(4,waterData[0],contentCenterCell).WithStyle(colStyleCenterContent),
-			text.NewCol(4,waterData[1],contentCenterCell).WithStyle(colStyleCenterContent),
-			text.NewCol(4,waterData[2],contentCenterCell).WithStyle(colStyleCenterContent),
+			text.NewCol(4, waterData[0], contentCenterCell).WithStyle(colStyleCenterContent),
+			text.NewCol(4, waterData[1], contentCenterCell).WithStyle(colStyleCenterContent),
+			text.NewCol(4, waterData[2], contentCenterCell).WithStyle(colStyleCenterContent),
 		}
-		m.AddRow(6,waterHeader...)	
-		m.AddRow(5,waterContents...)	
+		m.AddRow(6, waterHeader...)
+		m.AddRow(5, waterContents...)
 	}
 
 	m.AddRow(5)
 	// PAY INFORMACION
 	receipt.SubHeader(&m, "INFORMACION DE PAGO", colStyleHeader)
 	if len(strings.TrimSpace(myAp.Tower)) > 0 {
-		t,found := GetTowerInfoByName(&buildng,myAp.Tower)	
+		t, found := GetTowerInfoByName(&buildng, myAp.Tower)
 		if found {
-			receipt.PayInfo(&m, colStyleHeader,colStyleCenterContent, &t.Account)
+			receipt.PayInfo(&m, colStyleHeader, colStyleCenterContent, &t.Account)
 		} else {
 			fmt.Println("No se encuentra la torre para este dpto.")
 		}
 	} else {
-		receipt.PayInfo(&m, colStyleHeader,colStyleCenterContent, &buildng.PayData)
+		receipt.PayInfo(&m, colStyleHeader, colStyleCenterContent, &buildng.PayData)
 	}
-
 
 	// Create the directory to store the receipts
 	if err := os.Mkdir("output/"+buildng.Nickname+"-RECIBOS-"+periodo, os.ModePerm); err != nil {
-
 	}
 
 	// Create a custom name for the receipt
@@ -283,11 +286,12 @@ func (ap *FeeDetail) GenerateReceipt(tipoCuota, fechaEmision, fechaVenc, periodo
 func GetTowerInfoByName(b *building.Building, towerName string) (building.Tower, bool) {
 	for _, tower := range b.Towers {
 		if tower.Name == towerName {
-			return tower, true 
+			return tower, true
 		}
 	}
-	return building.Tower{} , false
+	return building.Tower{}, false
 }
+
 // Para separar los montos de la cuota en dos arrays y pintarlos en el recibo
 func Detail(pdf *core.Maroto, contentSize, rowHeight float64, ap *FeeDetail, myApartment *apartment.Apartment) {
 	m := *pdf
@@ -327,20 +331,21 @@ func Detail(pdf *core.Maroto, contentSize, rowHeight float64, ap *FeeDetail, myA
 		receipt.DataOwner(&m, rowHeight, contentSize, v, ownerData[i], SecondColumn[i], otherData[i])
 	}
 }
-//Pinta los montos de la cuota en una sola columna
+
+// Pinta los montos de la cuota en una sola columna
 func DetailFeeOneColumn(pdf *core.Maroto, contentSize, rowHeight float64, ap *FeeDetail, myApartment *apartment.Apartment) {
-	m:= *pdf
-	for key,value := range ap.Amounts {
+	m := *pdf
+	for key, value := range ap.Amounts {
 		if key == "cuota" {
 			continue
 		}
-		totalServiceAmount := fmt.Sprintf("%.2f",ap.TotalAmounts[key])
-		receipt.PrintDetailFeeTwoColumn(&m, rowHeight, 8,key,fmt.Sprintf("%.2f", value),totalServiceAmount)
+		totalServiceAmount := fmt.Sprintf("%.2f", ap.TotalAmounts[key])
+		receipt.PrintDetailFeeTwoColumn(&m, rowHeight, 8, key, fmt.Sprintf("%.2f", value), totalServiceAmount)
 	}
 }
 
 func parseYesNo(input string) bool {
-	normalizedInput := strings.TrimSpace(input) // Trim surrounding spaces
+	normalizedInput := strings.TrimSpace(input)        // Trim surrounding spaces
 	normalizedInput = strings.ToUpper(normalizedInput) // Convert to uppercase
 
 	if normalizedInput == "Y" {
@@ -348,7 +353,7 @@ func parseYesNo(input string) bool {
 	} else if normalizedInput == "N" {
 		return false
 	}
-	
+
 	// Handle unexpected input (optional)
 	fmt.Printf("Invalid input: %s. Please provide 'y' or 'n'.\n", input)
 	return false

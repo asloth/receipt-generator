@@ -8,11 +8,10 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-type InDefault struct{
+type InDefault struct {
 	ApartmentNumber string
-	Amount float64
+	Amount          float64
 }
-
 
 func LoadInDefaultData(filePath, sheetName string) ([]InDefault, error) {
 
@@ -35,20 +34,16 @@ func LoadInDefaultData(filePath, sheetName string) ([]InDefault, error) {
 		return nil, err
 	}
 
-	cols := []string{} //No usaremos los nombres de las columnas por el momento
-
 	ret := []InDefault{}
 
 	for i, row := range rows {
 		if i == 0 {
-			for _, colCell := range row {
-				cols = append(cols, colCell)
-			}
+			continue
 		} else {
 			ap := InDefault{}
 		inside:
 			for j, colCell := range row {
-				colCell = strings.TrimSpace(colCell)               //el valor de la celda
+				colCell = strings.TrimSpace(colCell) //el valor de la celda
 				if j == 0 {
 					ap.ApartmentNumber = colCell
 					continue inside
